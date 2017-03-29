@@ -1,0 +1,107 @@
+(graph
+ (definition
+  (nodes 8 8 15)
+  (arcs 15)
+  (incidences
+   (0
+      0  5  6)
+   (1
+      2 19 20  1)
+   (2
+      9 10 17  3  4)
+   (3
+      7  8 13)
+   (4
+     12 14 28 11)
+   (5
+     18 23 24 15 16)
+   (6
+     21 22 26)
+   (7
+     25 27 29)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+     2.000  4.000  4.000  5.000  1.000  7.000 10.000  1.000  4.000  7.000
+     5.000  3.000  5.000  2.000  4.000)
+  (demand 2.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+     20.000 10.000 15.000 20.000 10.000  5.000  0.000  0.000 19.000  1.000
+      5.000 15.000  5.000 15.000 10.000  7.000  3.000  3.000  7.000 13.000
+     17.000 17.000 13.000)
+   (axis1
+     20.000 20.000 15.000 10.000 10.000 15.000 20.000 10.000 15.000 15.000
+     21.000 21.000  9.000  9.000 14.000 12.000 12.000 18.000 18.000 18.000
+     18.000 12.000 12.000)
+  )
+ )
+ (layout
+  (nodeSize 110.000)
+  (arrowSize 150.000)
+  (arrowDisplayMode 4)
+  (arcFontSize 120.000)
+  (nodeSpacing 5.000)
+  (gridDisplayMode 1)
+  (arcLabelFormat "#4")
+  (nodeLabelFormat "#3")
+  (arcStippleMode 1)
+  (arcWidthMin 3)
+  (align
+    11 19 20  8 21 22 13 15 14 18
+    10 17 16  9 12)
+  (nodeFontSize 50.000)
+ )
+ (solutions
+  (predecessor
+     7  0 16  9 29 14 20 26)
+  (label
+    * * * * * * * *)
+  (potential
+    -2.000 -1.000  1.500 -1.500  0.500  2.000  3.000 -2.500)
+  (nodeColour
+    3 3 3 3 3 3 3 3)
+  (edgeColour
+    * * * * * * * * * *
+    * 1 * * *)
+  (subgraph
+    1.000 0.000 0.000 1.000 1.000 1.000 0.000 1.000 0.000 0.000
+    1.000 0.000 0.000 1.000 1.000)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               7
+   -xShift             400
+   -yShift             400
+   -xZoom              2.35e+02
+   -yZoom              2.35e+02
+   -legenda            5
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logMem             1
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methPQ             2
+   -methModLength      1
+   -methMinCBalFlow    0
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          1
+   -methLocal          0
+   -maxBBIterations    10000
+   -maxBBNodes         50000
+   -methPlanarity      0
+   -randLength         0
+   -randGeometry       0)
+)

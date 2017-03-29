@@ -1,0 +1,1126 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainEditor.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Generation of the editor canvas
+#             All editor functions
+#             Conversions between library and editor object
+#-------------------------------------------------------------------------------
+
+
+
+# Conversions of Canvas Coordinates and Goblin Coordinates
+
+proc CurrentCX {cx gridSize} {
+    global c
+
+    return [$c canvasx $cx]
+}
+
+proc CurrentCY {cy gridSize} {
+    global c
+
+    return [$c canvasy $cy]
+}
+
+
+
+# Placement of Canvas Nodes
+
+proc DrawNode {focussedGraph displayProxy v nodeType cx cy} {
+    global c IncIn IncOut NodeIndex RevNodeIndex
+
+    set nodeShapeMode [$focussedGraph layout info -nodeShapeMode]
+    set shape oval
+    set fillColour [NodeColour $focussedGraph $displayProxy $v]
+
+    if {[string equal $nodeType "real"] && $nodeShapeMode==2} {
+        set shape rectangle
+    }
+
+    set node [$c create $shape $cx $cy $cx $cy -outline black -tags node]
+
+    set IncIn($v) {}
+    set IncOut($v) {}
+    set NodeIndex($node) $v
+    set RevNodeIndex($v) $node
+
+    RedrawNode $focussedGraph $displayProxy $v $nodeType
+}
+
+
+proc RedrawNode {focussedGraph displayProxy v nodeType} {
+    global c RevNodeIndex
+
+    if {[string equal $nodeType "real"]} {
+        set nodeShapeMode [$focussedGraph layout info -nodeShapeMode]
+
+        if {$nodeShapeMode==0} {
+            set ratio 8
+            set xRatio $ratio
+            set yRatio $ratio
+        } else {
+            set xRatio [$displayProxy node $v info -canvasWidth]
+            set yRatio [$displayProxy node $v info -canvasHeight]
+        }
+    } else {
+        set ratio 4
+        set xRatio $ratio
+        set yRatio $ratio
+    }
+
+    set Node $RevNodeIndex($v)
+    $c coords $Node \
+        [expr {[$displayProxy layoutPoint $v info -canvasX]-$xRatio}] \
+        [expr {[$displayProxy layoutPoint $v info -canvasY]-$yRatio}] \
+        [expr {[$displayProxy layoutPoint $v info -canvasX]+$xRatio}] \
+        [expr {[$displayProxy layoutPoint $v info -canvasY]+$yRatio}]
+
+    if {[string equal $nodeType "real"]} {
+        set fillColour [NodeColour $focussedGraph $displayProxy $v]
+    } else {
+        set fillColour peru
+    }
+
+    $c itemconfigure $Node -fill $fillColour
+}
+
+
+# Placement of Canvas Arcs
+
+proc DrawArc {focussedGraph displayProxy a} {
+    global c IncIn IncOut Mode ArcIndex RevArcIndex HandleIndex RevHandleIndex thisCoords
+
+    set u [$focussedGraph arc [expr {2*$a}] info -startNode]
+    set v [$focussedGraph arc [expr {2*$a}] info -endNode]
+    set w [$focussedGraph arc [expr {2*$a}] info -labelAnchorPoint]
+
+    if {$u==$v && [string equal $w "*"]} {return}
+
+
+    # Draw Handle
+
+    set cx [$displayProxy labelAnchorPoint [expr {2*$a}] info -canvasX]
+    set cy [$displayProxy labelAnchorPoint [expr {2*$a}] info -canvasY]
+
+    set handle [$c create rectangle \
+        [expr {$cx-4}] [expr {$cy-4}] [expr {$cx+4}] [expr {$cy+4}] \
+        -outline black -fill black -tags handle]
+
+
+    # Compute Canvas Coordinates
+
+    if {$w!="*"} {set w [$focussedGraph layout point $w info -successor]}
+
+    while {$w!="*"} {
+        DrawNode $focussedGraph $displayProxy $w artifical \
+            [$displayProxy layoutPoint $w info -canvasX] \
+            [$displayProxy layoutPoint $w info -canvasY]
+        set w [$focussedGraph layout point $w info -successor]
+    }
+
+
+    # Draw Arc
+
+    set lineCommand "$c create line $cx $cy $cx $cy"
+
+    set smoothOption ""
+    if {[$focussedGraph layout info -arcShapeMode] == 1} {set smoothOption "-smooth on"}
+
+    set arrowSize [$displayProxy info -canvasArrowSize]
+    set arrowShape "-arrowshape {[expr $arrowSize*2] [expr $arrowSize*3] $arrowSize}"
+
+    set Arc [eval $lineCommand $smoothOption $arrowShape]
+
+    # Set Indices
+
+    $c lower $Arc
+    lappend IncIn($v) $Arc
+    lappend IncOut($u) $Arc
+    set ArcIndex($Arc) $a
+    set RevArcIndex($a) $Arc
+
+    set RevHandleIndex($handle) $a
+    set HandleIndex($a) $handle
+
+    RedrawArc $focussedGraph $displayProxy $a
+}
+
+proc RedrawArc {focussedGraph displayProxy a} {
+    global c RevArcIndex HandleIndex thisCoords
+
+    set u [$focussedGraph arc [expr {2*$a}] info -startNode]
+    set v [$focussedGraph arc [expr {2*$a}] info -endNode]
+    set w [$focussedGraph arc [expr {2*$a}] info -labelAnchorPoint]
+
+    if {$u==$v && [string equal $w "*"]} {return}
+
+
+    # Draw Handle
+    set cx [$displayProxy labelAnchorPoint [expr {2*$a}] info -canvasX]
+    set cy [$displayProxy labelAnchorPoint [expr {2*$a}] info -canvasY]
+
+    $c coords $HandleIndex($a) \
+        [expr {$cx-4}] [expr {$cy-4}] [expr {$cx+4}] [expr {$cy+4}]
+
+
+    # Compute Canvas Coordinates
+
+    if {$w!="*"} {set w [$focussedGraph layout point $w info -successor]}
+
+    set thisCoords [list \
+        [$displayProxy arc [expr {2*$a}] info -canvasPortX] \
+        [$displayProxy arc [expr {2*$a}] info -canvasPortY] ]
+
+    while {$w!="*"} {
+        RedrawNode $focussedGraph DP $w artifical
+        lappend thisCoords \
+            [$displayProxy layoutPoint $w info -canvasX] [$displayProxy layoutPoint $w info -canvasY]
+        set w [$focussedGraph layout point $w info -successor]
+    }
+
+    lappend thisCoords \
+        [$displayProxy arc [expr {2*$a+1}] info -canvasPortX] \
+        [$displayProxy arc [expr {2*$a+1}] info -canvasPortY]
+
+
+    # Draw Arc
+
+    eval $c coords $RevArcIndex($a) $thisCoords
+
+    $c itemconfigure $RevArcIndex($a) \
+        -arrow [$displayProxy arc [expr {2*$a}] info -arrows] \
+        -width [$displayProxy arc [expr {2*$a}] info -width ] \
+        -fill  [$displayProxy arc [expr {2*$a}] info -colour]
+}
+
+
+# Initialize Canvas with Graph in GOBLIN Library
+
+proc NodeColour {focussedGraph displayProxy v} {
+    global Mode
+
+    if {![string equal $Mode "insert nodes"]} {
+        return [$displayProxy node $v info -colour]
+    }
+
+    if {[$focussedGraph info -bipartite] && $v<[$focussedGraph #leftHand]} {
+        return sienna
+    } else {
+        return peru
+    }
+}
+
+proc RGBColour {rSat gSat bSat} {
+    return [format "#%X%X%X" $rSat $gSat $bSat];
+}
+
+proc HighlightIncidences {focussedGraph v} {
+    global c RevArcIndex ThisNode
+
+    for {set a 0} {$a<[$focussedGraph #edges]} {incr a} {
+        $c itemconfigure $RevArcIndex($a) -fill black -width 2
+    }
+
+    set aFirst [$focussedGraph node $v info -firstIncidence]
+
+    if {$aFirst=="*"} {break}
+
+    set a $aFirst
+    set aNext [$focussedGraph arc $a info -righthandArc]
+    set incList [list]
+    set lLength 1
+
+    while {$aNext!=$aFirst} {
+        lappend incList $a
+        set a $aNext
+        set aNext [$focussedGraph arc $aNext info -righthandArc]
+        incr lLength
+    }
+    lappend incList $a
+
+    set i 1
+    foreach a $incList {
+        $c itemconfigure $RevArcIndex([expr $a/2]) -fill \
+            [RGBColour \
+                [expr 16+round(239.0*($lLength-$i+1)/$lLength)] \
+                16 [expr 16+round(239.0*$i/$lLength)] ]
+        incr i
+    }
+}
+
+proc DrawGraph {focussedGraph} {
+    global c goblinWallpaper
+
+    $focussedGraph displayProxy DP
+
+    for {set v 0} {$v<[$focussedGraph #nodes]} {incr v} {
+        DrawNode $focussedGraph DP $v real \
+            [DP layoutPoint $v info -canvasX] [DP layoutPoint $v info -canvasY]
+    }
+
+    if {[$focussedGraph info -sparse]} {
+        for {set a 0} {$a<[$focussedGraph #edges]} {incr a} {
+            DrawArc $focussedGraph DP $a
+        }
+    } else {
+        for {set v 0} {$v<[$focussedGraph #nodes]} {incr v} {
+            set thisPred [$focussedGraph node $v info -predecessorArc]
+            if {$thisPred!="*"} {
+                DrawArc $focussedGraph DP [expr $thisPred/2]
+            }
+        }
+    }
+
+    if {$goblinWallpaper!=""} {
+        image create photo wallpaper -file "$goblinWallpaper"
+        $c lower [$c create image 0 0 -image wallpaper -anchor nw]
+    }
+
+    destroy DP
+
+    set boundingBox [$c create rectangle 0 0 \
+        [DP info -canvasWidth] [DP info -canvasHeight] \
+        -outline grey -fill ivory]
+    $c lower $boundingBox
+
+    BackupScrollPos
+}
+
+proc RedrawGraph {focussedGraph} {
+    global c CanvasMargin
+
+    $focussedGraph displayProxy DP
+
+    for {set v 0} {$v<[$focussedGraph #nodes]} {incr v} {RedrawNode $focussedGraph DP $v real}
+
+    if {[$focussedGraph info -sparse]} {
+        for {set a 0} {$a<[$focussedGraph #edges]} {incr a} {
+            RedrawArc $focussedGraph DP $a
+        }
+    } else {
+        for {set v 0} {$v<[$focussedGraph #nodes]} {incr v} {
+            set thisPred [$focussedGraph node $v info -predecessorArc]
+
+            if {$thisPred!="*"} {
+                RedrawArc $focussedGraph DP [expr $thisPred/2]
+            }
+        }
+    }
+
+    $c configure -scrollregion [list \
+        [expr [lindex [$c bbox all] 0]-$CanvasMargin] \
+        [expr [lindex [$c bbox all] 1]-$CanvasMargin] \
+        [expr [lindex [$c bbox all] 2]+$CanvasMargin] \
+        [expr [lindex [$c bbox all] 3]+$CanvasMargin] ]
+
+    destroy DP
+}
+
+
+
+# Editor Event Bindings
+
+proc MakeBalloonEdit {label cx cy} {
+    global c
+    destroy .balloon
+    toplevel .balloon
+    append wdSize 100x20+ \
+        [expr [winfo rootx $c]+$cx+15] + \
+        [expr [winfo rooty $c]+$cy+20]
+    wm geometry .balloon $wdSize
+    label .balloon.text -text $label -bg yellow -relief solid -anchor w
+    pack .balloon.text -fill both
+
+    set wdSize ""
+    append wdSize [winfo reqwidth .balloon.text] x \
+        [winfo reqheight .balloon.text] + \
+        [expr [winfo rootx $c]+$cx+15]  + \
+        [expr [winfo rooty $c]+$cy+20]
+    wm geometry .balloon $wdSize
+    wm overrideredirect .balloon 1
+}
+
+proc InitEditor {graphObject} {
+    global currentNode currentArc c Mode StartNode EndNode ThisArcIndex \
+        MoveNode MoveArc ThisArcIndex2
+
+    InitCanvasRegion
+    MakeEditorBar $graphObject
+
+    set currentNode ""
+    set currentArc ""
+    set ThisNode ""
+    set ThisArcIndex ""
+    set ThisArcIndex2 ""
+    set StartNode ""
+    set EndNode ""
+    set MoveNode ""
+    set MoveArc ""
+
+    PostStatusInfo ""
+
+
+    $c bind node <Any-Enter> {
+        set thisObj [$c find withtag current]
+        $c itemconfigure current -width 3 -outline ivory3
+        set currentNode $NodeIndex($thisObj)
+        MakeBalloonEdit "node index $currentNode" %x %y
+    }
+
+    $c bind handle <Any-Enter> {
+        set thisObj [$c find withtag current]
+        $c itemconfigure current -fill grey -width 3 -outline ivory3
+        set currentArc $RevHandleIndex($thisObj)
+        MakeBalloonEdit "arc index $currentArc" %x %y
+    }
+
+    $c bind node <Any-Leave> {
+        set thisObj [$c find withtag current]
+        $c itemconfigure current -width 1 -outline black
+        set currentNode ""
+        DestroyBalloon
+    }
+
+    $c bind handle <Any-Leave> {
+        set thisObj [$c find withtag current]
+        $c itemconfigure current -fill black -width 1 -outline black
+        set currentArc ""
+        DestroyBalloon
+    }
+
+    bind $c <Button-1> {
+        set focussedGraph [GetFocussedObject]
+        set fineSpacing [$focussedGraph layout info -fineSpacing]
+        set bendSpacing [$focussedGraph layout info -bendSpacing]
+        set nodeSpacing [$focussedGraph layout info -nodeSpacing]
+
+        if {[string equal $Mode "move nodes"]} {
+            if {$currentNode!=""} {
+                if {$currentNode<[$focussedGraph #nodes]} {
+                    UploadNodeLabels $focussedGraph
+                    DownloadNodeLabels $focussedGraph $currentNode
+                }
+
+                set MoveNode $currentNode
+            }
+
+            if {$currentArc!=""} {
+                if {[$focussedGraph arc [expr {2*$currentArc}] info -labelAnchorPoint]=="*"} {
+                    $focussedGraph displayProxy DP
+                    DP labelAnchorPoint [expr {2*$currentArc}] placeAt [$c canvasx %x] [$c canvasy %y]
+                    destroy DP
+                }
+
+                UploadArcLabels $focussedGraph
+                DownloadArcLabels $focussedGraph $currentArc
+                set MoveArc $currentArc
+            }
+        }
+
+        if {[string equal $Mode "change labels"]} {
+            if {$currentNode!="" && $currentNode<[$focussedGraph #nodes]} {
+                UploadNodeLabels $focussedGraph
+                DownloadNodeLabels $focussedGraph $currentNode
+                source [file join $GoblinTclPath editNodeLabels.tk]}
+            if {$currentArc!=""} {
+                UploadArcLabels $focussedGraph
+                DownloadArcLabels $focussedGraph $currentArc
+
+                source [file join $GoblinTclPath editArcLabels.tk]}
+        }
+
+        if {[string equal $Mode "redirect arcs"]} {
+            if {$currentArc!=""} {
+                $focussedGraph arc [expr {2*$currentArc}] reverse
+
+                $focussedGraph displayProxy DP
+                RedrawArc $focussedGraph DP $currentArc
+                destroy DP
+
+                UploadArcLabels $focussedGraph
+                DownloadArcLabels $focussedGraph $currentArc
+                PropagateModifications $focussedGraph
+            }
+        }
+
+        if {[string equal $Mode "sort incidences"]} {
+            if {$currentNode!="" && $currentNode<[$focussedGraph #nodes]} {
+                if {$ThisNode!=$currentNode || $ThisArcIndex==""} {
+                    set ThisArcIndex [$focussedGraph node $currentNode info -firstIncidence]
+                    UploadAndDownloadLabels $focussedGraph $currentNode [expr $ThisArcIndex/2]
+                    HighlightIncidences $focussedGraph $ThisNode
+                } else {
+                    $c itemconfigure $RevArcIndex([expr $ThisArcIndex/2]) -width 2
+                    set ThisArcIndex [$focussedGraph arc $ThisArcIndex info -righthandArc]
+                    UploadAndDownloadLabels $focussedGraph $ThisNode [expr $ThisArcIndex/2]
+                }
+
+                MakeHelp "(L) scan/select node  (R) select incidence"
+                $c itemconfigure $RevArcIndex([expr $ThisArcIndex/2]) -width 5
+            }
+        }
+
+        if {[string equal $Mode "shift incidence"]} {
+            $focussedGraph node $ThisNode configure -firstIncidence $ThisArcIndex
+            set Mode "sort incidences"
+            MakeHelp "(L) scan/select node  (R) select incidence"
+            HighlightIncidences $focussedGraph $ThisNode
+            PropagateModifications $focussedGraph
+            break
+        }
+
+        if {[string equal $Mode "paste incidence"]} {
+            $c itemconfigure $RevArcIndex([expr $ThisArcIndex/2]) -width 2
+            set ThisArcIndex [$focussedGraph arc $ThisArcIndex info -righthandArc]
+            $c itemconfigure $RevArcIndex([expr $ThisArcIndex/2]) -width 5
+            break
+        }
+
+        if {[string equal $Mode "insert nodes"]} {
+            if {$currentNode == ""} {
+                set w [expr [$focussedGraph layout #points]]
+                set v [$focussedGraph #nodes]
+
+                # This uses implementational details about index changes!
+                if {$w!=$v && [info exists RevNodeIndex($v)]} {
+                    # w is a bend node
+                    set RevNodeIndex($w) $RevNodeIndex($v)
+                    set NodeIndex($RevNodeIndex($w)) $w
+                } else {
+                    # w is an edge label alignment point
+                    # or no artificial nodes exist at all
+                    set RevNodeIndex($w) ""
+                }
+
+                $focussedGraph node insert
+                PropagateModifications $focussedGraph
+
+                $focussedGraph displayProxy DP
+                DP layoutPoint $v placeAt [$c canvasx %x] [$c canvasy %y]
+                DrawNode $focussedGraph DP $v real \
+                    [DP layoutPoint $v info -canvasX] [DP layoutPoint $v info -canvasY]
+                destroy DP
+
+                # Allow to drop the new node elsewhere
+                UploadNodeLabels $focussedGraph
+                DownloadNodeLabels $focussedGraph $v
+                set MoveNode $v
+            }
+        }
+
+        if {[string equal $Mode "set colours"]} {
+            if {$currentNode != "" && $currentNode<[$focussedGraph #nodes]} {
+                set newColour [$focussedGraph node $currentNode info -nodeColour]
+
+                if {$newColour!="*" && $newColour!=0} {
+                    incr newColour -1
+                } else {
+                    if {$newColour=="*"} {
+                        set newColour [expr [$focussedGraph #nodes]-1]
+                    } else {
+                        set newColour "*"
+                    }
+                }
+
+                UploadNodeLabels $focussedGraph
+                $focussedGraph node $currentNode configure -nodeColour $newColour
+                DownloadNodeLabels $focussedGraph $currentNode
+                $focussedGraph displayProxy DP
+                RedrawNode $focussedGraph DP $currentNode real
+                destroy DP
+                PropagateModifications $focussedGraph
+            }
+
+            if {$currentArc != ""} {
+                set newColour [$focussedGraph arc [expr {2*$currentArc}] info -edgeColour]
+
+                if {$newColour=="*" || $newColour!=0} {
+                    if {$newColour=="*"} {
+                        set newColour [expr [$focussedGraph #edges]-1]
+                    } else {
+                        incr newColour -1
+                    }
+                } else {
+                    set newColour "*"
+                }
+
+                UploadArcLabels $focussedGraph
+                $focussedGraph arc [expr {2*$currentArc}] configure -edgeColour $newColour
+                DownloadArcLabels $focussedGraph $currentArc
+                $focussedGraph displayProxy DP
+                RedrawArc $focussedGraph DP $currentArc
+                destroy DP
+                PropagateModifications $focussedGraph
+            }
+        }
+
+        if {[string equal $Mode "set predecessors"]} {
+            if {$EndNode == ""} {
+                if {$currentNode != "" && $currentNode<[$focussedGraph #nodes]} {
+                    UploadNodeLabels $focussedGraph
+                    set EndNode $currentNode
+                    DownloadNodeLabels $focussedGraph $currentNode
+
+                    MakeHelp "(L) set predecessor node/arc  (C) dismiss"
+                }
+            } else {
+                set thisPred ""
+                if {$currentNode!="" && $currentNode<[$focussedGraph #nodes]} {
+                    set StartNode $currentNode
+                    set thisPred [$focussedGraph adjacency $StartNode $EndNode]
+                }
+
+                if {$currentArc!=""} {
+                    set thisPred [expr 2*$currentArc]
+                    if {[$focussedGraph arc $thisPred info -endNode]!=$EndNode} {
+                        incr thisPred
+                    }
+                    set StartNode [$focussedGraph arc $thisPred info -startNode]
+                }
+
+                if {$thisPred!="" && [$focussedGraph arc $thisPred info -endNode]==$EndNode} {
+                    UploadNodeLabels $focussedGraph
+                    UploadArcLabels $focussedGraph
+                    $focussedGraph node $EndNode configure -predecessorArc $thisPred
+                    DownloadNodeLabels $focussedGraph $EndNode
+                    DownloadArcLabels $focussedGraph [expr $thisPred/2]
+                    PropagateModifications $focussedGraph
+                    set EndNode ""
+                    MakeHelp "(L) select node"
+                    InitEditor $focussedGraph
+                }
+            }
+        }
+
+        if {[string equal $Mode "insert arcs"]} {
+            if {$StartNode == ""} {
+                if {$currentNode != "" && $currentNode<[$focussedGraph #nodes]} {
+                    set StartNode $currentNode
+                    set EndNode ""
+
+                    $focussedGraph displayProxy DP
+
+                    set ThisCoords [list \
+                        [DP layoutPoint $StartNode info -canvasX] \
+                        [DP layoutPoint $StartNode info -canvasY] \
+                        [CurrentCX %x $nodeSpacing]               \
+                        [CurrentCY %y $nodeSpacing]               ]
+
+                    destroy DP
+
+                    set smoothOption ""
+                    if {[$focussedGraph layout info -arcShapeMode] == 1} {
+                        set smoothOption "-smooth on"
+                    }
+                    set ThisArcIndex2 [eval $c create line $ThisCoords $smoothOption]
+                    $c lower $ThisArcIndex2
+
+                    MakeHelp "(L) select end node / place bend  (C) cancel"
+                }
+            } else {
+                set EndNode $currentNode
+
+                if {$currentNode != "" && $currentNode<[$focussedGraph #nodes]} {
+                    set u $StartNode
+                    set v $currentNode
+                    $c delete $ThisArcIndex2
+                    set ThisArcIndex2 ""
+
+                    if {[$focussedGraph info -bipartite] && \
+                        (($u<[$focussedGraph #leftHand] && $v<[$focussedGraph #leftHand]) || \
+                         ($u>=[$focussedGraph #leftHand] && $v>=[$focussedGraph #leftHand])) } \
+                    {
+                        PostStatusInfo "end nodes must be in different components"
+                        set StartNode ""
+                        break
+                    }
+
+                    set a [$focussedGraph arc insert $u $v]
+                    set thisLength [llength $ThisCoords]
+
+                    $focussedGraph displayProxy DP
+
+                    if {$thisLength>4} {
+                        set LabelNode [$focussedGraph arc [expr {2*$a}] provide -labelAnchorPoint]
+
+                        DP labelAnchorPoint [expr {2*$a}] placeAt [$c canvasx %x] [$c canvasy %y]
+
+                        set p [$focussedGraph arc [expr {2*$a}] provide -portNode]
+                        DP layoutPoint $p placeAt [lindex $ThisCoords 2] [lindex $ThisCoords 3]
+
+                        for {set i 4} {$i < [expr {$thisLength-3}]} {incr i 2} {
+                            set p [$focussedGraph layout point $p insertSuccessor]
+
+                            DP layoutPoint $p placeAt \
+                                [lindex $ThisCoords $i] [lindex $ThisCoords [expr $i+1]]
+                        }
+
+                        MakeHelp "(L) align label"
+                    } else {
+                        set LabelNode ""
+                        MakeHelp "(L) align label  (R) automatic alignment"
+                    }
+
+                    DrawArc $focussedGraph DP $a
+
+                    destroy DP
+
+                    if {[info exists HandleIndex($a)]} {
+                        UploadArcLabels $focussedGraph
+                        DownloadArcLabels $focussedGraph $a
+                        set NewArc $a
+                        set Mode "align label"
+
+                        PropagateModifications $focussedGraph
+                        set StartNode ""
+                    } else {
+                        MakeHelp "Missing interpolation points"
+                        set StartNode ""
+                    }
+                } else {
+                    lappend ThisCoords [CurrentCX %x $bendSpacing] [CurrentCY %y $bendSpacing]
+                    eval $c coords $ThisArcIndex2 $ThisCoords
+                }
+            }
+        }
+
+        if {[string equal $Mode "align label"] && $currentNode == ""} {
+            if {$LabelNode == ""} {
+                set LabelNode [$focussedGraph arc [expr {2*$ThisArc}] provide -labelAnchorPoint]
+            }
+
+            $focussedGraph displayProxy DP
+            DP labelAnchorPoint [expr {2*$ThisArc}] placeAt [$c canvasx %x] [$c canvasy %y]
+            $c coords $HandleIndex($ThisArc) \
+                [expr {[DP layoutPoint $LabelNode info -canvasX]-4}] \
+                [expr {[DP layoutPoint $LabelNode info -canvasY]-4}] \
+                [expr {[DP layoutPoint $LabelNode info -canvasX]+4}] \
+                [expr {[DP layoutPoint $LabelNode info -canvasY]+4}]
+            destroy DP
+
+            set Mode "insert arcs"
+            MakeHelp "(L) select start node  (R) add bend nodes"
+        }
+
+        if {[string equal $Mode "add bend nodes"]} {
+            if {$currentNode!=""} {
+                if {$StartNode == ""} {
+                    set StartNode $currentNode
+                    set EndNode ""
+
+                    $focussedGraph displayProxy DP
+
+                    set ThisCoords [list \
+                        [DP layoutPoint $StartNode info -canvasX] \
+                        [DP layoutPoint $StartNode info -canvasY] \
+                        [CurrentCX %x $bendSpacing]               \
+                        [CurrentCY %y $bendSpacing]               ]
+
+                    destroy DP
+
+                    set smoothOption ""
+                    if {[$focussedGraph layout info -arcShapeMode] == 1} {
+                        set smoothOption "-smooth on"
+                    }
+                    set ThisArcIndex2 [eval $c create line $ThisCoords $smoothOption]
+                    $c lower $ThisArcIndex2
+
+                    MakeHelp "(L) place bend node / select segment end node"
+                    break
+                }
+
+                if {$EndNode == ""} {
+                    set EndNode $currentNode
+                    $c delete $ThisArcIndex2
+                    set ThisArcIndex2 ""
+
+                    # Check if StartNode and EndNode are different, adjacent
+                    # with each other and incident with ThisArcIndex
+
+                    set x [$focussedGraph arc $ThisArcIndex info -startNode]
+                    set y [$focussedGraph arc $ThisArcIndex info -labelAnchorPoint]
+                    if {$y!="*"} {set y [$focussedGraph layout point $y info -successor]}
+
+                    while {$x!=$StartNode && $x!=$EndNode && $y!="*"} {
+                        set x $y
+                        set y [$focussedGraph layout point $y info -successor]
+                    }
+
+                    if {$y=="*"} {set y [$focussedGraph arc $ThisArcIndex info -endNode]}
+
+                    if {($x!=$StartNode && $x!=$EndNode) || \
+                        ($y!=$StartNode && $y!=$EndNode) || \
+                        ($x==$y)} \
+                    {
+                        set StartNode ""
+                        set Mode "insert arcs"
+                        MakeHelp "bad segment end nodes"
+                        break
+                    }
+
+                    set thisLength [llength $ThisCoords]
+
+                    if {$thisLength == 4} {
+                        # No bend nodes were added
+
+                        set StartNode ""
+                        set Mode "insert arcs"
+                        MakeHelp "(L) select start node  (R) add bend nodes"
+                        break
+                    }
+
+
+                    set goblinCoords ""
+
+                    if {$x==$EndNode} {
+                        # Revert the order of bend nodes
+
+                        for {set i [expr {$thisLength-4}]} {$i > 1} {incr i -2} {
+                            lappend goblinCoords \
+                                [lindex $ThisCoords $i] [lindex $ThisCoords [expr $i+1]]
+                        }
+                    } else {
+                        for {set i 2} {$i < [expr {$thisLength-2}]} {incr i 2} {
+                            lappend goblinCoords \
+                                [lindex $ThisCoords $i] [lindex $ThisCoords [expr $i+1]]
+                        }
+                    }
+
+
+                    $focussedGraph displayProxy DP
+
+                    if {[$focussedGraph arc $ThisArcIndex info -labelAnchorPoint] == "*"} {
+                        set LabelNode [$focussedGraph arc $ThisArcIndex provide -labelAnchorPoint]
+                        DP labelAnchorPoint $ThisArcIndex placeAt [$c canvasx %x] [$c canvasy %y]
+                        set p $LabelNode
+
+                        for {set i 0} {$i < [expr {$thisLength-4}]} {incr i 2} {
+                            set p [$focussedGraph layout point $p insertSuccessor]
+                            DP layoutPoint $p placeAt \
+                                [lindex $goblinCoords $i] [lindex $goblinCoords [expr $i+1]]
+                        }
+
+                        set Mode "align label"
+                        MakeHelp "(L) align label"
+                    } else {
+                        if {$x==[$focussedGraph arc $ThisArcIndex info -startNode]} {
+                            set x [$focussedGraph arc $ThisArcIndex info -labelAnchorPoint]
+                        }
+
+                        for {set i 0} {$i < [expr {$thisLength-4}]} {incr i 2} {
+                            set x [$focussedGraph layout point $x insertSuccessor]
+
+                            DP layoutPoint $x placeAt \
+                                [lindex $goblinCoords $i] [lindex $goblinCoords [expr $i+1]]
+                        }
+
+                        set Mode "insert arcs"
+                        MakeHelp "(L) select start node  (R) add bend nodes"
+                    }
+
+                    $c delete $RevArcIndex([expr $ThisArcIndex/2])
+                    $c delete $HandleIndex([expr $ThisArcIndex/2])
+                    DrawArc $focussedGraph DP [expr $ThisArcIndex/2]
+
+                    destroy DP
+
+                    set StartNode ""
+
+                    PropagateModifications $focussedGraph
+                }
+            } else {
+                lappend ThisCoords [CurrentCX %x $bendSpacing] [CurrentCY %y $bendSpacing]
+                eval $c coords $ThisArcIndex2 $ThisCoords
+            }
+        }
+
+        if {[string equal $Mode "delete objects"]} {
+            if {$currentNode != ""} {
+                UploadAndDownloadLabels $focussedGraph "" ""
+                $focussedGraph node $currentNode delete
+                PropagateModifications $focussedGraph
+                InitEditor $focussedGraph
+            }
+
+            if {$currentArc != ""} {
+                UploadArcLabels $focussedGraph
+
+                set v [$focussedGraph arc [expr {2*$currentArc}] info -labelAnchorPoint]
+                set x [$focussedGraph arc [expr {2*$currentArc}] info -endNode]
+                set y [$focussedGraph arc [expr {2*$currentArc}] info -startNode]
+
+                if {$v == "*" || $x == $y} {
+                    $focussedGraph arc [expr {2*$currentArc}] delete
+                    DownloadArcLabels $focussedGraph ""
+                } else {
+                    $focussedGraph arc [expr {2*$currentArc}] straightLine
+                    DownloadArcLabels $focussedGraph $currentArc
+                }
+
+                PropagateModifications $focussedGraph
+                InitEditor $focussedGraph
+            }
+        }
+    }
+
+    bind $c <B1-Motion> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[string equal $Mode "move nodes"] || \
+            [string equal $Mode "insert nodes"]} \
+        {
+            if {$MoveNode != ""} {
+                $focussedGraph displayProxy DP
+                DP layoutPoint $MoveNode placeAt [$c canvasx %x] [$c canvasy %y]
+                destroy DP
+                RedrawGraph $focussedGraph
+
+                if {$MoveNode<[$focussedGraph #nodes]} {
+                    DownloadNodeLabels $focussedGraph $MoveNode
+                }
+            }
+
+            if {$MoveArc != ""} {
+                $focussedGraph displayProxy DP
+                DP labelAnchorPoint [expr {2*$ThisArc}] placeAt [$c canvasx %x] [$c canvasy %y]
+                set p [$focussedGraph arc [expr {2*$ThisArc}] info -labelAnchorPoint]
+                $c coords $HandleIndex($ThisArc) \
+                    [expr {[DP layoutPoint $p info -canvasX]-4}] \
+                    [expr {[DP layoutPoint $p info -canvasY]-4}] \
+                    [expr {[DP layoutPoint $p info -canvasX]+4}] \
+                    [expr {[DP layoutPoint $p info -canvasY]+4}]
+                destroy DP
+            }
+        }
+    }
+
+    bind $c <Motion> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[string equal $Mode "insert arcs"] || \
+            [string equal $Mode "add bend nodes"]} \
+        {
+            set bendSpacing [$focussedGraph layout info -bendSpacing]
+
+            if {$StartNode != ""} {
+                set thisLength [llength $ThisCoords]
+                set thiscx [CurrentCX %x $bendSpacing]
+                set thiscy [CurrentCY %y $bendSpacing]
+
+                if {[$focussedGraph layout info -arcShapeMode]==2} {
+                    set prevcx [lindex $ThisCoords [expr {$thisLength-4}]]
+                    set prevcy [lindex $ThisCoords [expr {$thisLength-3}]]
+
+                    if {$thiscx > $prevcx} {
+                        set diffcx [expr {$thiscx-$prevcx}]
+                    } else {
+                        set diffcx [expr {$prevcx-$thiscx}]
+                    }
+
+                    if {$thiscy > $prevcy} {
+                        set diffcy [expr {$thiscy-$prevcy}]
+                    } else {
+                        set diffcy [expr {$prevcy-$thiscy}]
+                    }
+
+                    if {$diffcx*0.95>$diffcy} {set thiscy $prevcy}
+                    if {$diffcx<$diffcy*0.95} {set thiscx $prevcx}
+                }
+
+                set ThisCoords \
+                    [lreplace $ThisCoords \
+                        [expr {$thisLength-2}] \
+                        [expr {$thisLength-1}] \
+                        $thiscx $thiscy \
+                    ]
+                eval $c coords $ThisArcIndex2 $ThisCoords
+            }
+        }
+
+        if {[string equal $Mode "align label"]} {
+            $c coords $HandleIndex($ThisArc) \
+                [expr {[$c canvasx %x]-4}] [expr {[$c canvasy %y]-4}] \
+                [expr {[$c canvasx %x]+4}] [expr {[$c canvasy %y]+4}]
+        }
+    }
+
+    bind $c <ButtonRelease-1> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[string equal $Mode "move nodes"] || \
+            [string equal $Mode "insert nodes"]} \
+        {
+            if {$MoveNode != ""} {
+                set MoveNode ""
+                PropagateModifications $focussedGraph
+            }
+
+            if {$MoveArc != ""} {
+                set MoveArc ""
+                PropagateModifications $focussedGraph
+            }
+        }
+    }
+
+    bind $c <Button-3> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[string equal $Mode "insert nodes"]} {
+            if {![$focussedGraph info -bipartite]} {break}
+
+            if {$currentNode == ""} {break}
+
+            if {[$focussedGraph node $currentNode first]=="*"} {
+                UploadNodeLabels $focussedGraph
+                $focussedGraph node $currentNode swap
+                DownloadNodeLabels $focussedGraph ""
+                InitEditor $focussedGraph
+                PropagateModifications $focussedGraph
+                MakeHelp "(L) place new node  (R) Move to other component"
+            } else {
+                PostStatusInfo "node must be isolated"
+            }
+        }
+
+        if {[string equal $Mode "insert arcs"]} {
+            if {$ThisArcIndex2 != ""} {
+                $c delete $ThisArcIndex2
+                set ThisArcIndex2 ""
+                set StartNode ""
+                MakeHelp "(L) select start node  (R) add bend nodes"
+            } else {
+                if {$currentArc == ""} {break}
+
+                set ThisArcIndex [expr {2*$currentArc}]
+                set StartNode ""
+                UploadArcLabels $focussedGraph
+                DownloadArcLabels $focussedGraph $currentArc
+                set Mode "add bend nodes"
+                MakeHelp "(L) select segment start node"
+            }
+        }
+
+        if {[string equal $Mode "sort incidences"] && $ThisNode!=""} {
+            set Mode "shift incidence"
+            MakeHelp "(L) mark as first  (R) cut incidence"
+            break
+        }
+
+        if {[string equal $Mode "shift incidence"]} {
+            set Mode "paste incidence"
+            MakeHelp "(L) scan incidences  (R) paste here"
+            set ThisCutArc $ThisArcIndex
+            break
+        }
+
+        if {[string equal $Mode "paste incidence"]} {
+            set Mode "sort incidences"
+            MakeHelp "(L) scan/select node  (R) select incidence"
+            $focussedGraph arc $ThisArcIndex configure -righthandArc $ThisCutArc
+            HighlightIncidences $focussedGraph $ThisNode
+            PropagateModifications $focussedGraph
+            break
+        }
+
+        if {[string equal $Mode "redirect arcs"]} {
+            if {   $currentArc!=""                   \
+                && ![$focussedGraph info -undirected]   \
+                && ![$focussedGraph info -directed]   } \
+            {
+                $focussedGraph arc [expr {2*$currentArc}] configure -directed \
+                    [expr {1-[$focussedGraph arc [expr {2*$currentArc}] info -directed]}]
+
+                $focussedGraph displayProxy DP
+                RedrawArc $focussedGraph DP $currentArc
+                destroy DP
+
+                UploadArcLabels $focussedGraph
+                DownloadArcLabels $focussedGraph $currentArc
+                PropagateModifications $focussedGraph
+            }
+        }
+
+        if {[string equal $Mode "align label"] && $LabelNode==""} {
+            $c delete $HandleIndex($NewArc)
+            $c delete $RevArcIndex($NewArc)
+
+            $focussedGraph displayProxy DP
+            DrawArc $focussedGraph DP $NewArc
+            destroy DP
+
+            set Mode "insert arcs"
+            MakeHelp "(L) select start node"
+        }
+
+        if {[string equal $Mode "set colours"]} {
+            if {$currentNode != "" && $currentNode<[$focussedGraph #nodes]} {
+                set newColour [$focussedGraph node $currentNode info -nodeColour]
+
+                if {$newColour!="*" && $newColour<[expr [$focussedGraph #nodes]-1]} {
+                    incr newColour
+                } else {
+                    if {$newColour=="*"} {
+                        set newColour 0
+                    } else {
+                        set newColour "*"
+                    }
+                }
+
+                UploadNodeLabels $focussedGraph
+                $focussedGraph node $currentNode configure -nodeColour $newColour
+                DownloadNodeLabels $focussedGraph $currentNode
+                $focussedGraph displayProxy DP
+                RedrawNode $focussedGraph DP $currentNode real
+                destroy DP
+                PropagateModifications $focussedGraph
+            }
+
+            if {$currentArc != ""} {
+                set newColour [$focussedGraph arc [expr {2*$currentArc}] info -edgeColour]
+
+                if {$newColour=="*" || $newColour!=[expr [$focussedGraph #edges]-1]} {
+                    if {$newColour=="*"} {
+                        set newColour 0
+                    } else {
+                        incr newColour
+                    }
+                } else {
+                    set newColour "*"
+                }
+
+                UploadArcLabels $focussedGraph
+                $focussedGraph arc [expr {2*$currentArc}] configure -edgeColour $newColour
+                DownloadArcLabels $focussedGraph $currentArc
+                $focussedGraph displayProxy DP
+                RedrawArc $focussedGraph DP $currentArc
+                destroy DP
+                PropagateModifications $focussedGraph
+            }
+        }
+
+        if {[string equal $Mode "set predecessors"]} {
+            if {$EndNode != ""} {
+                UploadNodeLabels $focussedGraph
+                $focussedGraph node $EndNode configure -predecessorArc "*"
+                PropagateModifications $focussedGraph
+                DownloadNodeLabels $focussedGraph $EndNode
+                set EndNode ""
+                MakeHelp "(L) select node"
+                InitEditor $focussedGraph
+            }
+        }
+
+        if {[string equal $Mode "delete objects"]} {
+            if {$currentArc != ""} {
+                UploadArcLabels $focussedGraph
+                $focussedGraph arc [expr {2*$currentArc}] contract
+                DownloadArcLabels $focussedGraph $currentArc
+                PropagateModifications $focussedGraph
+                InitEditor $focussedGraph
+            }
+        }
+    }
+
+    DrawGraph $graphObject
+}

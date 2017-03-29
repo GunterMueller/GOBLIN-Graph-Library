@@ -1,0 +1,300 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileOpen.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Dialog for file open operations
+#-------------------------------------------------------------------------------
+
+
+source [file join $GoblinTclPath fileImport.tk]
+
+proc MakeImportForm {} {
+    global WDImport FileName ThisFile goblinExtension ThisFormat \
+        ZipEnabled ZipExtension MergeMode SupportedFormats ImportFilter
+
+    if {![info exists ThisFormat]} {set ThisFormat $goblinExtension}
+    set ThisFile [file tail $FileName].$ThisFormat
+    if {$ZipEnabled} {set ThisFile "$ThisFile$ZipExtension"}
+
+    if {![file exists [file dirname $ImportFilter]]} {
+        set ImportFilter [file join [pwd] [file tail $ImportFilter]]
+    }
+
+    set WDImport .open
+    destroy $WDImport
+    toplevel $WDImport
+    wm withdraw $WDImport
+    wm title $WDImport "Object Import"
+
+    frame $WDImport.f1
+    label $WDImport.f1.label -text "File:" -anchor w
+    pack $WDImport.f1.label -side top -fill x
+
+    entry $WDImport.f1.entry -textvariable ThisFile -bg white -width 40
+    pack $WDImport.f1.entry -side left -fill x
+
+    MakePulldownMenuButton $WDImport.f1.mergeSelect "-width 21"
+    pack $WDImport.f1.mergeSelect -side right
+
+    set MergeMode 0
+
+    if {![[GetFocussedObject] info -sparse] } {
+        set listOfImportModes { \
+            "Replace Current Object"        0 }
+    } else {
+        set listOfImportModes { \
+            "Replace Current Object"        0 \
+            "Merge, Align Horizontally"     1 \
+            "Merge, Align Vertically"       2 \
+            "Merge, Overlay Graphs"         3 \
+            "Facet composition"            4 }
+    }
+
+    AttachSelectionForm $WDImport.f1.mergeSelect 5 \
+        [lindex $listOfImportModes [expr 2*$MergeMode]] \
+        $listOfImportModes ApplyImportModeSelection
+
+    bind $WDImport.f1.entry <Return> OpenNow
+
+    frame $WDImport.f2
+    label $WDImport.f2.label -text "Filter:" -anchor w
+    entry $WDImport.f2.entry -textvariable ImportFilter -bg white -width 66
+    pack $WDImport.f2.label $WDImport.f2.entry -side top -fill x
+
+    bind $WDImport.f2.entry <Return> DisplayImportSelection
+
+    frame $WDImport.f3
+    label $WDImport.f3.label -text "Selection:" -anchor w
+    scrollbar $WDImport.f3.scroll -command "$WDImport.f3.list yview"
+    pack $WDImport.f3.label -side top -fill x
+    pack $WDImport.f3.scroll -side left -fill y
+
+    DisplayImportSelection
+
+    frame $WDImport.f4
+    label $WDImport.f4.label -text "File Format:" -anchor w
+    pack $WDImport.f4.label -side top -fill x
+
+    scrollbar $WDImport.f4.scroll -command "$WDImport.f4.list yview"
+    listbox $WDImport.f4.list -yscrollcommand "$WDImport.f4.scroll set" -width 30
+
+    global Ext
+
+    foreach {format extension dummy1 dummy2 importFilter dummy3} $SupportedFormats {
+        if {!$importFilter} {continue}
+
+        $WDImport.f4.list insert end $format
+
+        if {$extension==$ThisFormat} {
+            $WDImport.f4.list activate end
+            $WDImport.f4.list selection set end end
+            $WDImport.f4.list see active
+        }
+    }
+
+    pack $WDImport.f4.list $WDImport.f4.scroll -side left -fill y
+
+    bind $WDImport.f4.list <Double-Button-1> {
+        global Ext ImportFilter SourceFormat
+        set SourceFormat [selection get]
+        set ThisFormat [GetFormatProperty $SourceFormat 2]
+
+        if {[file extension $ThisFile]!=$ZipExtension} {
+            set ThisFile [file rootname [file tail $ThisFile]].$ThisFormat
+        } else {
+            set ThisFile [file rootname [file rootname \
+                [file tail $ThisFile]]].$ThisFormat$ZipExtension
+        }
+
+        set ImportFilter [file join [file dirname $ImportFilter] *.$ThisFormat]
+        DisplayImportSelection
+    }
+
+    frame $WDImport.buttons
+    button $WDImport.buttons$WDImport -text "Open" -command OpenNow
+    button $WDImport.buttons.cancel -text "Cancel" -command {destroy $WDImport}
+
+    pack $WDImport.buttons$WDImport $WDImport.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack $WDImport.buttons -padx 3m -pady 3m -side bottom
+    pack $WDImport.f1 $WDImport.f2 -padx 5m -pady 3m -side top -anchor w -expand 1 -fill x
+    pack $WDImport.f4 $WDImport.f3 -padx 5m -pady 3m -side left -anchor w
+
+    bind $WDImport <FocusOut> {
+        if {[winfo exists $WDImport]} {
+            raise $WDImport .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists $WDImport]} {
+            raise $WDImport .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDImport}
+    after 500 {wm resizable $WDImport 0 0}
+}
+
+proc ApplyImportModeSelection {mode} {
+    global MergeMode
+
+    set MergeMode $mode
+}
+
+proc DisplayImportSelection {} {
+    global WDImport ImportFilter ZipExtension
+
+    if {![file isdirectory [file dirname $ImportFilter]]} {return}
+
+    if {[file isdirectory $ImportFilter]} {
+        cd $ImportFilter
+        set ImportFilter [file join $ImportFilter *]
+    } else {
+        cd [file dirname $ImportFilter]
+    }
+
+    destroy $WDImport.f3.list
+    listbox $WDImport.f3.list -yscrollcommand "$WDImport.f3.scroll set" -width 25
+    pack $WDImport.f3.list -side left -before $WDImport.f3.scroll
+
+    $WDImport.f3.list insert end ".."
+    foreach i [lsort [glob -nocomplain *]] {
+        if {[file isdirectory $i]} {$WDImport.f3.list insert end $i}
+    }
+    foreach i [lsort [glob -nocomplain [file tail $ImportFilter]]] {
+        if {![file isdirectory $i]} {$WDImport.f3.list insert end $i}
+    }
+    if {$ZipExtension!="" && [file tail $ImportFilter]!="*"} {
+        foreach i [lsort [glob -nocomplain \
+                [file tail $ImportFilter]$ZipExtension]] {
+            if {![file isdirectory $i]} {$WDImport.f3.list insert end $i}
+        }
+    }
+
+    bind $WDImport.f3.list <Double-Button-1> {
+        if {[file isdirectory [selection get]]} {
+            cd [selection get]
+            set ImportFilter [file join [pwd] [file tail $ImportFilter]]
+            set ThisFile ""
+            DisplayImportSelection
+        } else {
+            set ThisFile [selection get]
+        }
+    }
+}
+
+proc OpenNow {} {
+    global WDImport OrigFileName FileName ImportFilter ThisFile ThisFormat \
+        goblinExtension TraceDir WorkingDir UnzipCommand \
+        ZipExtension ZipEnabled MergeMode SystemTmpDir
+
+    set focussedObject [GetFocussedObject]
+    set importDir [file dirname $ImportFilter]
+
+    if {  ![file exists [file join $importDir $ThisFile]] \
+        || [file isdirectory [file join $importDir $ThisFile]]} {
+        return
+    }
+
+    destroy $WDImport
+
+    if {$MergeMode==0} {
+        set newFileName [file join $importDir [file rootname $ThisFile]]
+        set newObject [ChooseObjectName]
+        UpdateCompressionMode \
+            [expr ![string compare [file extension $ThisFile] $ZipExtension]]
+
+        if {$ZipEnabled} {
+            set tmpName [file join $SystemTmpDir "goblin.tmp"]
+            file copy -force $newFileName$ZipExtension $tmpName$ZipExtension
+            eval exec $UnzipCommand $tmpName$ZipExtension
+            file rename -force $tmpName $newFileName
+            set ThisFile [file rootname $ThisFile]
+            UpdateCompressionMode 1
+        }
+
+        if {[catch {AsynchronousImport $newObject \
+                [file join $importDir $ThisFile] $ThisFormat} result]} {
+            return
+        }
+
+        EndSession $focussedObject
+
+        if {$ZipEnabled} {
+            file delete -force $newFileName
+            set OrigFileName [file rootname $newFileName]
+        } else {
+            set OrigFileName $newFileName
+        }
+
+        set FileName [file join $TraceDir [file tail $OrigFileName]]
+
+        SetFocusOnObject $newObject
+        ResumeSession
+
+        set WorkingDir $importDir
+        $newObject write "$FileName.$goblinExtension"
+        InitFile
+        PostStatusInfo "imported problem: $OrigFileName"
+    } else {
+        if {![$focussedObject info -sparse]} {
+            PostStatusInfo "merge failed, target must be a sparse graph object"
+            return
+        }
+
+        set tmpGraph [ChooseObjectName]
+
+        # This restores the original object name (necessary due
+        # to the poor ChooseObjectName implementation)
+        ChooseObjectName
+
+        set newFileName [file join $importDir [file rootname $ThisFile]]
+        UpdateCompressionMode \
+            [expr ![string compare [file extension $ThisFile] $ZipExtension]]
+
+        if {$ZipEnabled} {
+            set tmpName [file join $SystemTmpDir "goblin.tmp"]
+            file copy -force $newFileName$ZipExtension $tmpName$ZipExtension
+            eval exec $UnzipCommand $tmpName$ZipExtension
+            file rename -force $tmpName $newFileName
+            set ThisFile [file rootname $ThisFile]
+            UpdateCompressionMode 1
+        }
+
+        if {[catch {AsynchronousImport $tmpGraph \
+                [file join $importDir $ThisFile] $ThisFormat} result]} {
+            return
+        }
+
+        if {![$tmpGraph info -sparse]} {
+            PostStatusInfo "merge failed, target must be a sparse graph object"
+            $tmpGraph delete
+            return
+        }
+
+        if {$MergeMode==1} {
+            $focussedObject merge -right [$tmpGraph handle]
+        }
+
+        if {$MergeMode==2} {
+            $focussedObject merge -below [$tmpGraph handle]
+        }
+
+        if {$MergeMode==3} {
+            $focussedObject merge -overlay [$tmpGraph handle]
+        }
+
+        if {$MergeMode==4} {
+            $focussedObject merge -facets [$tmpGraph handle]
+        }
+
+        PropagateModifications $focussedObject
+        PostStatusInfo "merged to problem: $OrigFileName"
+
+        $tmpGraph delete
+    }
+}
+
+MakeImportForm

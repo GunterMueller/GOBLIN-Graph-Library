@@ -1,0 +1,64 @@
+# Initial browser configuration. Overruled by the
+# settings.tcl file in the $TraceDir folder
+
+set PrintCommand "lp"
+    # Shell command for processing postscript print jobs
+set ZipCommand "bzip2 -f"
+    # Shell command for file compression
+set UnzipCommand "bunzip2 -f"
+    # Shell command for file decompression
+set ZipExtension ".bz2"
+    # Filename extension for compressed files
+set ZipEnabled 1
+    # Enables file compression
+set goblinCommLevel 3
+    # 0: Only one thread of execution.
+    #    Optimisation blocks the Tcl event loop.
+    # 1: Optimisation is performed in an own thread of execution
+    #    GOBLET can control optimisation online.
+    # 2: The messenger window is updated with the most recent
+    #    computational results.
+    # 3: The browser window shows the most recent trace object.
+    #    The solver thread is controlled by GOBLET
+set SingleStep 1
+    # 0: Tracing runs in automatic mode.
+    #    The computation is suspended for a certain amount of time
+    # 1: Tracing runs in manual mode.
+    #    The computation is suspended until one of the step buttons
+    #    is pressed
+set UpdateCycle 500
+    # Time for updating the transscript window / the image.
+    # Computation is suspended meanwhile
+set BackupLevel 50
+    # Number of possible undo operations
+set ChangeOptions 1
+    # 0: Dismissed objects are automatically written to file
+    # 1: Require user acknowledgements
+    # 2: Abandon changes since last file writing
+set AlignOptions 1
+    # 0: Graphs are aligned with canvas widgets only by explicit commands
+    # 1: Graphs are aligned with canvas automatically in tracing mode
+    # 2: Graphs are aligned with canvas automatically whenever
+    #    graph drawing is performed
+set BalloonHelp 1
+    # 1: Small popup helps for the GOBLET icons 
+set InternalWindowing 1
+    # 0: Messenger window is toplevel
+    # 1: Messenger window and graph browser
+    #    are in the same toplevel window
+set BruteOverwrite 1
+    # 0: Files are overwritten only with confirmation
+    # 1: Files are overwritten without warning
+set BrowserBalance 0.65
+    # Initial balance between graph browser and messenger window
+set DialogBalance 0.75
+    # Initial balance between graph browser and dialog region
+set SepWidth 5
+    # Separator width between canvas, messenger and dialog region
+set InitialWidth 800
+set InitialHeight 600
+    # Size of browser window on start
+set CanvasMargin 10
+    # Border width separating the canvas widgets and elements
+set MaxDisplayArcs 5000
+    # The maximum number of arcs for which graph display is permitted

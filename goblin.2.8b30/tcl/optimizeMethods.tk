@@ -1,0 +1,248 @@
+
+#-------------------------------------------------------------------------------
+# Module:     optimizeMethods.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of solver methods
+#-------------------------------------------------------------------------------
+
+
+# Needed for dereferencing module information
+
+
+global NTasks NMethods TaskLabel TaskGobName MethodName TaskIndex MethodIndex ModuleIndex
+set NTasks 0
+set NMethods 0
+foreach {thisTaskLabel thisGobName thisMethodName thisModule} { \
+    "Shortest Path Tree"        "SPX"         "FIFO Label Correcting"           38 \
+    ""                          ""            "Dijkstra Method"                 35 \
+    ""                          ""            "Bellman/Ford Method"             36 \
+    ""                          ""            "Breadth First Search"            13 \
+    ""                          ""            "DAG Search"                      60 \
+    ""                          ""            "TJoin"                           16 \
+    "Minimum Spanning Tree"     "MST"         "Prim Method"                     30 \
+    ""                          ""            "Enhanced Prim Method"            31 \
+    ""                          ""            "Kruskal Method"                  32 \
+    ""                          ""            "Arborescence Method"             33 \
+    "Maximum st-Flows"          "MXF"         "Successive Augmentation"         27 \
+    ""                          ""            "Dinic Method"                    28 \
+    ""                          ""            "Push/Relabel (FIFO)"             29 \
+    ""                          ""            "Push/Relabel (Highest Label)"    29 \
+    ""                          ""            "Push/Relabel (Excess Scaling)"   29 \
+    ""                          ""            "Capacity Scaling"                 9 \
+    "Minimum Edge Cuts"         "MCC"         "Maximum Flows"                   12 \
+    ""                          ""            "Push/Relabel (FIFO)"             57 \
+    ""                          ""            "Push/Relabel (Highest Label)"    57 \
+    ""                          ""            "Node Identification"             58 \
+    "Min Cost st-Flows"         "MCFST"       "Revised SAP"                     41 \
+    ""                          ""            "Successive Augmentation"         45 \
+    ""                          ""            "Transform to b-flow"             10 \
+    "Min Cost b-Flows"          "MCF"         "Klein Method"                    40 \
+    ""                          ""            "Cost Scaling"                    44 \
+    ""                          ""            "e-Tight Cost Scaling"            44 \
+    ""                          ""            "Minimum Mean Cycles"             42 \
+    ""                          ""            "Shortest Augmenting Path"        41 \
+    ""                          ""            "Primal Network Simplex"          43 \
+    ""                          ""            "Reduction to LP"                 10 \
+    ""                          ""            "Capacity Scaling"                78 \
+    "Network Simplex Pricing"   "NWPricing"   "Partial Pricing"                 *  \
+    ""                          ""            "Multiple Partial Pricing"        *  \
+    ""                          ""            "Dantzig Rule"                    *  \
+    ""                          ""            "First Eligible"                  *  \
+    "Non-Weighted Matching"     "MaxBalFlow"  "Successive Augmentation"         64 \
+    ""                          ""            "Blocking Flows"                  63 \
+    ""                          ""            "BF With Lookahead Operations"    63 \
+    ""                          ""            "BF With Simple Augmentations"    63 \
+    ""                          ""            "Capacity Scaling"                65 \
+    ""                          ""            "Start With Maximum Flow"         62 \
+    "Balanced Network Search"   "BNS"         "Exact Search"                    66 \
+    ""                          ""            "Depth First Heuristics 1"        67 \
+    ""                          ""            "Depth First Heuristics 2"        67 \
+    ""                          ""            "Breadth First Heuristics"        68 \
+    "Weighted Matching"         "MinCBalFlow" "Plain Primal-Dual"               61 \
+    ""                          ""            "Start With Min-Cost Flow"        65 \
+    "TSP Heuristic"             "HeurTSP"     "Random Tour"                     51 \
+    ""                          ""            "Farthest Insertion"              52 \
+    ""                          ""            "Tree Heuristic"                  47 \
+    ""                          ""            "Christofides"                    48 \
+    ""                          ""            "Nearest Insertion"               52 \
+    "TSP Initial Lower Bounds"  "RelaxTSP1"   "Straight 1-Tree Bound"           5  \
+    ""                          ""            "Subgradient Optimization (Fast)" 46 \
+    ""                          ""            "Subgradient Optimization (Stable)" 46 \
+    "TSP Iterated Lower Bounds" "RelaxTSP2"   "Straight 1-Tree Bound"           5  \
+    ""                          ""            "Subgradient Optimization (Fast)" 46 \
+    ""                          ""            "Subgradient Optimization (Stable)" 46 \
+    "Max-Cut Construction"      "MaxCut"      "GRASP Heuristic"                 72 \
+    ""                          ""            "Tree Heuristic"                  7  \
+    ""                          ""            "Dual T-Join"                     71 \
+    "Force Directed Layout"     "FDP"         "GEM"                             76 \
+    ""                          ""            "Spring Embedder"                 75 \
+    ""                          ""            "Planar FDP"                      77 \
+    "Planar Embeddding"         "Planarity"   "Hopcroft/Tarjan"                 87 \
+    ""                          ""            "Demoucron/Malgrange/Pertuiset"   34 \
+    "Orthogonal Drawing Refinement"    \
+                                "OrthoRefine" "Disabled"                        *  \
+    ""                          ""            "Shape Preserving Model"          91 \
+    ""                          ""            "Flow Minimization Model"         91 \
+    ""                          ""            "Sweep Line Search"               80 \
+    ""                          ""            "Exhaustive Moving Line Search"   80 \
+    "Colouring Strategy"        "Colour"      "CELIM"                           2  \
+    ""                          ""            "DSATUR"                          2  \
+    "Linear Programming"        "LP"          "Automatic"                       25 \
+    ""                          ""            "Primal Simplex"                  25 \
+    ""                          ""            "Dual Simplex"                    25 \
+    ""                          ""            "Interior Points"                 25 \
+    "Integer Programming"       "MIP"         "Branch and Bound"                *  \
+    ""                          ""            "Cutting Planes"                  *  \
+    ""                          ""            "Branch and Cut"                  *  \
+} {
+    if {$thisTaskLabel!=""} {
+        incr NTasks
+        set TaskLabel($NTasks) $thisTaskLabel
+        set TaskGobName($NTasks) $thisGobName
+        set i 0
+    }
+
+    incr NMethods
+    set MethodName($NMethods) $thisMethodName
+    set TaskIndex($NMethods) $NTasks
+    set MethodIndex($NMethods) $i
+    set ModuleIndex($NMethods) $thisModule
+    incr i
+}
+
+ # Temporarily disable MIP configuration
+ incr NTasks -1
+
+
+proc ShowMethodOptions {} {
+    global WDMethOpt ThisTask DefPadX TaskIndex MethodIndex \
+        NTasks NMethods TaskLabel TaskGobName MethodName
+
+    set title "Method Options"
+
+    if {[RegisterFormOrWindow $title methopt WDMethOpt ShowMethodOptions \
+            "Done"          {} \
+            ""              {} \
+            "Module Info"   {
+                global ThisModule ModuleIndex ThisMethod GoblinTclPath
+                set ThisModule $ModuleIndex($ThisMethod)
+                source [file join $GoblinTclPath infoModules.tk]
+            } \
+            ""              {} \
+        ]
+    } {
+        AttachMethodSelectionForm $ThisTask
+        return
+    }
+
+    if {![info exists ThisTask]} {
+        set ThisTask 1
+    }
+
+
+    destroy $WDMethOpt.frame0
+
+    frame $WDMethOpt.frame0
+    pack $WDMethOpt.frame0 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDMethOpt.frame0.label -text "Solver Configuration:" -anchor w
+    grid $WDMethOpt.frame0.label \
+        -row 0 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    frame $WDMethOpt.frame0.sep
+    grid $WDMethOpt.frame0.sep \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -pady 1m
+
+    label $WDMethOpt.frame0.timerText -text "Solver: " -anchor w
+    grid $WDMethOpt.frame0.timerText \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    MakePulldownMenuButton $WDMethOpt.frame0.taskSelect "-width 28"
+    grid $WDMethOpt.frame0.taskSelect \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    set listOfTasks [list]
+
+    for {set i 1} {$i<=$NTasks} {incr i} {
+        set listOfTasks [lappend listOfTasks $TaskLabel($i) $i]
+    }
+
+    AttachSelectionForm $WDMethOpt.frame0.taskSelect 5 \
+        $TaskLabel($ThisTask) $listOfTasks ApplyTaskSelection
+
+
+    label $WDMethOpt.frame0.codeText -text "Method: " -anchor w
+    grid $WDMethOpt.frame0.codeText \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    MakePulldownMenuButton $WDMethOpt.frame0.methodSelect "-width 28"
+    grid $WDMethOpt.frame0.methodSelect \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+
+    frame $WDMethOpt.frame1
+    pack $WDMethOpt.frame1 -padx $DefPadX -pady 5m -side top -anchor w
+
+    label $WDMethOpt.frame1.label -text "Reduced Length Labels:" -anchor w
+    radiobutton $WDMethOpt.frame1.explicit -text "Store Explicitly" \
+        -variable goblinMethModLength -value 0 -anchor w
+    radiobutton $WDMethOpt.frame1.implicit -text "Compute Recursively" \
+        -variable goblinMethModLength -value 1 -anchor w
+    checkbutton $WDMethOpt.frame1.failSave -text "Check Consistency on Exit" \
+        -variable goblinMethFailSave -anchor w
+    pack $WDMethOpt.frame1.label $WDMethOpt.frame1.explicit \
+        $WDMethOpt.frame1.implicit $WDMethOpt.frame1.failSave -side top -fill x
+
+    AttachMethodSelectionForm $ThisTask
+
+    DisplayForm $title
+}
+
+
+proc ApplyTaskSelection {taskIndex} {
+    global ThisTask
+
+    if {$ThisTask==$taskIndex} {return}
+
+    set ThisTask $taskIndex
+
+    AttachMethodSelectionForm $taskIndex
+}
+
+
+proc ApplyMethodSelection {methodIndex} {
+    global ThisMethod ThisTask TaskIndex MethodIndex TaskGobName
+
+    set ThisMethod $methodIndex
+    set ThisTask $TaskIndex($methodIndex)
+    eval global "goblinMeth$TaskGobName($ThisTask)"
+    eval "set goblinMeth$TaskGobName($ThisTask) $MethodIndex($methodIndex)"
+
+    AlignActiveDialog
+}
+
+
+proc AttachMethodSelectionForm {taskIndex} {
+    global ThisMethod WDMethOpt TaskGobName NMethods TaskLabel TaskIndex MethodName MethodIndex
+
+    eval global "goblinMeth$TaskGobName($taskIndex)"
+    eval "set thisMethodIndex \$goblinMeth$TaskGobName($taskIndex)"
+
+    $WDMethOpt.frame0.taskSelect configure -text $TaskLabel($taskIndex)
+
+    set listOfMethods [list]
+
+    for {set i 1} {$i<=$NMethods} {incr i} {
+        if {$TaskIndex($i)!=$taskIndex} {continue}
+
+        if {$MethodIndex($i)==$thisMethodIndex} {set ThisMethod $i}
+
+        set listOfMethods [lappend listOfMethods $MethodName($i) $i]
+    }
+
+    AttachSelectionForm $WDMethOpt.frame0.methodSelect 5 \
+        $MethodName($ThisMethod) $listOfMethods ApplyMethodSelection
+}
+
+ShowMethodOptions
+

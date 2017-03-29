@@ -1,0 +1,313 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editVar.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Edit variable related data of mixed integer problems
+#-------------------------------------------------------------------------------
+
+
+
+proc UploadLpColumn {objectName} {
+    global DialogPar
+    set j $DialogPar("LpVarIndex")
+    set i [CheckLpRow $objectName]
+
+    if {$i>=0} {
+        $objectName variable $j set label $DialogPar("LpVarLabel")
+        $objectName variable $j set cost $DialogPar("LpCostCoeff")
+
+        if {$DialogPar("LpLowerRange")<=[$objectName variable $i urange]} {
+            $objectName variable $j set lrange $DialogPar("LpLowerRange")
+            $objectName variable $j set urange $DialogPar("LpUpperRange")
+        } else {
+            $objectName variable $j set urange $DialogPar("LpUpperRange")
+            $objectName variable $j set lrange $DialogPar("LpLowerRange")
+        }
+
+        $objectName variable $j mark $DialogPar("LpVarType")
+        $objectName set coeff $i $j $DialogPar("LpRowCoeff")
+        PropagateModifications $objectName
+    }
+}
+
+proc DownloadLpColumn {objectName} {
+    global DialogPar
+
+    set j [CheckLpVar $objectName]
+
+    if {$j>=0} {
+        set DialogPar("LpVarIndex") $j 
+    } else {
+        set j $DialogPar("LpVarIndex")
+        set DialogPar("LpVarLabel") [$objectName variable $j label]
+    }
+
+    set i [CheckLpRow $objectName]
+
+    set DialogPar("LpCostCoeff")  [$objectName variable $j cost]
+    set DialogPar("LpLowerRange") [$objectName variable $j lrange]
+    set DialogPar("LpUpperRange") [$objectName variable $j urange]
+    set DialogPar("LpVarType")    [$objectName variable $j type]
+    set DialogPar("LpRowCoeff")   [$objectName coeff $i $j]
+
+    PostStatusInfo "editing column with index $j"
+}
+
+proc EditVariable {} {
+    global WDEditVariable DefPadX DialogPar
+
+    set objectName [GetFocussedObject]
+    set title "Edit Columns"
+
+    if {[RegisterFormOrWindow $title editVariable WDEditVariable EditVariable \
+            "Done"          {} \
+            "Apply"         {
+                if {$DialogPar("LpLowerRange")!="*" &&
+                    $DialogPar("LpUpperRange")!="*" &&
+                    $DialogPar("LpLowerRange")>$DialogPar("LpUpperRange")} {
+                    PostStatusInfo "mismatching variable bounds"
+                    focus $WDEditVariable.edit.lower
+                } else {
+                    set objectName [GetFocussedObject]
+                    if {[CheckLpRow $objectName]>=0} {
+                        UploadLpColumn $objectName
+                        DownloadLpColumn $objectName
+                        focus $WDEditVariable.edit.variable
+                    } else {
+                        focus $WDEditRestriction.matrix.row
+                    }
+                }
+            } \
+            ""              {} \
+            "New"           {
+                set objectName [GetFocussedObject]
+                set j [$objectName variable insert float 0 0]
+                set DialogPar("LpVarLabel") [$objectName variable $j label]
+                DownloadLpColumn $objectName
+                focus $WDEditVariable.edit.variable
+            } \
+        ]
+    } {
+        return
+    }
+
+
+    if {[$objectName #variables]==0} {$objectName variable insert float 0 0}
+    if {[$objectName #rows]==0}      {$objectName row insert 0 0}
+
+    if {   ![info exists DialogPar] \
+        || ![info exists DialogPar("LpVarLabel")] \
+        || [CheckLpVar $objectName]<0 } {
+        set DialogPar("LpVarLabel") [$objectName variable 0 label]
+        set DialogPar("LpRowLabel") [$objectName row 0 label]
+    }
+
+    DownloadLpColumn $objectName
+
+    frame $WDEditVariable.edit
+    pack $WDEditVariable.edit -side top -fill x -padx  $DefPadX -pady 5m
+
+    label $WDEditVariable.edit.label1 -text "Variable Label:" \
+        -anchor w
+    grid $WDEditVariable.edit.label1 -in $WDEditVariable.edit  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.edit.variable -textvariable DialogPar("LpVarLabel") \
+        -bg white -width 10
+    grid $WDEditVariable.edit.variable -in $WDEditVariable.edit \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditVariable.edit.label2 -text "Cost Coefficient:" \
+        -anchor w
+    grid $WDEditVariable.edit.label2 -in $WDEditVariable.edit  \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.edit.cost -textvariable DialogPar("LpCostCoeff") \
+        -bg white -width 5
+    grid $WDEditVariable.edit.cost -in $WDEditVariable.edit \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    frame $WDEditVariable.edit.sep
+    grid $WDEditVariable.edit.sep -in $WDEditVariable.edit  \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+
+    label $WDEditVariable.edit.label3 -text "Lower Bound:" \
+        -anchor w
+    grid $WDEditVariable.edit.label3 -in $WDEditVariable.edit  \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.edit.lower -textvariable DialogPar("LpLowerRange") \
+        -bg white -width 5
+    grid $WDEditVariable.edit.lower -in $WDEditVariable.edit \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditVariable.edit.label4 -text "Upper Bound:" \
+        -anchor w
+    grid $WDEditVariable.edit.label4 -in $WDEditVariable.edit  \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.edit.upper -textvariable DialogPar("LpUpperRange") \
+        -bg white -width 5
+    grid $WDEditVariable.edit.upper -in $WDEditVariable.edit \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditVariable.edit.label5 -text "(Use asterisks * where unbounded)" \
+        -anchor w
+    grid $WDEditVariable.edit.label5 -in $WDEditVariable.edit  \
+        -row 5 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+    frame $WDEditVariable.type
+    pack $WDEditVariable.type -side top -fill x -padx  $DefPadX -pady 3m
+
+    radiobutton $WDEditVariable.type.float \
+        -text "Floating" -variable DialogPar("LpVarType") \
+        -value "float" -anchor w
+    pack $WDEditVariable.type.float -side left
+    radiobutton $WDEditVariable.type.int \
+        -text "Integer" -variable DialogPar("LpVarType") \
+        -value "integer" -anchor w
+    pack $WDEditVariable.type.int -side right
+
+
+    frame $WDEditVariable.matrix
+    pack $WDEditVariable.matrix -side top -fill x -padx  $DefPadX -pady 5m
+
+    label $WDEditVariable.matrix.label1 -text "Restriction Label:  " \
+        -anchor w
+    grid $WDEditVariable.matrix.label1 -in $WDEditVariable.matrix  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.matrix.row -textvariable DialogPar("LpRowLabel") \
+        -bg white -width 12
+    grid $WDEditVariable.matrix.row -in $WDEditVariable.matrix \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditVariable.matrix.label2 -text "Row Coefficient:" \
+        -anchor w
+    grid $WDEditVariable.matrix.label2 -in $WDEditVariable.matrix  \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditVariable.matrix.coeff -textvariable DialogPar("LpRowCoeff") \
+        -bg white -width 5
+    grid $WDEditVariable.matrix.coeff -in $WDEditVariable.matrix \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    bind $WDEditVariable.edit.variable <FocusOut> {
+        set objectName [GetFocussedObject]
+        UploadLpColumn $objectName
+
+        if {[CheckLpVar $objectName]>=0} {
+            set DialogPar("LpRowLabel") [$objectName row 0 label]
+        } else {
+            $$objectName variable $DialogPar("LpVarIndex") \
+                set label $DialogPar("LpVarLabel")
+            PropagateModifications $objectName
+        }
+
+        DownloadLpColumn $objectName
+    }
+
+    bind $WDEditVariable.edit.variable <Down> {
+        set objectName [GetFocussedObject]
+        UploadLpColumn $objectName
+        set j [CheckLpVar $objectName]
+        if {$j<0} {set j $DialogPar("LpVarIndex")}
+        if {$j==[$objectName #variables]-1} {set j 0} else {incr j}
+        set DialogPar("LpVarLabel") [$objectName variable $j label]
+        DownloadLpColumn $objectName
+    }
+
+    bind $WDEditVariable.edit.variable <Up> {
+        set objectName [GetFocussedObject]
+        UploadLpColumn $objectName
+        set j [CheckLpVar $objectName]
+        if {$j<0} {set j $DialogPar("LpVarIndex")}
+        if {$j==0} {set j [$objectName #variables]}
+        incr j -1
+        set DialogPar("LpVarLabel") [$objectName variable $j label]
+        DownloadLpColumn $objectName
+    }
+
+    bind $WDEditVariable.edit.variable <Return> {
+        set objectName [GetFocussedObject]
+        UploadLpColumn $objectName
+
+        if {[CheckLpVar $objectName]<0} {
+            $objectName variable $DialogPar("LpVarIndex") \
+                set label $DialogPar("LpVarLabel")
+            PropagateModifications $objectName
+        }
+
+        DownloadLpColumn $objectName
+        focus $WDEditVariable.edit.cost
+    }
+
+    bind $WDEditVariable.edit.cost <Return> {
+        focus $WDEditVariable.edit.lower
+    }
+
+    bind $WDEditVariable.edit.lower <Return> {
+        focus $WDEditVariable.edit.upper
+    }
+
+    bind $WDEditVariable.edit.upper <Return> {
+        focus $WDEditVariable.matrix.row
+    }
+
+    bind $WDEditVariable.matrix.row <FocusOut> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$i>=0} {
+            set DialogPar("LpRowCoeff") [$objectName coeff $i $j]
+            focus $WDEditVariable.matrix.coeff
+        } else {
+            focus $WDEditVariable.matrix.row
+        }
+    }
+
+    bind $WDEditVariable.matrix.row <Return> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$i>=0} {
+            set DialogPar("LpRowCoeff") [$objectName coeff $i $j]
+            focus $WDEditVariable.matrix.coeff
+        }
+    }
+
+    bind $WDEditVariable.matrix.row <Down> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$i>=0} {
+            if {$i==[$objectName #rows]-1} {set i 0} else {incr i}
+            set DialogPar("LpRowLabel") [$objectName row $i label]
+            set DialogPar("LpRowCoeff") [$objectName coeff $i $j]
+        }
+    }
+
+    bind $WDEditVariable.matrix.row <Up> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$i>=0} {
+            if {$i==0} {set i [$objectName #rows]}
+            incr i -1
+            set DialogPar("LpRowLabel") [$objectName row $i label]
+            set DialogPar("LpRowCoeff") [$objectName coeff $i $j]
+        }
+    }
+
+    bind $WDEditVariable.matrix.coeff <Return> {
+        set objectName [GetFocussedObject]
+        UploadLpColumn $objectName
+        DownloadLpColumn $objectName
+        set i [CheckLpRow $objectName]
+        if {$i==[$objectName #rows]-1} {set i 0} else {incr i}
+        set DialogPar("LpRowLabel") [$objectName row $i label]
+        set DialogPar("LpRowCoeff") [$objectName coeff $i $j]
+        focus $WDEditVariable.matrix.row
+    }
+
+    focus $WDEditVariable.edit.variable
+
+    DisplayForm $title
+}
+
+EditVariable

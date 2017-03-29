@@ -1,0 +1,1921 @@
+lib_src/abstractBalanced.o: lib_src/abstractBalanced.cpp \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/disjointFamily.h include/moduleGuard.h
+lib_src/abstractBigraph.o: lib_src/abstractBigraph.cpp include/abstractBigraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/abstractDigraph.o: lib_src/abstractDigraph.cpp include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h
+lib_src/abstractGraph.o: lib_src/abstractGraph.cpp include/abstractGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h
+lib_src/abstractMixedGraph.o: lib_src/abstractMixedGraph.cpp \
+  include/exportToXFig.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/exportToTk.h include/exportToDot.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/nestedFamily.h include/sparseInclude.h include/graphInclude.h \
+  include/disjointFamily.h include/basicHeap.h include/fibonacciHeap.h \
+  include/binaryHeap.h include/denseRepresentation.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/abstractGraph.h
+lib_src/abstractSubgraph.o: lib_src/abstractSubgraph.cpp \
+  include/abstractSubgraph.h include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/attributePool.o: lib_src/attributePool.cpp include/attributePool.h \
+  include/attribute.h include/globals.h include/configuration.h \
+  include/goblinController.h include/timers.h include/fileImport.h \
+  include/fileExport.h include/switchBaseTypes.h
+lib_src/auxiliaryNetwork.o: lib_src/auxiliaryNetwork.cpp \
+  include/auxiliaryNetwork.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/staticQueue.h
+lib_src/balancedDigraph.o: lib_src/balancedDigraph.cpp include/balancedDigraph.h \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h
+lib_src/balancedToBalanced.o: lib_src/balancedToBalanced.cpp \
+  include/balancedToBalanced.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/dynamicStack.h
+lib_src/basicHeap.o: lib_src/basicHeap.cpp include/basicHeap.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h
+lib_src/bigraphToDigraph.o: lib_src/bigraphToDigraph.cpp \
+  include/bigraphToDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/abstractBigraph.h include/abstractGraph.h
+lib_src/binaryHeap.o: lib_src/binaryHeap.cpp include/binaryHeap.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/treeView.h \
+  include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/branchMIP.o: lib_src/branchMIP.cpp include/branchMIP.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/ilpWrapper.h include/moduleGuard.h
+lib_src/branchScheme.o: lib_src/branchScheme.cpp include/branchScheme.h \
+  include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/moduleGuard.h
+lib_src/canvasBuilder.o: lib_src/canvasBuilder.cpp include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/complement.o: lib_src/complement.cpp include/complement.h \
+  include/subgraph.h include/abstractSubgraph.h include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/denseBigraph.o: lib_src/denseBigraph.cpp include/denseBigraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/denseRepresentation.h \
+  include/graphRepresentation.h include/denseInclude.h \
+  include/graphInclude.h
+lib_src/denseDigraph.o: lib_src/denseDigraph.cpp include/denseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/denseRepresentation.h include/graphRepresentation.h \
+  include/denseInclude.h include/graphInclude.h include/moduleGuard.h
+lib_src/denseGraph.o: lib_src/denseGraph.cpp include/denseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/denseRepresentation.h include/graphRepresentation.h \
+  include/denseInclude.h include/graphInclude.h
+lib_src/denseRepresentation.o: lib_src/denseRepresentation.cpp \
+  include/denseRepresentation.h include/graphRepresentation.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/canvasBuilder.h include/graphDisplayProxy.h
+lib_src/dictionary.o: lib_src/dictionary.cpp include/dictionary.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h
+lib_src/digraphToDigraph.o: lib_src/digraphToDigraph.cpp \
+  include/digraphToDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseDigraph.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/moduleGuard.h
+lib_src/disjointFamily.o: lib_src/disjointFamily.cpp include/disjointFamily.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/treeView.h include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h
+lib_src/doxygen.o: lib_src/doxygen.cpp
+lib_src/dynamicQueue.o: lib_src/dynamicQueue.cpp include/dynamicQueue.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h
+lib_src/dynamicStack.o: lib_src/dynamicStack.cpp include/dynamicStack.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h
+lib_src/exportToDot.o: lib_src/exportToDot.cpp include/exportToDot.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h
+lib_src/exportToTk.o: lib_src/exportToTk.cpp include/exportToTk.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h
+lib_src/exportToXFig.o: lib_src/exportToXFig.cpp include/exportToXFig.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h
+lib_src/fibonacciHeap.o: lib_src/fibonacciHeap.cpp include/fibonacciHeap.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/treeView.h \
+  include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/fileExport.o: lib_src/fileExport.cpp include/fileExport.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h
+lib_src/fileImport.o: lib_src/fileImport.cpp include/fileImport.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h
+lib_src/globals.o: lib_src/globals.cpp include/globals.h include/configuration.h
+lib_src/goblinController.o: lib_src/goblinController.cpp \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/version.h include/hashTable.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/fileImport.h include/fileExport.h \
+  include/lpSolver.h include/ilpWrapper.h include/matrix.h \
+  include/hashTable.h include/dictionary.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/indexSet.h include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/abstractMixedGraph.h include/moduleGuard.h
+lib_src/graphDisplayProxy.o: lib_src/graphDisplayProxy.cpp \
+  include/graphDisplayProxy.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h
+lib_src/graphRepresentation.o: lib_src/graphRepresentation.cpp \
+  include/graphRepresentation.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/graphToBalanced.o: lib_src/graphToBalanced.cpp include/graphToBalanced.h \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/abstractGraph.h include/balancedToBalanced.h \
+  include/moduleGuard.h
+lib_src/hashTable.o: lib_src/hashTable.cpp include/hashTable.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h
+lib_src/ilpCompose.o: lib_src/ilpCompose.cpp include/ilpWrapper.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h
+lib_src/ilpWrapper.o: lib_src/ilpWrapper.cpp include/ilpWrapper.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/moduleGuard.h
+lib_src/incrementalGeometry.o: lib_src/incrementalGeometry.cpp \
+  include/incrementalGeometry.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/indexSet.o: lib_src/indexSet.cpp include/indexSet.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h
+lib_src/itAuxiliaryNetwork.o: lib_src/itAuxiliaryNetwork.cpp \
+  include/auxiliaryNetwork.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/staticQueue.h
+lib_src/itGraph.o: lib_src/itGraph.cpp include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/itSurfaceGraph.o: lib_src/itSurfaceGraph.cpp include/surfaceGraph.h \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/nestedFamily.h include/dynamicStack.h
+lib_src/layoutForceDirected.o: lib_src/layoutForceDirected.cpp \
+  include/mixedGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/nestedFamily.h include/sparseInclude.h include/graphInclude.h \
+  include/matrix.h include/moduleGuard.h
+lib_src/layoutKandinsky.o: lib_src/layoutKandinsky.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/staticStack.h \
+  include/staticQueue.h include/incrementalGeometry.h \
+  include/moduleGuard.h
+lib_src/layoutLayered.o: lib_src/layoutLayered.cpp include/mixedGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/staticStack.h \
+  include/staticQueue.h include/lpSolver.h include/ilpWrapper.h \
+  include/matrix.h include/dictionary.h include/moduleGuard.h
+lib_src/layoutOrthogonal.o: lib_src/layoutOrthogonal.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/staticQueue.h include/binaryHeap.h \
+  include/incrementalGeometry.h include/moduleGuard.h \
+  include/stripeDissectionModel.h include/orthogonalGrid.h \
+  include/dynamicQueue.h include/sparseDigraph.h \
+  include/movingLineModel.h
+lib_src/libConvert.o: lib_src/libConvert.cpp include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h
+lib_src/libImport.o: lib_src/libImport.cpp include/mixedGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseBigraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/sparseDigraph.h include/abstractDigraph.h include/sparseGraph.h \
+  include/balancedDigraph.h include/abstractBalanced.h \
+  include/denseBigraph.h include/denseRepresentation.h \
+  include/denseInclude.h include/graphInclude.h include/denseDigraph.h \
+  include/denseGraph.h include/ilpWrapper.h
+lib_src/libLayout.o: lib_src/libLayout.cpp include/sparseRepresentation.h \
+  include/graphRepresentation.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/staticStack.h
+lib_src/libPerfect.o: lib_src/libPerfect.cpp include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/moduleGuard.h
+lib_src/libPlanarity.o: lib_src/libPlanarity.cpp include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/staticStack.h include/sparseGraph.h include/abstractGraph.h \
+  include/abstractMixedGraph.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/binaryHeap.h include/moduleGuard.h
+lib_src/listOfAuthors.o: lib_src/listOfAuthors.cpp include/globals.h \
+  include/configuration.h
+lib_src/listOfModules.o: lib_src/listOfModules.cpp include/globals.h \
+  include/configuration.h
+lib_src/listOfReferences.o: lib_src/listOfReferences.cpp include/globals.h \
+  include/configuration.h
+lib_src/listOfTimers.o: lib_src/listOfTimers.cpp include/globals.h \
+  include/configuration.h
+lib_src/lpBasis.o: lib_src/lpBasis.cpp include/lpSolver.h include/ilpWrapper.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/matrix.h include/hashTable.h include/dictionary.h \
+  include/fileImport.h include/moduleGuard.h
+lib_src/lpRepresentation.o: lib_src/lpRepresentation.cpp include/lpSolver.h \
+  include/ilpWrapper.h include/managedObject.h include/goblinController.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/fileImport.h
+lib_src/lpSolver.o: lib_src/lpSolver.cpp include/lpSolver.h include/ilpWrapper.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/matrix.h include/hashTable.h include/dictionary.h \
+  include/moduleGuard.h
+lib_src/managedObject.o: lib_src/managedObject.cpp include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h
+lib_src/matrix.o: lib_src/matrix.cpp include/matrix.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/hashTable.h
+lib_src/mixedGraph.o: lib_src/mixedGraph.cpp include/mixedGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/moduleGuard.o: lib_src/moduleGuard.cpp include/moduleGuard.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h
+lib_src/movingLineModel.o: lib_src/movingLineModel.cpp include/movingLineModel.h \
+  include/orthogonalGrid.h include/hashTable.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/dynamicQueue.h \
+  include/goblinQueue.h include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/disjointFamily.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/nestedFamily.o: lib_src/nestedFamily.cpp include/nestedFamily.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/treeView.h include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h
+lib_src/networkSimplex.o: lib_src/networkSimplex.cpp include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/networkSimplex.h
+lib_src/orthogonalGrid.o: lib_src/orthogonalGrid.cpp include/orthogonalGrid.h \
+  include/hashTable.h include/managedObject.h include/goblinController.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/dynamicQueue.h include/goblinQueue.h \
+  include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/disjointFamily.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/poolTables.o: lib_src/poolTables.cpp include/globals.h \
+  include/configuration.h
+lib_src/segment.o: lib_src/segment.cpp include/segment.h include/subgraph.h \
+  include/abstractSubgraph.h include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/seriesParallel.o: lib_src/seriesParallel.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/mixedGraph.h include/nestedFamily.h \
+  include/staticStack.h include/moduleGuard.h
+lib_src/shrinkingNetwork.o: lib_src/shrinkingNetwork.cpp \
+  include/shrinkingNetwork.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/auxiliaryNetwork.h include/staticQueue.h include/dynamicStack.h
+lib_src/solveAsyTSP.o: lib_src/solveAsyTSP.cpp include/branchAsyTSP.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/sparseDigraph.h include/denseDigraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/binaryHeap.h include/abstractGraph.h \
+  include/moduleGuard.h
+lib_src/solveColour.o: lib_src/solveColour.cpp include/branchColour.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/staticStack.h include/mixedGraph.h \
+  include/nestedFamily.h include/sparseGraph.h include/abstractGraph.h \
+  include/staticQueue.h include/abstractBigraph.h include/moduleGuard.h
+lib_src/solveComponents.o: lib_src/solveComponents.cpp \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseGraph.h include/abstractGraph.h \
+  include/abstractMixedGraph.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/staticStack.h include/moduleGuard.h
+lib_src/solveMatching.o: lib_src/solveMatching.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseBigraph.h \
+  include/abstractBigraph.h include/graphToBalanced.h \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/bigraphToDigraph.h include/binaryHeap.h include/moduleGuard.h
+lib_src/solveMaxBalFlow.o: lib_src/solveMaxBalFlow.cpp include/staticStack.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/indexSet.h \
+  include/shrinkingNetwork.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/disjointFamily.h include/hashTable.h \
+  include/auxiliaryNetwork.h include/staticQueue.h include/dynamicStack.h \
+  include/balancedToBalanced.h include/moduleGuard.h
+lib_src/solveMaxCut.o: lib_src/solveMaxCut.cpp include/branchMaxCut.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/sparseGraph.h include/abstractGraph.h \
+  include/staticQueue.h include/moduleGuard.h
+lib_src/solveMaxFlow.o: lib_src/solveMaxFlow.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/denseDigraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/staticQueue.h include/auxiliaryNetwork.h \
+  include/staticQueue.h include/moduleGuard.h
+lib_src/solveMCBalFlow.o: lib_src/solveMCBalFlow.cpp include/abstractBalanced.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/balancedToBalanced.h include/abstractBalanced.h \
+  include/surfaceGraph.h include/nestedFamily.h include/dynamicStack.h \
+  include/moduleGuard.h
+lib_src/solveMCFlow.o: lib_src/solveMCFlow.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/staticQueue.h \
+  include/nestedFamily.h include/lpSolver.h include/ilpWrapper.h \
+  include/matrix.h include/dictionary.h include/networkSimplex.h \
+  include/moduleGuard.h
+lib_src/solveMinCut.o: lib_src/solveMinCut.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/staticQueue.h \
+  include/sparseGraph.h include/abstractGraph.h include/moduleGuard.h
+lib_src/solveMinTree.o: lib_src/solveMinTree.cpp include/mixedGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/nestedFamily.h \
+  include/abstractGraph.h include/staticQueue.h include/moduleGuard.h
+lib_src/solvePlanarity.o: lib_src/solvePlanarity.cpp include/mixedGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/staticQueue.h \
+  include/staticStack.h include/subgraph.h include/abstractSubgraph.h \
+  include/sparseGraph.h include/abstractGraph.h include/segment.h \
+  include/subgraph.h include/sparseBigraph.h include/abstractBigraph.h \
+  include/moduleGuard.h
+lib_src/solvePostman.o: lib_src/solvePostman.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/denseBigraph.h \
+  include/abstractBigraph.h include/denseRepresentation.h \
+  include/denseInclude.h include/graphInclude.h include/moduleGuard.h
+lib_src/solveSPTree.o: lib_src/solveSPTree.cpp include/abstractGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/abstractDigraph.h include/staticQueue.h \
+  include/moduleGuard.h
+lib_src/solveStable.o: lib_src/solveStable.cpp include/branchStable.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/branchMIP.h include/ilpWrapper.h \
+  include/sparseGraph.h include/abstractGraph.h include/abstractBigraph.h \
+  include/moduleGuard.h
+lib_src/solveSteiner.o: lib_src/solveSteiner.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/moduleGuard.h
+lib_src/solveSymmTSP.o: lib_src/solveSymmTSP.cpp include/branchSymmTSP.h \
+  include/branchScheme.h include/moduleGuard.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/goblinQueue.h include/disjointFamily.h \
+  include/hashTable.h include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h include/sparseGraph.h include/abstractGraph.h \
+  include/sparseGraph.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/binaryHeap.h include/dynamicQueue.h \
+  include/moduleGuard.h
+lib_src/solveTJoin.o: lib_src/solveTJoin.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/moduleGuard.h
+lib_src/solveTreePkg.o: lib_src/solveTreePkg.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/moduleGuard.h
+lib_src/sparseBigraph.o: lib_src/sparseBigraph.cpp include/sparseBigraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h
+lib_src/sparseDigraph.o: lib_src/sparseDigraph.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/sparseGraph.o: lib_src/sparseGraph.cpp include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/sparseRepresentation.o: lib_src/sparseRepresentation.cpp \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/binaryHeap.h
+lib_src/staticQueue.o: lib_src/staticQueue.cpp include/staticQueue.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/indexSet.h
+lib_src/staticStack.o: lib_src/staticStack.cpp include/staticStack.h \
+  include/goblinQueue.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/indexSet.h
+lib_src/stripeDissectionModel.o: lib_src/stripeDissectionModel.cpp \
+  include/stripeDissectionModel.h include/orthogonalGrid.h \
+  include/hashTable.h include/managedObject.h include/goblinController.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/dynamicQueue.h include/goblinQueue.h \
+  include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/disjointFamily.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+lib_src/subgraph.o: lib_src/subgraph.cpp include/subgraph.h \
+  include/abstractSubgraph.h include/sparseGraph.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h include/complement.h \
+  include/subgraph.h
+lib_src/surfaceGraph.o: lib_src/surfaceGraph.cpp include/surfaceGraph.h \
+  include/abstractBalanced.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/nestedFamily.h include/dynamicStack.h \
+  include/staticQueue.h include/dynamicStack.h include/moduleGuard.h
+lib_src/timers.o: lib_src/timers.cpp include/timers.h include/globals.h \
+  include/configuration.h
+lib_src/treeView.o: lib_src/treeView.cpp include/treeView.h \
+  include/sparseDigraph.h include/abstractDigraph.h \
+  include/abstractMixedGraph.h include/investigator.h \
+  include/managedObject.h include/goblinController.h include/globals.h \
+  include/configuration.h include/timers.h include/attributePool.h \
+  include/attribute.h include/fileImport.h include/fileExport.h \
+  include/goblinQueue.h include/disjointFamily.h include/hashTable.h \
+  include/indexSet.h include/sparseRepresentation.h \
+  include/graphRepresentation.h include/canvasBuilder.h \
+  include/graphDisplayProxy.h include/sparseInclude.h \
+  include/graphInclude.h
+glpk_src/glpavl.o: glpk_src/glpavl.c glpk_include/glpavl.h glpk_include/glpdmp.h \
+  glpk_include/glplib.h
+glpk_src/glpbcs1.o: glpk_src/glpbcs1.c glpk_include/glpbcs.h glpk_include/glpies.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h \
+  glpk_include/glplib.h
+glpk_src/glpbcs2.o: glpk_src/glpbcs2.c glpk_include/glpbcs.h glpk_include/glpies.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h \
+  glpk_include/glplib.h
+glpk_src/glpchol.o: glpk_src/glpchol.c glpk_include/glpchol.h \
+  glpk_include/glpmat.h glpk_include/glpdmp.h glpk_include/glplib.h \
+  glpk_include/glpqmd.h
+glpk_src/glpdmp.o: glpk_src/glpdmp.c glpk_include/glpdmp.h glpk_include/glplib.h
+glpk_src/glphbsm.o: glpk_src/glphbsm.c glpk_include/glphbsm.h \
+  glpk_include/glpmat.h glpk_include/glpdmp.h glpk_include/glplib.h \
+  glpk_include/glpstr.h
+glpk_src/glpies1.o: glpk_src/glpies1.c glpk_include/glpies.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h glpk_include/glplib.h
+glpk_src/glpies2.o: glpk_src/glpies2.c glpk_include/glpies.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h glpk_include/glplib.h
+glpk_src/glpies3.o: glpk_src/glpies3.c glpk_include/glpies.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h glpk_include/glplib.h
+glpk_src/glpinv.o: glpk_src/glpinv.c glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glplib.h
+glpk_src/glpipm.o: glpk_src/glpipm.c glpk_include/glpchol.h glpk_include/glpmat.h \
+  glpk_include/glpdmp.h glpk_include/glpipm.h glpk_include/glplib.h
+glpk_src/glplib1.o: glpk_src/glplib1.c glpk_include/glplib.h
+glpk_src/glplib2.o: glpk_src/glplib2.c glpk_include/glplib.h
+glpk_src/glplib3.o: glpk_src/glplib3.c glpk_include/glplib.h
+glpk_src/glplpp1.o: glpk_src/glplpp1.c glpk_include/glplib.h glpk_include/glplpp.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpp2.o: glpk_src/glplpp2.c glpk_include/glplib.h glpk_include/glplpp.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpt.o: glpk_src/glplpt.c glpk_include/glpavl.h glpk_include/glpdmp.h \
+  glpk_include/glplib.h glpk_include/glplpt.h
+glpk_src/glplpx1.o: glpk_src/glplpx1.c glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx2.o: glpk_src/glplpx2.c glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx3.o: glpk_src/glplpx3.c glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx4.o: glpk_src/glplpx4.c glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx5.o: glpk_src/glplpx5.c glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx6a.o: glpk_src/glplpx6a.c glpk_include/glplib.h \
+  glpk_include/glplpp.h glpk_include/glplpx.h glpk_include/glpinv.h \
+  glpk_include/glpluf.h glpk_include/glpspm.h glpk_include/glpstr.h \
+  glpk_include/glpdmp.h glpk_include/glpspx.h
+glpk_src/glplpx6b.o: glpk_src/glplpx6b.c glpk_include/glpipm.h \
+  glpk_include/glpmat.h glpk_include/glpdmp.h glpk_include/glplib.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h
+glpk_src/glplpx6c.o: glpk_src/glplpx6c.c glpk_include/glplib.h \
+  glpk_include/glpmip.h glpk_include/glpies.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx7.o: glpk_src/glplpx7.c glpk_include/glplib.h glpk_include/glpspx.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glplpx8a.o: glpk_src/glplpx8a.c glpk_include/glpavl.h \
+  glpk_include/glpdmp.h glpk_include/glplib.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpmps.h
+glpk_src/glplpx8c.o: glpk_src/glplpx8c.c glpk_include/glplib.h \
+  glpk_include/glplpt.h glpk_include/glpdmp.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h
+glpk_src/glplpx8d.o: glpk_src/glplpx8d.c glpk_include/glplib.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h \
+  glpk_include/glpmpl.h glpk_include/glpavl.h
+glpk_src/glpluf.o: glpk_src/glpluf.c glpk_include/glplib.h glpk_include/glpluf.h
+glpk_src/glpmat.o: glpk_src/glpmat.c glpk_include/glplib.h glpk_include/glpmat.h \
+  glpk_include/glpdmp.h
+glpk_src/glpmip1.o: glpk_src/glpmip1.c glpk_include/glplib.h glpk_include/glpmip.h \
+  glpk_include/glpies.h glpk_include/glplpx.h glpk_include/glpinv.h \
+  glpk_include/glpluf.h glpk_include/glpspm.h glpk_include/glpstr.h \
+  glpk_include/glpdmp.h
+glpk_src/glpmpl1.o: glpk_src/glpmpl1.c glpk_include/glplib.h glpk_include/glpmpl.h \
+  glpk_include/glpavl.h glpk_include/glpdmp.h
+glpk_src/glpmpl2.o: glpk_src/glpmpl2.c glpk_include/glplib.h glpk_include/glpmpl.h \
+  glpk_include/glpavl.h glpk_include/glpdmp.h
+glpk_src/glpmpl3.o: glpk_src/glpmpl3.c glpk_include/glplib.h glpk_include/glpmpl.h \
+  glpk_include/glpavl.h glpk_include/glpdmp.h
+glpk_src/glpmpl4.o: glpk_src/glpmpl4.c glpk_include/glplib.h glpk_include/glpmpl.h \
+  glpk_include/glpavl.h glpk_include/glpdmp.h
+glpk_src/glpmps.o: glpk_src/glpmps.c glpk_include/glpavl.h glpk_include/glpdmp.h \
+  glpk_include/glplib.h glpk_include/glpmps.h glpk_include/glpstr.h
+glpk_src/glpqmd.o: glpk_src/glpqmd.c glpk_include/glpqmd.h
+glpk_src/glpspm.o: glpk_src/glpspm.c glpk_include/glplib.h glpk_include/glpspm.h
+glpk_src/glpspx1.o: glpk_src/glpspx1.c glpk_include/glplib.h glpk_include/glpspx.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glpspx2.o: glpk_src/glpspx2.c glpk_include/glplib.h glpk_include/glpspx.h \
+  glpk_include/glplpx.h glpk_include/glpinv.h glpk_include/glpluf.h \
+  glpk_include/glpspm.h glpk_include/glpstr.h glpk_include/glpdmp.h
+glpk_src/glpstr.o: glpk_src/glpstr.c glpk_include/glplib.h glpk_include/glpstr.h \
+  glpk_include/glpdmp.h
+glpk_src/glptsp.o: glpk_src/glptsp.c glpk_include/glplib.h glpk_include/glptsp.h
+glpk_wrap/glpkInit.o: glpk_wrap/glpkInit.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h glpk_include/glpk.h \
+  glpk_include/glpbcs.h glpk_include/glpies.h glpk_include/glplpx.h \
+  glpk_include/glpinv.h glpk_include/glpluf.h glpk_include/glpspm.h \
+  glpk_include/glpstr.h glpk_include/glpdmp.h glpk_include/glplib.h \
+  include/glpkWrapper.h glpk_include/glpk.h
+glpk_wrap/glpkWrapper.o: glpk_wrap/glpkWrapper.cpp include/glpkWrapper.h \
+  include/ilpWrapper.h include/managedObject.h include/goblinController.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h glpk_include/glpk.h glpk_include/glpbcs.h \
+  glpk_include/glpies.h glpk_include/glplpx.h glpk_include/glpinv.h \
+  glpk_include/glpluf.h glpk_include/glpspm.h glpk_include/glpstr.h \
+  glpk_include/glpdmp.h glpk_include/glplib.h glpk_include/glpk.h \
+  include/fileImport.h include/moduleGuard.h
+shell_src/goshDiplayProxy.o: shell_src/goshDiplayProxy.cpp include/gosh.h \
+  include/goblin.h include/configuration.h include/globals.h \
+  include/configuration.h include/timers.h include/globals.h \
+  include/goblinController.h include/timers.h include/managedObject.h \
+  include/goblinController.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+shell_src/goshGraph.o: shell_src/goshGraph.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+shell_src/goshLin.o: shell_src/goshLin.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+shell_src/goshMain.o: shell_src/goshMain.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h include/messenger.h
+shell_src/messenger.o: shell_src/messenger.cpp include/messenger.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h
+main_src/colour.o: main_src/colour.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/connect.o: main_src/connect.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/gobshow.o: main_src/gobshow.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/goshAppInit2.o: main_src/goshAppInit2.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/goshAppInit.o: main_src/goshAppInit.cpp include/gosh.h include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/gsearch.o: main_src/gsearch.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/lpsolve.o: main_src/lpsolve.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/mintree.o: main_src/mintree.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/optbflow.o: main_src/optbflow.cpp include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/optflow.o: main_src/optflow.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/optmatch.o: main_src/optmatch.cpp include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/opttour.o: main_src/opttour.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/postman.o: main_src/postman.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/pthread.o: main_src/pthread.cpp
+main_src/rbigraph.o: main_src/rbigraph.cpp include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/rdigraph.o: main_src/rdigraph.cpp include/goblin.h \
+  include/configuration.h include/globals.h include/configuration.h \
+  include/timers.h include/globals.h include/goblinController.h \
+  include/timers.h include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/rgraph.o: main_src/rgraph.cpp include/goblin.h include/configuration.h \
+  include/globals.h include/configuration.h include/timers.h \
+  include/globals.h include/goblinController.h include/timers.h \
+  include/managedObject.h include/goblinController.h \
+  include/attributePool.h include/attribute.h include/fileImport.h \
+  include/fileExport.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/abstractGraph.h include/abstractMixedGraph.h \
+  include/abstractBigraph.h include/abstractGraph.h \
+  include/abstractDigraph.h include/abstractBalanced.h \
+  include/abstractDigraph.h include/investigator.h include/fileImport.h \
+  include/fileExport.h include/graphRepresentation.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/denseRepresentation.h include/mixedGraph.h \
+  include/sparseRepresentation.h include/nestedFamily.h \
+  include/sparseInclude.h include/graphInclude.h include/sparseGraph.h \
+  include/sparseBigraph.h include/abstractBigraph.h \
+  include/sparseDigraph.h include/balancedDigraph.h \
+  include/abstractBalanced.h include/denseGraph.h \
+  include/denseRepresentation.h include/denseInclude.h \
+  include/graphInclude.h include/denseBigraph.h include/denseDigraph.h \
+  include/graphToBalanced.h include/balancedToBalanced.h \
+  include/digraphToDigraph.h include/bigraphToDigraph.h \
+  include/surfaceGraph.h include/dynamicStack.h \
+  include/auxiliaryNetwork.h include/staticQueue.h \
+  include/shrinkingNetwork.h include/auxiliaryNetwork.h \
+  include/goblinQueue.h include/staticQueue.h include/dynamicQueue.h \
+  include/staticStack.h include/dynamicStack.h include/disjointFamily.h \
+  include/nestedFamily.h include/basicHeap.h include/binaryHeap.h \
+  include/fibonacciHeap.h include/matrix.h include/hashTable.h \
+  include/dictionary.h include/ilpWrapper.h include/lpSolver.h \
+  include/ilpWrapper.h include/matrix.h include/dictionary.h \
+  include/branchScheme.h include/moduleGuard.h include/sparseDigraph.h \
+  include/branchStable.h include/branchScheme.h include/branchAsyTSP.h \
+  include/branchSymmTSP.h include/sparseGraph.h include/branchColour.h \
+  include/staticStack.h include/exportToTk.h include/exportToXFig.h \
+  include/graphDisplayProxy.h include/treeView.h \
+  include/abstractSubgraph.h include/subgraph.h include/complement.h \
+  include/subgraph.h include/segment.h
+main_src/testBinTree.o: main_src/testBinTree.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+main_src/testDAG.o: main_src/testDAG.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+main_src/testHypercube.o: main_src/testHypercube.cpp include/sparseDigraph.h \
+  include/abstractDigraph.h include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h \
+  include/sparseRepresentation.h include/graphRepresentation.h \
+  include/canvasBuilder.h include/graphDisplayProxy.h \
+  include/sparseInclude.h include/graphInclude.h
+main_src/testPlanarity.o: main_src/testPlanarity.cpp include/abstractMixedGraph.h \
+  include/investigator.h include/managedObject.h \
+  include/goblinController.h include/globals.h include/configuration.h \
+  include/timers.h include/attributePool.h include/attribute.h \
+  include/fileImport.h include/fileExport.h include/goblinQueue.h \
+  include/disjointFamily.h include/hashTable.h include/indexSet.h

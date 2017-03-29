@@ -1,0 +1,429 @@
+
+proc ShowStatistics {} {
+    global WDStatistics
+
+    set title "Problem Statistics"
+
+    if {[RegisterFormOrWindow $title statistics WDStatistics ShowStatistics \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        UpdateStatistics [GetFocussedObject]
+        return
+    }
+
+
+    UpdateStatistics [GetFocussedObject]
+
+    DisplayForm $title
+}
+
+
+proc UpdateStatistics {focussedObject} {
+    global WDStatistics DefPadX
+
+    destroy $WDStatistics.frame
+
+    frame $WDStatistics.frame
+
+    pack $WDStatistics.frame \
+        -side top -fill x -padx $DefPadX -pady 3m
+
+
+    if {[$focussedObject info -mipObject]} {
+        UpdateMIPStatistics $focussedObject
+        return
+    }
+
+
+    label $WDStatistics.frame.label1 -text "Problem Characteristics:" -anchor w
+    grid $WDStatistics.frame.label1 \
+        -row 0 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    if {[$focussedObject info -sparse]} {
+        if {[$focussedObject info -undirected]} {
+            if {[$focussedObject info -bipartite]} {
+                set type "Bipartite Incidence Structure"
+            } else {
+                set type "Undirected Incidence Structure"
+            }
+        } else {
+            if {[$focussedObject info -directed]} {
+                set type "Directed Incidence Structure"
+            } else {
+                set type "Mixed Incidence Structure"
+            }
+        }
+    } else {
+        if {[$focussedObject info -undirected]} {
+            if {[$focussedObject info -bipartite]} {
+                set type "Complete Bipartite Graph"
+            } else {
+                set type "Complete Undirected Graph"
+            }
+        } else {
+            set type "Complete Directed Graph"
+        }
+    }
+
+    if {[$focussedObject info -metricType]==0} {
+        set geometry "Explicit Length Labels"
+    } else {
+        set geometry "2-Dimensional"
+        if {[$focussedObject info -metricType]==1} {set geometry "$geometry Manhattan Metric"}
+        if {[$focussedObject info -metricType]==2} {set geometry "$geometry Euclidean"}
+        if {[$focussedObject info -metricType]==3} {set geometry "$geometry Maximum Metric"}
+        if {[$focussedObject info -metricType]==4} {set geometry "$geometry Spheric"}
+    }
+
+    label $WDStatistics.frame.type -text "$type" -anchor w
+    grid $WDStatistics.frame.type \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 5m
+
+    label $WDStatistics.frame.geometry -text "$geometry" -anchor w
+    grid $WDStatistics.frame.geometry \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 5m
+
+
+    frame $WDStatistics.frame.dummy1
+    grid $WDStatistics.frame.dummy1 \
+        -row 3 -column 0 -rowspan 1 -columnspan 2 -pady 2m
+
+    label $WDStatistics.frame.label2 -text "Problem Dimensions:" -anchor w
+    grid $WDStatistics.frame.label2 \
+        -row 4 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    label $WDStatistics.frame.nnodes -text "Number of Nodes:" -anchor w
+    grid $WDStatistics.frame.nnodes \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 5m
+    label $WDStatistics.frame.valNodes \
+        -text "[$focussedObject #nodes]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valNodes \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.narcs -text "Number of Arcs:" -anchor w
+    grid $WDStatistics.frame.narcs \
+        -row 6 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valArcs \
+        -text "[$focussedObject #edges]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valArcs \
+        -row 6 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    if {![$focussedObject constant -upperBound]} {
+        set maxUCap "Maximum Upper Bound:"
+    } else {
+        set maxUCap "Constant Upper Bounds:"
+    }
+    label $WDStatistics.frame.maxucap -text "$maxUCap" -anchor w
+    grid $WDStatistics.frame.maxucap \
+        -row 7 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valUCap \
+        -text "[$focussedObject max -upperBound]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valUCap \
+        -row 7 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    if {![$focussedObject constant -lowerBound]} {
+        set maxLCap "Maximum Lower Bound:"
+    } else {
+        set maxLCap "Constant Lower Bounds:"
+    }
+    label $WDStatistics.frame.maxlcap -text "$maxLCap" -anchor w
+    grid $WDStatistics.frame.maxlcap \
+        -row 8 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valLCap \
+        -text "[$focussedObject max -lowerBound]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valLCap \
+        -row 8 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+
+    if {![$focussedObject constant -nodeDemand]} {
+        set nDemands 0
+        set nSupplies 0
+        for {set v 0} {$v<[$focussedObject #nodes]} {incr v} {
+            if {[$focussedObject node $v info -nodeDemand]>0} {incr nDemands}
+            if {[$focussedObject node $v info -nodeDemand]<0} {incr nSupplies}
+        }
+
+        if {$nDemands>0} {
+            label $WDStatistics.frame.ndemands \
+                -text "Demand Nodes:" -anchor w
+            grid $WDStatistics.frame.ndemands \
+                -row 9 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+            label $WDStatistics.frame.valDemands \
+                -text "$nDemands" -anchor w -relief ridge
+            grid $WDStatistics.frame.valDemands \
+                -row 9 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+        }
+
+        if {$nSupplies>0} {
+            label $WDStatistics.frame.nsupplies \
+                -text "Supply Nodes:" -anchor w
+            grid $WDStatistics.frame.nsupplies \
+                -row 10 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+            label $WDStatistics.frame.valSupplies \
+                -text "$nSupplies" -anchor w -relief ridge
+            grid $WDStatistics.frame.valSupplies \
+                -row 10 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+        }
+
+        set maxDemand "Maximum Node Demand:"
+    } else {
+        set maxDemand "Constant Node Demands:"
+    }
+    label $WDStatistics.frame.maxdemand -text "$maxDemand" -anchor w
+    grid $WDStatistics.frame.maxdemand \
+        -row 11 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valMaxDemand \
+        -text "[$focussedObject max -nodeDemand]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valMaxDemand \
+        -row 11 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    if {![$focussedObject constant -edgeLength]} {
+        set nNegative 0
+        for {set a 0} {$a<[$focussedObject #edges]} {incr a} {
+            if {[$focussedObject arc [expr 2*$a] info -edgeLength]<0} {incr nNegative}
+        }
+
+        if {$nNegative>0} {
+            label $WDStatistics.frame.nnegative \
+                -text "Negative Length Arcs:" -anchor w
+            grid $WDStatistics.frame.nnegative \
+                -row 12 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+            label $WDStatistics.frame.valNegative \
+                -text "$nNegative" -anchor w -relief ridge
+            grid $WDStatistics.frame.valNegative \
+                -row 12 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+        }
+
+        set maxLength "Maximum Arc Length:"
+    } else {
+        set maxLength "Constant Arc Lengths:"
+    }
+    label $WDStatistics.frame.maxlength -text "$maxLength" -anchor w
+    grid $WDStatistics.frame.maxlength \
+        -row 13 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valMaxLength \
+        -text "[$focussedObject max -edgeLength]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valMaxLength \
+        -row 13 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+
+    frame $WDStatistics.frame.dummy2
+    grid $WDStatistics.frame.dummy2 \
+        -row 20 -column 0 -rowspan 1 -columnspan 2 -pady 2m
+
+    label $WDStatistics.frame.label3 -text "Solutions:" -anchor w
+    grid $WDStatistics.frame.label3 \
+        -row 21 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    label $WDStatistics.frame.card \
+        -text "Subgraph Cardinality:" -anchor w
+    grid $WDStatistics.frame.card \
+        -row 22 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valCard \
+        -text "[$focussedObject info -cardinality]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valCard \
+        -row 22 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.weight \
+        -text "Subgraph Weight:" -anchor w
+    grid $WDStatistics.frame.weight \
+        -row 23 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valWeight \
+        -text "[$focussedObject info -subgraphWeight]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valWeight \
+        -row 23 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.length \
+        -text "Path/Tree Length:" -anchor w
+    grid $WDStatistics.frame.length \
+        -row 24 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valLength \
+        -text "[$focussedObject info -edgeLength]" -anchor w -relief ridge
+    grid $WDStatistics.frame.valLength \
+        -row 24 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDStatistics.frame 0 -weight 1 -minsize 0
+    grid columnconfig $WDStatistics.frame 1 -weight 2 -minsize 50
+}
+
+
+proc UpdateMIPStatistics {focussedObject} {
+    global WDStatistics
+
+    label $WDStatistics.frame.label1 -text "Problem Characteristics:" -anchor w
+    grid $WDStatistics.frame.label1 \
+        -row 0 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    set nInts 0
+    set nFixed 0
+    set nEqual 0
+    set nPrimalInf 0
+    set nDualInf 0
+    set isSF true
+    set isCF true
+
+    for {set i 0} {$i<[$focussedObject #variables]} {incr i} {
+        if {[$focussedObject variable $i type]=="integer"} {incr nInts}
+        if {[$focussedObject variable $i lrange] ==
+            [$focussedObject variable $i urange]} {incr nFixed}
+        if {[$focussedObject variable $i lrange]!=0 ||
+            [$focussedObject variable $i urange]!="*"} {set isSF false}
+        if {[$focussedObject variable $i lrange]!="*"} {set isCF false}
+
+        set j [$focussedObject variable $i index]
+
+        if {[$focussedObject row $j value lower]<-0.01} {incr nDualInf}
+        if {[$focussedObject row $j value upper]>0.01} {incr nDualInf}
+        if {[$focussedObject row $j value lower]<-0.01 &&
+            [$focussedObject row $j lbound]=="*"} {incr nDualInf}
+
+        set j [expr [$focussedObject #rows]+$i]
+
+        if {[$focussedObject row $j slack lower]<-0.01 ||
+            [$focussedObject row $j slack upper]<-0.01} {incr nPrimalInf}
+    }
+
+    for {set i 0} {$i<[$focussedObject #rows]} {incr i} {
+        if {[$focussedObject row $i ubound]=="*" ||
+            [$focussedObject row $i lbound]=="*" ||
+            [$focussedObject row $i ubound]!=[$focussedObject row $i lbound] } {
+            set isSF false
+        } else {
+            incr nEqual
+        }
+
+        if {[$focussedObject row $i lbound]!="*"} {set isCF false}
+
+        if {[$focussedObject row $i slack lower]<-0.01 ||
+            [$focussedObject row $i slack upper]<-0.01} {incr nPrimalInf}
+    }
+
+    if {$nInts>0} {
+        if {$nInts<[$focussedObject #variables]} {
+            set type "Mixed Integer Linear Program"
+        } else {
+            set type "Integer Linear Program"
+        }
+    } else {
+        set type "Linear Program"
+    }
+
+    if {$isSF} {
+        set form "Standard Form"
+    } else {
+        if {$isCF} {
+            set form "Canonical Form"
+        } else {
+            set form "Indefinite Form"
+        }
+    }
+
+    label $WDStatistics.frame.type -text "$type" -anchor w
+    grid $WDStatistics.frame.type \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 5m
+    label $WDStatistics.frame.form -text "$form" -anchor w
+    grid $WDStatistics.frame.form \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky we -padx 5m
+
+    frame $WDStatistics.frame.dummy1
+    grid $WDStatistics.frame.dummy1 \
+        -row 3 -column 0 -rowspan 1 -columnspan 2 -pady 2m
+
+    label $WDStatistics.frame.label2 -text "Problem Dimensions:" -anchor w
+    grid $WDStatistics.frame.label2 \
+        -row 4 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    label $WDStatistics.frame.ncols -text "Number of Variables:" -anchor w
+    grid $WDStatistics.frame.ncols \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valNCols \
+        -text "[$focussedObject #variables]" -relief ridge -anchor w
+    grid $WDStatistics.frame.valNCols \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.nints -text "Integer Variables:" -anchor w
+    grid $WDStatistics.frame.nints \
+        -row 6 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valNInts -text "$nInts" -relief ridge -anchor w
+    grid $WDStatistics.frame.valNInts \
+        -row 6 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.nfixed -text "Fixed Variables:" -anchor w
+    grid $WDStatistics.frame.nfixed \
+        -row 7 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valNFixed -text "$nFixed" -relief ridge -anchor w
+    grid $WDStatistics.frame.valNFixed \
+        -row 7 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.nrows -text "Number of Restrictions:" -anchor w
+    grid $WDStatistics.frame.nrows \
+        -row 8 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valNRows -text "[$focussedObject #rows]" -relief ridge -anchor w
+    grid $WDStatistics.frame.valNRows \
+        -row 8 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.nequal -text "Equality Restrictions:" -anchor w
+    grid $WDStatistics.frame.nequal \
+        -row 9 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valNEqual -text "$nEqual" -relief ridge -anchor w
+    grid $WDStatistics.frame.valNEqual \
+        -row 9 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    frame $WDStatistics.frame.dummy2
+    grid $WDStatistics.frame.dummy2 \
+        -row 10 -column 0 -rowspan 1 -columnspan 2 -pady 2m
+
+    label $WDStatistics.frame.label3 -text "Basis Information:" -anchor w
+    grid $WDStatistics.frame.label3 \
+        -row 11 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    label $WDStatistics.frame.primal -anchor w \
+        -text "Primal Infeasibilities:"
+    grid $WDStatistics.frame.primal \
+        -row 12 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valPrimal -anchor w -relief ridge \
+        -text "$nPrimalInf"
+    grid $WDStatistics.frame.valPrimal \
+        -row 12 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.dual -anchor w \
+        -text "Dual Infeasibilities:"
+    grid $WDStatistics.frame.dual \
+        -row 13 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valDual -anchor w -relief ridge \
+        -text "$nDualInf"
+    grid $WDStatistics.frame.valDual \
+        -row 13 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.objective -anchor w \
+        -text "Objective Value:"
+    grid $WDStatistics.frame.objective \
+        -row 14 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDStatistics.frame.valObjective -anchor w -relief ridge \
+        -text "[$focussedObject objective primal]"
+    grid $WDStatistics.frame.valObjective \
+        -row 14 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDStatistics.frame.pivot -text "Next Pivot:" -anchor w
+    grid $WDStatistics.frame.pivot \
+        -row 15 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    if {[set pivot [$focussedObject pivot row]]=="*"} {
+        label $WDStatistics.frame.valPivot -anchor w -relief ridge \
+            -text "*"
+    } else {
+        label $WDStatistics.frame.valPivot -anchor w -relief ridge \
+            -text "$pivot [$focussedObject pivot direction], [$focussedObject pivot column]" -anchor w
+    }
+    grid $WDStatistics.frame.valPivot \
+        -row 15 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDStatistics.frame 0 -weight 1 -minsize 0
+    grid columnconfig $WDStatistics.frame 1 -weight 2 -minsize 50
+}
+
+ShowStatistics
+

@@ -1,0 +1,108 @@
+
+#-------------------------------------------------------------------------------
+# Module:     browserTraceOpt.tk
+# Activation: Dynamically loadad on user request
+# Scope:      Configuration of the tracing functionality
+#-------------------------------------------------------------------------------
+
+
+
+proc SelectTraceLevel {} {
+    global WDTraceLevel DefPadX
+
+    set title "Tracing Options"
+
+    if {[RegisterFormOrWindow $title traceopt WDTraceLevel SelectTraceLevel \
+            "Done"          {
+                if {![QualifiedInt $goblinTraceStep 0 50000] || \
+                    ![QualifiedInt $goblinThreshold 0 50000]
+                } {
+                    return
+                }
+            } \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+            "Reset"         {RestartEngine} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDTraceLevel.f1
+    label $WDTraceLevel.f1.label -text "Trace Level:" -anchor w
+    radiobutton $WDTraceLevel.f1.noTracing -text "No Tracing" \
+        -variable goblinTraceLevel -value 0 -anchor w
+    radiobutton $WDTraceLevel.f1.constructors -text "Trace Constructors" \
+        -variable goblinTraceLevel -value 2 -anchor w
+    radiobutton $WDTraceLevel.f1.exhaustive -text "Exhaustive Tracing" \
+        -variable goblinTraceLevel -value 3 -anchor w
+    pack $WDTraceLevel.f1.label $WDTraceLevel.f1.noTracing $WDTraceLevel.f1.constructors \
+        $WDTraceLevel.f1.exhaustive -side top -fill x
+
+    frame $WDTraceLevel.f2
+    checkbutton $WDTraceLevel.f2.data -text "Trace Data Structures" \
+        -variable goblinTraceData -anchor w
+    pack $WDTraceLevel.f2.data -side left -fill x
+
+    frame $WDTraceLevel.f3
+
+    label $WDTraceLevel.f3.traceStepText -text "Trace Step:" -anchor w
+    grid $WDTraceLevel.f3.traceStepText -in $WDTraceLevel.f3  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDTraceLevel.f3.traceStep -textvariable goblinTraceStep -bg white -width 5
+    grid $WDTraceLevel.f3.traceStep -in $WDTraceLevel.f3 \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDTraceLevel.f3.thresholdText -text "Threshold:" -anchor w
+    grid $WDTraceLevel.f3.thresholdText -in $WDTraceLevel.f3  \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDTraceLevel.f3.threshold -textvariable goblinThreshold -bg white -width 5
+    grid $WDTraceLevel.f3.threshold -in $WDTraceLevel.f3 \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDTraceLevel.f3 0 -weight 1 -minsize 0
+    grid columnconfig $WDTraceLevel.f3 1 -weight 1 -minsize 0
+
+    frame $WDTraceLevel.options
+    label $WDTraceLevel.options.label -text "Task Communication Level:" -anchor w
+    radiobutton $WDTraceLevel.options.single -text "Single Thread" \
+        -variable goblinCommLevel -value 0 -anchor w
+    radiobutton $WDTraceLevel.options.separate -text "Separate Threads" \
+        -variable goblinCommLevel -value 1 -anchor w
+    radiobutton $WDTraceLevel.options.update -text "Automatic Updates" \
+        -variable goblinCommLevel -value 2 -anchor w
+    radiobutton $WDTraceLevel.options.steps -text "Single Stepping" \
+        -variable goblinCommLevel -value 3 -anchor w
+    radiobutton $WDTraceLevel.options.trace -text "Interactive Tracing" \
+        -variable goblinCommLevel -value 4 -anchor w -state disabled
+    pack $WDTraceLevel.options.label $WDTraceLevel.options.single \
+        $WDTraceLevel.options.separate $WDTraceLevel.options.update \
+        $WDTraceLevel.options.steps $WDTraceLevel.options.trace \
+        -side top -fill x
+
+    frame $WDTraceLevel.value
+    label $WDTraceLevel.value.label -text "Refresh Rate: " -anchor w
+    grid $WDTraceLevel.value.label \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDTraceLevel.value.value -textvariable UpdateCycle -bg white -width 5
+    grid $WDTraceLevel.value.value \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTraceLevel.value.label2 -text "ms" -anchor w
+    grid $WDTraceLevel.value.label2 \
+        -row 0 -column 2 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    grid columnconfig $WDTraceLevel.value 0 -weight 1 -minsize 0
+    grid columnconfig $WDTraceLevel.value 1 -weight 1 -minsize 0
+    grid columnconfig $WDTraceLevel.value 2 -weight 0 -minsize 0
+
+    pack $WDTraceLevel.f1 $WDTraceLevel.f2 $WDTraceLevel.f3 \
+        $WDTraceLevel.options $WDTraceLevel.value -padx $DefPadX \
+        -pady 3m -side top -anchor w -fill x
+
+
+    DisplayForm $title
+}
+
+SelectTraceLevel

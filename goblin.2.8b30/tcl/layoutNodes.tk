@@ -1,0 +1,324 @@
+
+#-------------------------------------------------------------------------------
+# Module:     layoutNodes.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of graph node display
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowNDisplayOptions {} {
+    global WDNodeDisplay DefPadX UploadData
+
+    set title "Node Display Options"
+    set updateOnly true
+    set focussedGraph [GetFocussedObject]
+
+    set UploadData(nodeLabelFormat) [$focussedGraph layout info -nodeLabelFormat]
+    set UploadData(nodeFontSize)    [$focussedGraph layout info -nodeFontSize]
+    set UploadData(nodeSize)        [$focussedGraph layout info -nodeSize]
+
+    if {![RegisterFormOrWindow $title nodedisplay WDNodeDisplay ShowNDisplayOptions \
+            "Done"          {
+                UpdateNodeLayoutParameters
+            } \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        set updateOnly false
+
+        frame $WDNodeDisplay.options
+        pack $WDNodeDisplay.options -fill both -padx $DefPadX -pady 3m
+
+
+        set rowNr 0
+
+        label $WDNodeDisplay.options.nodeLabelLabel -text "Label Selection: " \
+            -anchor w
+        grid $WDNodeDisplay.options.nodeLabelLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        MakePulldownMenuButton $WDNodeDisplay.options.nodeLabelSelect "-width 15"
+        grid $WDNodeDisplay.options.nodeLabelSelect \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.formatStringLabel -text "Format String: " \
+            -anchor w
+        grid $WDNodeDisplay.options.formatStringLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+        entry $WDNodeDisplay.options.formatStringString \
+            -textvariable UploadData(nodeLabelFormat) -bg white -width 15
+        grid $WDNodeDisplay.options.formatStringString \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        bind $WDNodeDisplay.options.formatStringString <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutStringValue $targetGraph nodeLabelFormat]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDNodeDisplay.options.formatStringString <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutStringValue $targetGraph nodeLabelFormat]} {
+                PropagateModifications $targetGraph
+            }
+            focus $WDNodeDisplay.options.fontSizeFrame.value
+        }
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.fontTypeLabel -text "Font Type: " \
+            -anchor w
+        grid $WDNodeDisplay.options.fontTypeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDNodeDisplay.options.nodeFontSelect "-width 12"
+        grid $WDNodeDisplay.options.nodeFontSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.fontSizeLabel -text "Font Size: " \
+            -anchor w
+        grid $WDNodeDisplay.options.fontSizeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        frame $WDNodeDisplay.options.fontSizeFrame
+        grid $WDNodeDisplay.options.fontSizeFrame -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+        entry $WDNodeDisplay.options.fontSizeFrame.value \
+            -textvariable UploadData(nodeFontSize) -bg white -width 5
+        label $WDNodeDisplay.options.fontSizeFrame.label -text " % of Default Size" \
+            -anchor w
+
+        pack $WDNodeDisplay.options.fontSizeFrame.label -side right
+        pack $WDNodeDisplay.options.fontSizeFrame.value -expand true -fill both -side left
+
+        bind $WDNodeDisplay.options.fontSizeFrame.value <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph nodeFontSize]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDNodeDisplay.options.fontSizeFrame.value <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph nodeFontSize]} {
+                PropagateModifications $targetGraph
+            }
+
+            focus $WDNodeDisplay.options.fontSizeFrame.value
+        }
+
+
+        incr rowNr
+
+        frame $WDNodeDisplay.options.separator$rowNr -height 3m
+        grid $WDNodeDisplay.options.separator$rowNr \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.nodeShapeLabel -text "Node Style: " -anchor w
+        grid $WDNodeDisplay.options.nodeShapeLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        MakePulldownMenuButton $WDNodeDisplay.options.nodeShapeSelect "-width 12"
+        grid $WDNodeDisplay.options.nodeShapeSelect \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.nodeSizeLabel -text "Node Size: " \
+            -anchor w
+        grid $WDNodeDisplay.options.nodeSizeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        frame $WDNodeDisplay.options.nodeSizeFrame
+        grid $WDNodeDisplay.options.nodeSizeFrame -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+        entry $WDNodeDisplay.options.nodeSizeFrame.value -textvariable UploadData(nodeSize) -bg white -width 5
+        label $WDNodeDisplay.options.nodeSizeFrame.label1 -text " % of Default Size" \
+            -anchor w
+
+        pack $WDNodeDisplay.options.nodeSizeFrame.label1 -side right
+        pack $WDNodeDisplay.options.nodeSizeFrame.value -expand true -fill both -side left
+
+        bind $WDNodeDisplay.options.nodeSizeFrame.value <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph nodeSize]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDNodeDisplay.options.nodeSizeFrame.value <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph nodeSize]} {
+                PropagateModifications $targetGraph
+            }
+
+            focus $WDNodeDisplay.options.formatStringString
+        }
+
+
+        incr rowNr
+
+        label $WDNodeDisplay.options.nodeColourLabel -text "Node Colours: " \
+            -anchor w
+        grid $WDNodeDisplay.options.nodeColourLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        MakePulldownMenuButton $WDNodeDisplay.options.nodeColourSelect "-width 12"
+        grid $WDNodeDisplay.options.nodeColourSelect \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+
+        grid columnconfig $WDNodeDisplay.options 0 -weight 1 -minsize 0
+        grid columnconfig $WDNodeDisplay.options 1 -weight 1 -minsize 0
+
+        focus $WDNodeDisplay.options.formatStringString
+
+        DisplayForm $title
+    }
+
+    set listOfNodeLabelOptions { \
+        "Apply Format String"   0 \
+        "No Labels"             1 \
+        "Indices {0,1,2,..}"    2 \
+        "Distance Labels"       3 \
+        "Potentials"            4 \
+        "Node Colours"          5 \
+        "Demands"               6 \
+        "Indices {1,2,3,..}"    7 \
+    }
+
+    AttachSelectionForm $WDNodeDisplay.options.nodeLabelSelect 5 \
+        [lindex $listOfNodeLabelOptions [expr 2*[ExtractNodeLabelMode]]] \
+        $listOfNodeLabelOptions ApplyNodeLabelSelection
+
+    AttachFontTypeMenu $WDNodeDisplay.options.nodeFontSelect nodeFontType ApplyNodeFontSelection
+
+    set listOfNodeShapeOptions { \
+        "Fixed Size Dots"       0 \
+        "Circular"              1 \
+        "Rectangular"           2 \
+        "Regular By Colours"    3 \
+    }
+
+    AttachSelectionForm $WDNodeDisplay.options.nodeShapeSelect 5 \
+        [lindex $listOfNodeShapeOptions [expr 2*[$focussedGraph layout info -nodeShapeMode]]] \
+        $listOfNodeShapeOptions ApplyNodeShapeSelection
+
+    set listOfNodeColourOptions { \
+        "Uncoloured Inside"         0 \
+        "Highlight Distance Labels" 1 \
+        "Colour Table Lookup"       2 \
+        "Highlight Demand Nodes"    3 \
+        "Gradient Colours"          4 \
+    }
+
+    AttachSelectionForm $WDNodeDisplay.options.nodeColourSelect 5 \
+        [lindex $listOfNodeColourOptions [expr 2*[$focussedGraph layout info -nodeColourMode]]] \
+        $listOfNodeColourOptions ApplyNodeColourSelection
+}
+
+proc ExtractNodeLabelMode {} {
+    set targetGraph [GetFocussedObject]
+
+    if {[$targetGraph layout info -nodeLabelFormat]==""} {return 1}
+
+    set nodeLabelMode 0
+    set num [scan [$targetGraph layout info -nodeLabelFormat] "#%i%s" nodeLabelMode remainder]
+
+    if {$num!=1} {return 0}
+
+    return [expr $nodeLabelMode+1]
+}
+
+proc ApplyNodeLabelSelection {nodeLabelMode} {
+    set targetGraph [GetFocussedObject]
+
+    if {$nodeLabelMode==0} {return}
+
+    if {$nodeLabelMode==1} {
+        if {   [$targetGraph layout info -nodeLabelFormat]!=""   \
+            && [$targetGraph layout info -nodeLabelFormat]!="#0" \
+        } {
+            $targetGraph layout configure -nodeLabelFormat ""
+            PropagateModifications $targetGraph
+        }
+
+        return
+    }
+
+    if {![string equal [$targetGraph layout info -nodeLabelFormat] "#[expr $nodeLabelMode-1]"]} {
+        $targetGraph layout configure -nodeLabelFormat "#[expr $nodeLabelMode-1]"
+        PropagateModifications $targetGraph
+    }
+}
+
+proc ApplyNodeFontSelection {nodeFontType} {
+    global WDNodeDisplay
+
+    set targetGraph [GetFocussedObject]
+
+    if {[$targetGraph layout info -nodeFontType]!=$nodeFontType} {
+        $targetGraph layout configure -nodeFontType $nodeFontType
+        UpdateFontDisplay $WDNodeDisplay.options.nodeFontSelect $nodeFontType
+        PropagateModifications $targetGraph
+    }
+}
+
+proc ApplyNodeShapeSelection {nodeShapeMode} {
+    set targetGraph [GetFocussedObject]
+
+    if {[$targetGraph layout info -nodeShapeMode]!=$nodeShapeMode} {
+        $targetGraph layout configure -nodeShapeMode $nodeShapeMode
+        PropagateModifications $targetGraph
+    }
+}
+
+proc ApplyNodeColourSelection {nodeColourMode} {
+    set targetGraph [GetFocussedObject]
+
+    if {[$targetGraph layout info -nodeColourMode]!=$nodeColourMode} {
+        $targetGraph layout configure -nodeColourMode $nodeColourMode
+        PropagateModifications $targetGraph
+    }
+}
+
+proc UpdateNodeLayoutParameters {} {
+    set targetGraph [GetFocussedObject]
+
+    if {[UpdateLayoutStringValue $targetGraph nodeLabelFormat]} {
+        PropagateModifications $targetGraph
+    }
+
+    if {[UpdateLayoutNumericValue $targetGraph nodeSize]} {
+        PropagateModifications $targetGraph
+    }
+
+    if {[UpdateLayoutNumericValue $targetGraph nodeSize]} {
+        PropagateModifications $targetGraph
+    }
+}
+
+ShowNDisplayOptions

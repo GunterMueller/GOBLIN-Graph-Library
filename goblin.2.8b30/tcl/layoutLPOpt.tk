@@ -1,0 +1,107 @@
+
+#-------------------------------------------------------------------------------
+# Module:     layoutLPOpt.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of LP and MIP display
+#-------------------------------------------------------------------------------
+
+
+
+proc LPDisplayOptions {} {
+    global WDLPDisplay DefPadX DialogPar goblinLPDisplay
+
+    set title "LP Display Configuration"
+
+    if {[RegisterFormOrWindow $title lpDisplayOptions WDLPDisplay LPDisplayOptions \
+            "Cancel"        {} \
+            "Apply"         {
+                set goblinLPDisplay 0
+                if {$DialogPar("ShowObjective")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 1)]}
+                if {$DialogPar("ShowRestrictions")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 2)]}
+                if {$DialogPar("ShowBounds")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 4)]}
+                if {$DialogPar("ShowIntegers")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 8)]}
+                if {$DialogPar("ShowFixed")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 16)]}
+                if {$DialogPar("ShowPrimal")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 32)]}
+                if {$DialogPar("ShowDual")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 64)]}
+                if {$DialogPar("ShowSlacks")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 128)]}
+                if {$DialogPar("ShowBasis")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 256)]}
+                if {$DialogPar("ShowMatrix")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 512)]}
+                if {$DialogPar("ShowInverse")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 1024)]}
+                if {$DialogPar("ShowValues")} {
+                    set goblinLPDisplay [expr ($goblinLPDisplay | 2048)]}
+
+                DisplayObject
+            } \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+    
+    set DialogPar("ShowObjective") [expr ($goblinLPDisplay & 1)>0]
+    set DialogPar("ShowRestrictions") [expr ($goblinLPDisplay & 2)>0]
+    set DialogPar("ShowBounds") [expr ($goblinLPDisplay & 4)>0]
+    set DialogPar("ShowIntegers") [expr ($goblinLPDisplay & 8)>0]
+    set DialogPar("ShowFixed") [expr ($goblinLPDisplay & 16)>0]
+    set DialogPar("ShowPrimal") [expr ($goblinLPDisplay & 32)>0]
+    set DialogPar("ShowDual") [expr ($goblinLPDisplay & 64)>0]
+    set DialogPar("ShowSlacks") [expr ($goblinLPDisplay & 128)>0]
+    set DialogPar("ShowBasis") [expr ($goblinLPDisplay & 256)>0]
+    set DialogPar("ShowMatrix") [expr ($goblinLPDisplay & 512)>0]
+    set DialogPar("ShowInverse") [expr ($goblinLPDisplay & 1024)>0]
+    set DialogPar("ShowValues") [expr ($goblinLPDisplay & 2048)>0]
+
+    frame $WDLPDisplay.options
+    pack $WDLPDisplay.options -padx $DefPadX -pady 3m -side top -anchor w
+
+    label $WDLPDisplay.options.label -text "Displayed Data:" -anchor w
+    checkbutton $WDLPDisplay.options.objective -text "Objective Function" \
+        -variable DialogPar("ShowObjective") -anchor w
+    checkbutton $WDLPDisplay.options.restrictions -text "Restrictions" \
+        -variable DialogPar("ShowRestrictions") -anchor w
+    checkbutton $WDLPDisplay.options.bounds -text "Variable Bounds" \
+        -variable DialogPar("ShowBounds") -anchor w
+    checkbutton $WDLPDisplay.options.integers -text "Integer Variables" \
+        -variable DialogPar("ShowIntegers") -anchor w
+    checkbutton $WDLPDisplay.options.fixed -text "Fixed Variables" \
+        -variable DialogPar("ShowFixed") -anchor w
+    checkbutton $WDLPDisplay.options.primal -text "Primal Solution" \
+        -variable DialogPar("ShowPrimal") -anchor w
+    checkbutton $WDLPDisplay.options.dual -text "Dual Solution" \
+        -variable DialogPar("ShowDual") -anchor w
+    checkbutton $WDLPDisplay.options.values -text "Integer Solution" \
+        -variable DialogPar("ShowValues") -anchor w
+    checkbutton $WDLPDisplay.options.slacks -text "Slacks" \
+        -variable DialogPar("ShowSlacks") -anchor w
+    checkbutton $WDLPDisplay.options.basis -text "Basis Indices" \
+        -variable DialogPar("ShowBasis") -anchor w
+    checkbutton $WDLPDisplay.options.matrix -text "Tableau" \
+        -variable DialogPar("ShowMatrix") -anchor w
+    checkbutton $WDLPDisplay.options.inverse -text "Basis Inverse" \
+        -variable DialogPar("ShowInverse") -anchor w
+    pack $WDLPDisplay.options.label $WDLPDisplay.options.objective \
+        $WDLPDisplay.options.restrictions $WDLPDisplay.options.bounds \
+        $WDLPDisplay.options.integers $WDLPDisplay.options.fixed \
+        $WDLPDisplay.options.primal $WDLPDisplay.options.dual \
+        $WDLPDisplay.options.values $WDLPDisplay.options.slacks \
+        $WDLPDisplay.options.basis $WDLPDisplay.options.matrix \
+        $WDLPDisplay.options.inverse -side top -fill x
+
+
+    DisplayForm $title
+}
+
+LPDisplayOptions

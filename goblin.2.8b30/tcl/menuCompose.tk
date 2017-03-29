@@ -1,0 +1,398 @@
+
+#-------------------------------------------------------------------------------
+# Module:     menuCompose.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Compose menu item, bindings, some small dialogs
+#-------------------------------------------------------------------------------
+
+
+
+proc MakeComposeMenu {focussedObject} {
+    destroy .mbar.compose.menu
+
+    menu .mbar.compose.menu -tearoff false
+
+    if {[$focussedObject info -mipObject]} {
+        .mbar.compose.menu add command -label "Standard Form" -underline 0 \
+            -command {SaveAndCompose standard}
+        .mbar.compose.menu add command -label "Canonical Form" -underline 0 \
+            -command {SaveAndCompose canonical}
+        .mbar.compose.menu add command -label "Dual Form" -underline 0 \
+            -command {SaveAndCompose dual}
+        return
+    }
+
+    .mbar.compose.menu add command -label "Underlying Graph" -underline 0 \
+        -command "SaveAndCompose underlyingGraph"
+
+    menu .mbar.compose.menu.orientation -tearoff false
+    .mbar.compose.menu add cascade -label "Orientation" -underline 0 \
+        -menu .mbar.compose.menu.orientation
+    .mbar.compose.menu.orientation add command -label "Complete Orientation" \
+        -underline 0 -command {SaveAndCompose completeOrientation}
+    .mbar.compose.menu.orientation add command -label "...Induced By Colours" \
+        -underline 3 -command SaveAndInducedOrientation
+
+    .mbar.compose.menu add command -label "Shrink Colours" -underline 7 \
+        -command {SaveAndCompose colourContraction}
+
+    menu .mbar.compose.menu.subgraph -tearoff false
+    .mbar.compose.menu.subgraph add command -label "Explicit Subgraph" \
+        -underline 0 -command {SaveAndCompose explicitSubgraph}
+    .mbar.compose.menu add cascade -label "Subgraph" -underline 0 \
+        -menu .mbar.compose.menu.subgraph
+    .mbar.compose.menu.subgraph add command -label "By Node Colour..." \
+        -underline 3 \
+        -command SaveAndInducedSubgraph
+    .mbar.compose.menu.subgraph add command -label "By Edge Colour..." \
+        -underline 8 \
+        -command SaveAndInducedColour
+    .mbar.compose.menu.subgraph add command -label "Induced Bigraph..." \
+        -underline 8 -command SaveAndInducedBigraph
+
+    if {[$focussedObject info -directed]} {
+        .mbar.compose.menu.subgraph add command -label "Transitive Closure" \
+            -underline 0 -command {SaveAndCompose transitiveClosure}
+        .mbar.compose.menu.subgraph add command -label "Intransitive Reduction" \
+            -underline 13 -command {SaveAndCompose intransitiveReduction}
+    }
+
+
+    .mbar.compose.menu add command -label "Complement" -underline 0 \
+        -command {SaveAndCompose complementaryGraph}
+    .mbar.compose.menu add command -label "Line Graph" -underline 0 \
+        -command {SaveAndCompose "lineGraph -directed"}
+    .mbar.compose.menu add command -label "Node Splitting" -underline 0 \
+        -command {SaveAndCompose nodeSplitting}
+    .mbar.compose.menu add command -label "Mycielskian" -underline 1 \
+        -command {SaveAndCompose mycielskianGraph}
+    .mbar.compose.menu add command -label "Subdivision" -underline 5 \
+        -command {SaveAndCompose explicitSubdivision}
+
+    if {[$focussedObject info -sparse]} {
+        menu .mbar.compose.menu.planar -tearoff false
+        .mbar.compose.menu add cascade -label "Planar" -underline 0 \
+            -menu .mbar.compose.menu.planar
+        .mbar.compose.menu.planar add command -label "Undirected Dual Graph" \
+            -underline 0 -command {SaveAndCompose dualGraph}
+        .mbar.compose.menu.planar add command -label "Directed Dual Graph" \
+            -underline 0 -command {SaveAndCompose "dualGraph -directed"}
+        .mbar.compose.menu.planar add command -label "Planar Line Graph" \
+            -underline 0 -command {SaveAndCompose "lineGraph -planar"}
+        .mbar.compose.menu.planar add command -label "Truncate Vertices" \
+            -underline 0 -command {SaveAndCompose vertexTruncation}
+        .mbar.compose.menu.planar add command -label "Tear Regions Apart" \
+            -underline 0 -command {SaveAndCompose facetSeparation}
+        .mbar.compose.menu.planar add command -label "Tear & Turn Left" \
+            -underline 0 -command {SaveAndCompose "facetSeparation -turnLeft"}
+        .mbar.compose.menu.planar add command -label "Tear & Turn Right" \
+            -underline 0 -command {SaveAndCompose "facetSeparation -turnRight"}
+        .mbar.compose.menu.planar add command -label "Spread To Outerplanar" \
+            -underline 0 -command {SaveAndCompose spreadOutRegular}
+    }
+
+    .mbar.compose.menu add command -label "Distance Graph" \
+         -underline 0 -command {
+            SaveAndCompose distanceGraph
+            [GetFocussedObject] layout configure -arcVisibilityMode 1
+        }
+
+    if {[$focussedObject info -undirected]} {
+        .mbar.compose.menu add command -label "Metric Graph" -underline 0 \
+            -command {
+                SaveAndCompose metricGraph
+                [GetFocussedObject] layout configure -arcVisibilityMode 1
+            }
+    }
+
+    if {[$focussedObject info -directed]} {
+        .mbar.compose.menu add command -label "Split Graph" -underline 0 \
+            -command {SaveAndCompose splitGraph}
+    }
+
+    .mbar.compose.menu add separator
+    menu .mbar.compose.menu.mip -tearoff false
+    .mbar.compose.menu add cascade -label "Integer / Linear" -underline 1 \
+        -menu .mbar.compose.menu.mip
+    .mbar.compose.menu.mip add command -label "Stable Set Problem" \
+        -underline 0 -command {SaveAndCompose integerStableSetModel}
+
+    if {[$focussedObject info -directed]} {
+        .mbar.compose.menu.mip add command -label "b-Flow Problem" \
+            -underline 0 -command {SaveAndCompose linearFlowModel}
+    }
+}
+
+proc SaveAndCompose {option} {
+    global Unchanged GoblinTclPath PromptCommand
+
+    set PromptCommand "Compose $option"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc Compose {option {option2 {default}}} {
+    global OrigFileName FileName TraceDir
+
+    set originalObject [GetFocussedObject]
+    set newObject [ChooseObjectName]
+
+    if {   ($option2=="default" && [catch [$originalObject $option $newObject] result]) \
+        || ($option2!="default" && [catch [$originalObject $option $option2 $newObject] result]) \
+    } {
+        AcknowledgementMessage $result
+        ViewMessenger
+        return
+    }
+
+    EndSession $originalObject
+    SetFocusOnObject $newObject
+    set OrigFileName [file join [pwd] unnamed]
+    set FileName [file join $TraceDir unnamed]
+    InitFile
+    UpdateMessenger
+}
+
+proc SaveAndInducedOrientation {} {
+    global Unchanged GoblinTclPath PromptCommand
+    set PromptCommand "Compose inducedOrientation"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc CallWithIntParameter {_execCommand parameterDescription} {
+    global InputData execCommand WDInputParameter
+
+    if {![info exists InputData(inputParameter)]} {set InputData(inputParameter) "*"}
+
+    set execCommand $_execCommand
+    set WDInputParameter .inputParameter
+
+    destroy $WDInputParameter
+    toplevel $WDInputParameter
+    wm withdraw $WDInputParameter
+    wm title $WDInputParameter "GOBLIN Prompt"
+
+    frame $WDInputParameter.frame
+    pack $WDInputParameter.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDInputParameter.frame.text -text "$parameterDescription:  "
+    entry $WDInputParameter.frame.entry -textvariable InputData(inputParameter) \
+        -bg white -width 8
+    pack $WDInputParameter.frame.text $WDInputParameter.frame.entry \
+        -side left -fill x -expand 1
+    bind $WDInputParameter.frame.entry <Return> {
+        if {   $InputData(inputParameter)=="*" \
+            || [QualifiedInt $InputData(inputParameter) 0 "*"] \
+        } {
+            destroy .inputParameter
+            eval $execCommand
+        }
+    }
+
+    focus $WDInputParameter.frame.entry
+
+    bind $WDInputParameter <FocusOut> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDInputParameter}
+    after 500 {wm resizable $WDInputParameter 0 0}
+}
+
+proc CallWithTwoIntParameters {_execCommand parameterDescr1 parameterDescr2} {
+    global InputData execCommand WDInputParameter
+
+    if {![info exists InputData(inputParameter1)]} {set InputData(inputParameter1) "*"}
+    if {![info exists InputData(inputParameter2)]} {set InputData(inputParameter2) "*"}
+
+    set execCommand $_execCommand
+    set WDInputParameter .inputParameter
+
+    destroy $WDInputParameter
+    toplevel $WDInputParameter
+    wm withdraw $WDInputParameter
+    wm title $WDInputParameter "GOBLIN Prompt"
+
+    frame $WDInputParameter.frame
+    pack $WDInputParameter.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDInputParameter.frame.text1 -text "$parameterDescr1:  "
+    grid $WDInputParameter.frame.text1 \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    entry $WDInputParameter.frame.entry1 -textvariable InputData(inputParameter1) \
+        -bg white -width 8
+    grid $WDInputParameter.frame.entry1 \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    label $WDInputParameter.frame.text2 -text "$parameterDescr2:  "
+    grid $WDInputParameter.frame.text2 \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    entry $WDInputParameter.frame.entry2 -textvariable InputData(inputParameter2) \
+        -bg white -width 8
+    grid $WDInputParameter.frame.entry2 \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+
+    bind $WDInputParameter.frame.entry1 <Return> {
+        if {   $InputData(inputParameter1)=="*" \
+            || [QualifiedInt $InputData(inputParameter1) 0 "*"] \
+        } {
+            focus $WDInputParameter.frame.entry2
+        }
+    }
+
+    bind $WDInputParameter.frame.entry2 <Return> {
+        if {   $InputData(inputParameter2)=="*" \
+            || [QualifiedInt $InputData(inputParameter2) 0 "*"] \
+        } {
+            destroy .inputParameter
+            eval $execCommand
+        }
+    }
+
+    focus $WDInputParameter.frame.entry1
+
+    bind $WDInputParameter <FocusOut> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDInputParameter}
+    after 500 {wm resizable $WDInputParameter 0 0}
+}
+
+proc SaveAndInducedSubgraph {} {
+    global Unchanged GoblinTclPath PromptCommand
+    set PromptCommand "InducedSubgraph"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc InducedSubgraph {} {
+    global InputData
+
+    set InputData(inputParameter) 0
+
+    CallWithIntParameter {
+        global InputData
+
+        set originalObject [GetFocussedObject]
+        set thisC $InputData(inputParameter)
+
+        set found 0
+        for {set i 0} {!$found && $i<[$originalObject #nodes]} {incr i} {
+            if {[$originalObject node $i info -nodeColour]==$thisC} {set found 1}
+        }
+
+        if {$found && [QualifiedInt $thisC 0 [$originalObject #nodes]]} {
+            set newObject [ChooseObjectName]
+            $originalObject inducedSubgraph -nodeColour $thisC $newObject
+            EndSession $originalObject
+            SetFocusOnObject $newObject
+            set OrigFileName [file join [pwd] unnamed]
+            set FileName [file join $TraceDir unnamed]
+            InitFile
+        } else {
+            PostStatusInfo "inappropriate colour index: $thisC"
+        }
+    } "Colour Index"
+}
+
+proc SaveAndInducedColour {} {
+    global Unchanged GoblinTclPath PromptCommand
+    set PromptCommand "InducedColour"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc InducedColour {} {
+    global InputData
+
+    set InputData(inputParameter) 0
+
+    CallWithIntParameter {
+        global InputData
+
+        set originalObject [GetFocussedObject]
+        set thisC $InputData(inputParameter)
+        set found 0
+
+        for {set i 0} {!$found && $i<[$originalObject #edges]} {incr i} {
+            if {[$originalObject arc $i info -edgeColour]==$thisC} {set found 1}
+        }
+
+        if {$found && [QualifiedInt $thisC 0 [$originalObject #edges]]} {
+            set newObject [ChooseObjectName]
+            $originalObject inducedSubgraph -edgeColour $thisC $newObject
+            EndSession $originalObject
+            SetFocusOnObject $newObject
+            set OrigFileName [file join [pwd] unnamed]
+            set FileName [file join $TraceDir unnamed]
+            InitFile
+        } else {
+            PostStatusInfo "inappropriate colour index: $thisC"
+        }
+    } "Colour Index"
+}
+
+proc SaveAndInducedBigraph {} {
+    global Unchanged GoblinTclPath PromptCommand
+    set PromptCommand "InducedBigraph"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc InducedBigraph {} {
+    global InputData
+
+    set InputData(inputParameter1) 0
+    set InputData(inputParameter2) 1
+
+    CallWithTwoIntParameters {
+        global InputData
+
+        set originalObject [GetFocussedObject]
+        set thisC1 $InputData(inputParameter1)
+        set thisC2 $InputData(inputParameter2)
+        set found1 0
+        set found2 0
+
+        for {set i 0} {!$found1 && $i<[$originalObject #nodes]} {incr i} {
+            if {[$originalObject node $i info -nodeColour]==$thisC1} {set found1 1}
+        }
+
+        for {set i 0} {!$found2 && $i<[$originalObject #nodes]} {incr i} {
+            if {[$originalObject node $i info -nodeColour]==$thisC2} {set found2 1}
+        }
+
+        if {   $found1 && $found2 \
+            && [QualifiedInt $thisC1 0 [$originalObject #nodes]] \
+            && [QualifiedInt $thisC2 0 [$originalObject #nodes]] \
+        } {
+            set newObject [ChooseObjectName]
+            $originalObject inducedBigraph -nodeColours $thisC1 $thisC2 $newObject
+            EndSession $originalObject
+            SetFocusOnObject $newObject
+            set OrigFileName [file join [pwd] unnamed]
+            set FileName [file join $TraceDir unnamed]
+            InitFile
+        } else {
+            PostStatusInfo "inappropriate colour indices: $thisC1 $thisC2"
+        }
+    } "First Colour Index" "Second Colour Index"
+}

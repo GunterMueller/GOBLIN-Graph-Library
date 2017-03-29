@@ -1,0 +1,85 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileNewObject.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Dialog for generation of new objects from templates
+#-------------------------------------------------------------------------------
+
+
+
+proc NewObject {newObjectName templateName argList constructorMethod} {
+    global WDNew
+    set WDNew .newObject
+
+    destroy $WDNew
+    toplevel $WDNew
+    wm withdraw $WDNew
+    wm title $WDNew "New $templateName"
+
+    frame $WDNew.f3
+
+    set iArg 0
+
+    foreach {argName defaultValue} $argList {
+        global ConstructorArg$iArg
+        set ConstructorArg$iArg $defaultValue
+        label $WDNew.f3.nText$iArg -text "$argName:" -anchor w
+        grid $WDNew.f3.nText$iArg -in $WDNew.f3  \
+            -row $iArg -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+        entry $WDNew.f3.value$iArg -textvariable ConstructorArg$iArg -bg white -width 5
+        grid $WDNew.f3.value$iArg -in $WDNew.f3 \
+            -row $iArg -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+        incr iArg
+    }
+
+    grid rowconfig    $WDNew.f3 0 -weight 1 -minsize 0
+    grid columnconfig $WDNew.f3 0 -weight 1 -minsize 0
+
+    bind $WDNew.f3.value[expr $iArg-1] <Return> \
+        [list GenerateObject $newObjectName $constructorMethod]
+    for {} {$iArg>1} {} {
+        incr iArg -1
+        bind $WDNew.f3.value[expr $iArg-1] <Return> [list focus $WDNew.f3.value$iArg]
+    }
+
+    bind $WDNew <FocusOut> {
+        if {[winfo exists $WDNew]} {
+            raise $WDNew .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists $WDNew]} {
+            raise $WDNew .
+        }
+    }
+
+    pack $WDNew.f3 -padx 2m -pady 2m -side top -anchor w
+
+    after 500 {AdjustWithRootWindow $WDNew}
+    after 500 {wm resizable $WDNew 0 0}
+
+    focus $WDNew.f3.value0
+}
+
+proc GenerateObject {newObjectName constructorMethod} {
+    global OrigFileName FileName WDNew TraceDir
+
+    destroy $WDNew
+
+    set newObject [ChooseObjectName]
+    eval set $newObjectName $newObject
+
+    if {[catch {eval $constructorMethod} returnCode]} {
+        AcknowledgementMessage "Construction failed. Report: \"$returnCode\""
+        return
+    }
+
+    EndSession [GetFocussedObject]
+    SetFocusOnObject $newObject
+    set OrigFileName [file join [pwd] unnamed]
+    set FileName [file join $TraceDir unnamed]
+    wm title . "GOBLET: unnamed"
+    InitFile
+}
+

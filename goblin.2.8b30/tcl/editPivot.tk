@@ -1,0 +1,329 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editPivot.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Perform single pivoting steps on LP objects
+#-------------------------------------------------------------------------------
+
+
+
+proc CheckLeavingLabel {objectName} {
+    global DialogPar
+
+    set k [$objectName #rows]
+
+    for {set i 0} {
+        $i<$k && $DialogPar("LpLabelLeave")!=[$objectName row $i label]} {incr i} {}
+
+    if {$i!=$k} {return $i}
+
+    set l [$objectName #variables]
+
+    for {set i 0} {
+        $i<$l && $DialogPar("LpLabelLeave")!=[$objectName variable $i label]} {incr i} {}
+
+    if {$i==$l} {
+        PostStatusInfo "column label \"$DialogPar("LpLabelLeave")\" not found"
+        return -1
+    } else {
+        return [expr $k+$i]
+    }
+}
+
+proc CheckEnteringLabel {objectName} {
+    global DialogPar
+
+    set k [$objectName #rows]
+
+    for {set i 0} {
+        $i<$k && $DialogPar("LpLabelEnter")!=[$objectName row $i label]} {incr i} {}
+
+    if {$i!=$k} {return $i}
+
+    set l [$objectName #variables]
+
+    for {set i 0} {
+        $i<$l && $DialogPar("LpLabelEnter")!=[$objectName variable $i label]} {incr i} {}
+
+    if {$i==$l} {
+        PostStatusInfo "column label \"$DialogPar("LpLabelEnter")\" not found"
+        return -1
+    } else {
+        return [expr $k+$i]
+    }
+}
+
+proc PivotNow {objectName} {
+    global PivotDirection DialogPar
+
+    set k [CheckLeavingLabel $objectName]
+    set i [CheckEnteringLabel $objectName]
+
+    if {$k<0 || $i<0} {return}
+
+    if {$i>=0} {
+        if {[$objectName tableau coeff $k $i]==0} {
+            PostStatusInfo "cannot pivot on zero coefficient"
+            return
+        }
+
+        if {[catch {$objectName pivot $k $i $DialogPar("LpPivotDir")}]} {
+            ViewMessenger
+            PostStatusInfo "pivoting has failed"
+        } else {
+            PropagateModifications $objectName
+            PostStatusInfo "basis has been updated"
+        }
+    }
+}
+
+proc Pivoting {} {
+    global WDPivoting DialogPar PivotDirection DefPadX
+
+    set objectName [GetFocussedObject]
+    set title "Pivoting"
+
+    if {[RegisterFormOrWindow $title pivoting WDPivoting Pivoting \
+            "Done"          {} \
+            "Apply"         {PivotNow [GetFocussedObject]} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    if {![info exists DialogPar] ||
+        ![info exists DialogPar("LpPivotDir")]} {
+        set DialogPar("LpPivotDir") "lower"
+    }
+
+    frame $WDPivoting.element
+    frame $WDPivoting.direction
+    pack $WDPivoting.element $WDPivoting.direction \
+        -side top -fill x -padx  $DefPadX -pady 5m
+
+    if {[$objectName orientation]=="row"} {
+        RowOrientedPivoting $objectName
+    } else {
+        ColumnOrientedPivoting $objectName
+    }
+
+    bind $WDPivoting.element.leave <Return> {
+        if {[CheckLeavingLabel [GetFocussedObject]]>=0} {
+            focus $WDPivoting.element.enter
+        }
+    }
+
+    bind $WDPivoting.element.leave <FocusOut> {
+        if {[CheckLeavingLabel [GetFocussedObject]]<0} {
+            focus $WDPivoting.element.leave
+        }
+    }
+
+    bind $WDPivoting.element.leave <Down> {
+        set objectName [GetFocussedObject]
+        set j [CheckLeavingLabel $objectName]
+
+        if {$j<0} {set j $DialogPar("LpIndexLeave")} else {
+            incr j
+
+            if {$j==[expr [$objectName #rows]+[$objectName #variables]]} {
+                set j 0
+            }
+        }
+
+        if {$j<[$objectName #rows]} {
+            set DialogPar("LpLabelLeave") [$objectName row $j label]
+        } else {
+            set DialogPar("LpLabelLeave") \
+                [$objectName variable [expr $j-[$objectName #rows]] label]
+        }
+
+        set DialogPar("LpIndexLeave") $j
+    }
+
+    bind $WDPivoting.element.leave <Up> {
+        set objectName [GetFocussedObject]
+        set j [CheckLeavingLabel $objectName]
+
+        if {$j<0} {set j $DialogPar("LpIndexLeave")} else {
+            if {$j!=0} {incr j -1} else {
+                set j [expr [$objectName #rows]+[$objectName #variables]-1]
+            }
+        }
+
+        if {$j<[$objectName #rows]} {
+            set DialogPar("LpLabelLeave") [$objectName row $j label]
+        } else {
+            set DialogPar("LpLabelLeave") \
+                [$objectName variable [expr $j-[$objectName #rows]] label]
+        }
+
+        set DialogPar("LpIndexLeave") $j
+    }
+
+    bind $WDPivoting.element.enter <Return> {
+        set objectName [GetFocussedObject]
+        if {[CheckEnteringLabel $objectName]>=0} {
+            PivotNow $objectName
+            focus $WDPivoting.element.leave
+        }
+    }
+
+    bind $WDPivoting.element.enter <FocusOut> {
+        if {[CheckEnteringLabel [GetFocussedObject]]<0} {
+            focus $WDPivoting.element.enter
+        }
+    }
+
+    bind $WDPivoting.element.enter <Down> {
+        set objectName [GetFocussedObject]
+        set j [CheckEnteringLabel $objectName]
+
+        if {$j<0} {set j $DialogPar("LpIndexEnter")} else {
+            incr j
+
+            if {$j==[expr [$objectName #rows]+[$objectName #variables]]} {
+                set j 0
+            }
+        }
+
+        if {$j<[$objectName #rows]} {
+            set DialogPar("LpLabelEnter") [$objectName row $j label]
+        } else {
+            set DialogPar("LpLabelEnter") \
+                [$objectName variable [expr $j-[$objectName #rows]] label]
+        }
+
+        set DialogPar("LpIndexEnter") $j
+    }
+
+    bind $WDPivoting.element.enter <Up> {
+        set objectName [GetFocussedObject]
+        set j [CheckEnteringLabel $objectName]
+
+        if {$j<0} {set j $DialogPar("LpIndexEnter")} else {
+            if {$j!=0} {incr j -1} else {
+                set j [expr [$objectName #rows]+[$objectName #variables]-1]
+            }
+        }
+
+        if {$j<[$objectName #rows]} {
+            set DialogPar("LpLabelEnter") [$objectName row $j label]
+        } else {
+            set DialogPar("LpLabelEnter") \
+                [$objectName variable [expr $j-[$objectName #rows]] label]
+        }
+
+        set DialogPar("LpIndexEnter") $j
+    }
+
+    focus $WDPivoting.element.leave
+
+
+    DisplayForm $title
+}
+
+proc ColumnOrientedPivoting {objectName} {
+    global DialogPar WDPivoting
+
+    if {![info exists DialogPar] ||
+        ![info exists DialogPar("LpIndexEnter")]} {
+        set DialogPar("LpLabelEnter") [$objectName variable 0 label]
+        set DialogPar("LpIndexEnter") 0
+    }
+
+    if {![info exists DialogPar] ||
+        ![info exists DialogPar("LpIndexLeave")]} {
+        set DialogPar("LpLabelLeave") [$objectName variable 0 label]
+        set DialogPar("LpIndexLeave") 0
+    }
+
+    label $WDPivoting.element.label1 -text "Leaving Restriction:" \
+        -anchor w
+    grid $WDPivoting.element.label1 -in $WDPivoting.element  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDPivoting.element.leave -textvariable DialogPar("LpLabelLeave") \
+        -bg white -width 10
+    grid $WDPivoting.element.leave -in $WDPivoting.element \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    frame $WDPivoting.element.sep
+    grid $WDPivoting.element.sep -in $WDPivoting.element  \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+    label $WDPivoting.element.label2 -text "Entering Restriction:" \
+        -anchor w
+    grid $WDPivoting.element.label2 -in $WDPivoting.element  \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDPivoting.element.enter -textvariable DialogPar("LpLabelEnter") \
+        -bg white -width 10
+    grid $WDPivoting.element.enter -in $WDPivoting.element \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDPivoting.direction.label -text "Set Entering Restriction to" \
+        -anchor w
+    frame $WDPivoting.direction.options
+    pack $WDPivoting.direction.label $WDPivoting.direction.options -fill x
+
+    radiobutton $WDPivoting.direction.options.lower \
+        -text "Lower Bound" -variable DialogPar("LpPivotDir") \
+        -value "lower" -anchor w
+    radiobutton $WDPivoting.direction.options.upper \
+        -text "Upper Bound" -variable DialogPar("LpPivotDir") \
+        -value "upper" -anchor w
+    pack $WDPivoting.direction.options.lower \
+        $WDPivoting.direction.options.upper -fill x -side left
+}
+
+proc RowOrientedPivoting {objectName} {
+    global DialogPar WDPivoting
+
+    if {![info exists DialogPar] ||
+        ![info exists DialogPar("LpIndexEnter")]} {
+        set DialogPar("LpLabelEnter") [$objectName row 0 label]
+        set DialogPar("LpIndexEnter") 0
+    }
+
+    if {![info exists DialogPar] ||
+        ![info exists DialogPar("LpIndexLeave")]} {
+        set DialogPar("LpLabelLeave") [$objectName row 0 label]
+        set DialogPar("LpIndexLeave") 0
+    }
+
+    label $WDPivoting.element.label1 -text "Leaving Variable:" \
+        -anchor w
+    grid $WDPivoting.element.label1 -in $WDPivoting.element  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDPivoting.element.leave -textvariable DialogPar("LpLabelLeave") \
+        -bg white -width 12
+    grid $WDPivoting.element.leave -in $WDPivoting.element \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    frame $WDPivoting.element.sep
+    grid $WDPivoting.element.sep -in $WDPivoting.element  \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+    label $WDPivoting.element.label2 -text "Entering Variable:" \
+        -anchor w
+    grid $WDPivoting.element.label2 -in $WDPivoting.element  \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDPivoting.element.enter -textvariable DialogPar("LpLabelEnter") \
+        -bg white -width 12
+    grid $WDPivoting.element.enter -in $WDPivoting.element \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDPivoting.direction.label -text "Set Leaving Variable to" \
+        -anchor w
+    frame $WDPivoting.direction.options
+    pack $WDPivoting.direction.label $WDPivoting.direction.options -fill x
+
+    radiobutton $WDPivoting.direction.options.lower \
+        -text "Lower Bound" -variable DialogPar("LpPivotDir") \
+        -value "lower" -anchor w
+    radiobutton $WDPivoting.direction.options.upper \
+        -text "Upper Bound" -variable DialogPar("LpPivotDir") \
+        -value "upper" -anchor w
+    pack $WDPivoting.direction.options.lower \
+        $WDPivoting.direction.options.upper -fill x -side left
+}
+
+Pivoting

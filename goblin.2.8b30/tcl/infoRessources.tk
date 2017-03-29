@@ -1,0 +1,100 @@
+
+proc ShowRessources {} {
+    global WDRessources DefPadX
+
+    set title "System Ressources"
+
+    if {[RegisterFormOrWindow $title ressources WDRessources ShowRessources \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        UpdateRessources
+        return
+    }
+
+
+    frame $WDRessources.frame
+
+    pack $WDRessources.frame \
+        -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDRessources.frame.label -text "Memory Management:" -anchor w
+    grid $WDRessources.frame.label \
+        -row 0 -column 0 -rowspan 1 -columnspan 2 -sticky w -padx 1m
+
+    label $WDRessources.frame.heapSize \
+        -text "Current Heap Size:" -anchor w
+    grid $WDRessources.frame.heapSize \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDRessources.frame.valHeapSize \
+        -text "[goblin size]" -anchor w -relief ridge
+    grid $WDRessources.frame.valHeapSize \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDRessources.frame.maxSize \
+        -text "Maximum Heap Size:" -anchor w
+    grid $WDRessources.frame.maxSize \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDRessources.frame.valMaxSize \
+        -text "[goblin maxsize]" -anchor w -relief ridge
+    grid $WDRessources.frame.valMaxSize \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDRessources.frame.objects \
+        -text "Current Number of Objects:" -anchor w
+    grid $WDRessources.frame.objects \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDRessources.frame.valObjects \
+        -text "[goblin #objects]" -anchor w -relief ridge
+    grid $WDRessources.frame.valObjects \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDRessources.frame.fragments \
+        -text "Current Number of Fragments:" -anchor w
+    grid $WDRessources.frame.fragments \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDRessources.frame.valFragments \
+        -text "[goblin #fragments]" -anchor w -relief ridge
+    grid $WDRessources.frame.valFragments \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDRessources.frame.allocs \
+        -text "Total Number of Allocations:" -anchor w
+    grid $WDRessources.frame.allocs \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 5m
+    label $WDRessources.frame.valAllocs \
+        -text "[goblin #allocs]" -anchor w -relief ridge
+    grid $WDRessources.frame.valAllocs \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDRessources.frame 0 -weight 1 -minsize 0
+    grid columnconfig $WDRessources.frame 1 -weight 2 -minsize 50
+
+        
+    UpdateRessources
+
+    DisplayForm $title
+}
+
+
+proc UpdateRessources {} {
+    global WDRessources
+
+    $WDRessources.frame.valHeapSize configure \
+        -text "[goblin size]" -anchor w
+    $WDRessources.frame.valMaxSize configure \
+        -text "[goblin maxsize]" -anchor w
+    $WDRessources.frame.valObjects configure \
+        -text "[goblin #objects]" -anchor w
+    $WDRessources.frame.valFragments configure \
+        -text "[goblin #fragments]" -anchor w
+    $WDRessources.frame.valAllocs configure \
+        -text "[goblin #allocs]" -anchor w
+
+    AlignActiveDialog
+}
+
+ShowRessources

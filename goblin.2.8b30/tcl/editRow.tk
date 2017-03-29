@@ -1,0 +1,288 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editRow.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Edit restriction related data of mixed integer problems
+#-------------------------------------------------------------------------------
+
+
+
+proc UploadLpRow {objectName} {
+    global DialogPar
+
+    set i $DialogPar("LpRowIndex")
+    set j [CheckLpVar $objectName]
+
+    if {$j>=0} {
+        $objectName row $i set label $DialogPar("LpRowLabel")
+
+        if {$DialogPar("LpLowerBound")<=[$objectName row $i ubound]} {
+            $objectName row $i set lbound $DialogPar("LpLowerBound")
+            $objectName row $i set ubound $DialogPar("LpUpperBound")
+        } else {
+            $objectName row $i set ubound $DialogPar("LpUpperBound")
+            $objectName row $i set lbound $DialogPar("LpLowerBound")
+        }
+
+        $objectName set coeff $i $j $DialogPar("LpColCoeff")
+        PropagateModifications $objectName
+    }
+}
+
+proc DownloadLpRow {objectName} {
+    global DialogPar
+
+    set i [CheckLpRow $objectName]
+
+    if {$i>=0} {
+        set DialogPar("LpRowIndex") $i
+    } else {
+        set i $DialogPar("LpRowIndex")
+        set DialogPar("LpRowLabel") [$objectName row $i label]
+    }
+
+    set j [CheckLpVar $objectName]
+
+    set DialogPar("LpLowerBound") [$objectName row $i lbound]
+    set DialogPar("LpUpperBound") [$objectName row $i ubound]
+    set DialogPar("LpColCoeff")   [$objectName coeff $i $j]
+
+    PostStatusInfo "editing row with index $i"
+}
+
+proc EditRestriction {} {
+    global WDEditRestriction DefPadX DialogPar
+
+    set objectName [GetFocussedObject]
+    set title "Edit Rows"
+
+    if {[RegisterFormOrWindow $title editRestriction WDEditRestriction EditRestriction \
+            "Cancel"        {} \
+            "Apply"         {
+                if {($DialogPar("LpLowerBound")=="*" &&
+                     $DialogPar("LpUpperBound")=="*") ||
+                    ($DialogPar("LpLowerBound")!="*" &&
+                     $DialogPar("LpUpperBound")!="*" &&
+                     $DialogPar("LpLowerBound")>$DialogPar("LpUpperBound"))} {
+                    PostStatusInfo "mismatching row bounds"
+                    focus $WDEditRestriction.edit.lower
+                } else {
+                    set objectName [GetFocussedObject]
+                    if {[CheckLpVar $objectName]>=0} {
+                        UploadLpRow $objectName
+                        DownloadLpRow $objectName
+                        focus $WDEditRestriction.edit.row
+                    } else {
+                        focus $WDEditRestriction.matrix.variable
+                    }
+                }
+            } \
+            ""              {} \
+            "New"           {
+                set objectName [GetFocussedObject]
+                set j [$objectName row insert 0 0]
+                set DialogPar("LpRowLabel") [$objectName row $j label]
+                DownloadLpRow $objectName
+                focus $WDEditRestriction.edit.row
+            } \
+        ]
+    } {
+        return
+    }
+
+
+    if {[$objectName #variables]==0} {$objectName variable insert float 0 0}
+    if {[$objectName #rows]==0}      {$objectName row insert 0 0}
+
+    if {   ![info exists DialogPar] \
+        || ![info exists DialogPar("LpRowLabel")] \
+        || [CheckLpRow $objectName]<0 } {
+        set DialogPar("LpVarLabel") [$objectName variable 0 label]
+        set DialogPar("LpRowLabel") [$objectName row 0 label]
+    }
+
+    DownloadLpRow $objectName
+
+    frame $WDEditRestriction.edit
+    pack $WDEditRestriction.edit -side top -fill x -padx  $DefPadX -pady 5m
+
+    label $WDEditRestriction.edit.label1 -text "Restriction Label:" \
+        -anchor w
+    grid $WDEditRestriction.edit.label1 -in $WDEditRestriction.edit  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditRestriction.edit.row -textvariable DialogPar("LpRowLabel") \
+        -bg white -width 10
+    grid $WDEditRestriction.edit.row -in $WDEditRestriction.edit \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    frame $WDEditRestriction.edit.sep
+    grid $WDEditRestriction.edit.sep -in $WDEditRestriction.edit  \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+
+    label $WDEditRestriction.edit.label3 -text "Lower Bound:" \
+        -anchor w
+    grid $WDEditRestriction.edit.label3 -in $WDEditRestriction.edit  \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditRestriction.edit.lower -textvariable DialogPar("LpLowerBound") \
+        -bg white -width 5
+    grid $WDEditRestriction.edit.lower -in $WDEditRestriction.edit \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditRestriction.edit.label4 -text "Upper Bound:" \
+        -anchor w
+    grid $WDEditRestriction.edit.label4 -in $WDEditRestriction.edit  \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditRestriction.edit.upper -textvariable DialogPar("LpUpperBound") \
+        -bg white -width 5
+    grid $WDEditRestriction.edit.upper -in $WDEditRestriction.edit \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditRestriction.edit.label5 -text "(Use asterisks * where unbounded)" \
+        -anchor w
+    grid $WDEditRestriction.edit.label5 -in $WDEditRestriction.edit  \
+        -row 5 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+    frame $WDEditRestriction.matrix
+    pack $WDEditRestriction.matrix -side top -fill x -padx  $DefPadX -pady 5m
+
+    label $WDEditRestriction.matrix.label1 -text "Variable Label:  " \
+        -anchor w
+    grid $WDEditRestriction.matrix.label1 -in $WDEditRestriction.matrix  \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditRestriction.matrix.variable -textvariable DialogPar("LpVarLabel") \
+        -bg white -width 12
+    grid $WDEditRestriction.matrix.variable -in $WDEditRestriction.matrix \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDEditRestriction.matrix.label2 -text "Column Coefficient:" \
+        -anchor w
+    grid $WDEditRestriction.matrix.label2 -in $WDEditRestriction.matrix  \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDEditRestriction.matrix.coeff -textvariable DialogPar("LpColCoeff") \
+        -bg white -width 5
+    grid $WDEditRestriction.matrix.coeff -in $WDEditRestriction.matrix \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+
+    bind $WDEditRestriction.edit.row <FocusOut> {
+        set objectName [GetFocussedObject]
+        UploadLpRow $objectName
+
+        if {[CheckLpRow $objectName]>=0} {
+            set DialogPar("LpVarLabel") [$objectName variable 0 label]
+        } else {
+            $objectName row $DialogPar("LpRowIndex") \
+                set label $DialogPar("LpRowLabel")
+            PropagateModifications $objectName
+        }
+
+        DownloadLpRow $objectName
+    }
+
+    bind $WDEditRestriction.edit.row <Down> {
+        set objectName [GetFocussedObject]
+        UploadLpRow $objectName
+        set j [CheckLpRow $objectName]
+        if {$j<0} {set j $DialogPar("LpRowIndex")}
+        if {$j==[$objectName #rows]-1} {set j 0} else {incr j}
+        set DialogPar("LpRowLabel") [$objectName row $j label]
+        DownloadLpRow $objectName
+    }
+
+    bind $WDEditRestriction.edit.row <Up> {
+        set objectName [GetFocussedObject]
+        UploadLpRow $objectName
+        set j [CheckLpRow $objectName]
+        if {$j<0} {set j $DialogPar("LpRowIndex")}
+        if {$j==0} {set j [$objectName #rows]}
+        incr j -1
+        set DialogPar("LpRowLabel") [$objectName row $j label]
+        DownloadLpRow $objectName
+    }
+
+    bind $WDEditRestriction.edit.row <Return> {
+        set objectName [GetFocussedObject]
+        UploadLpRow $objectName
+
+        if {[CheckLpRow $objectName]<0} {
+            $objectName row $DialogPar("LpRowIndex") \
+                set label $DialogPar("LpRowLabel")
+            PropagateModifications $objectName
+        }
+
+        DownloadLpRow $objectName
+        focus $WDEditRestriction.edit.lower
+    }
+
+    bind $WDEditRestriction.edit.lower <Return> {
+        focus $WDEditRestriction.edit.upper
+    }
+
+    bind $WDEditRestriction.edit.upper <Return> {
+        focus $WDEditRestriction.matrix.variable
+    }
+
+    bind $WDEditRestriction.matrix.variable <FocusOut> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$j>=0} {
+            set DialogPar("LpColCoeff") [$objectName coeff $i $j]
+            focus $WDEditRestriction.matrix.coeff
+        } else {
+            focus $WDEditRestriction.matrix.variable
+        }
+    }
+
+    bind $WDEditRestriction.matrix.variable <Return> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$j>=0} {
+            set DialogPar("LpColCoeff") [$objectName coeff $i $j]
+            focus $WDEditRestriction.matrix.coeff
+        }
+    }
+
+    bind $WDEditRestriction.matrix.variable <Down> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$j>=0} {
+            if {$j==[$objectName #variables]-1} {set j 0} else {incr j}
+            set DialogPar("LpVarLabel") [$objectName variable $j label]
+            set DialogPar("LpColCoeff") [$objectName coeff $i $j]
+        }
+    }
+
+    bind $WDEditRestriction.matrix.variable <Up> {
+        set objectName [GetFocussedObject]
+        set j [CheckLpVar $objectName]
+        set i [CheckLpRow $objectName]
+        if {$j>=0} {
+            if {$j==0} {set j [$objectName #variables]}
+            incr j -1
+            set DialogPar("LpVarLabel") [$objectName variable $j label]
+            set DialogPar("LpColCoeff") [$objectName coeff $i $j]
+        }
+    }
+
+    bind $WDEditRestriction.matrix.coeff <Return> {
+        set objectName [GetFocussedObject]
+        UploadLpRow $objectName
+        DownloadLpRow $objectName
+        set j [CheckLpVar $objectName]
+        if {$j==[$objectName #variables]-1} {set j 0} else {incr j}
+        set DialogPar("LpVarLabel") [$objectName variable $j label]
+        set DialogPar("LpColCoeff") [$objectName coeff $i $j]
+        focus $WDEditRestriction.matrix.variable
+    }
+
+    focus $WDEditRestriction.edit.row
+
+
+    DisplayForm $title
+}
+
+EditRestriction

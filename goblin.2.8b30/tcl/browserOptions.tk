@@ -1,0 +1,102 @@
+
+#-------------------------------------------------------------------------------
+# Module:     browserOptions.tk
+# Activation: Dynamically loadad on user request
+# Scope:      Browser options dialog
+#-------------------------------------------------------------------------------
+
+
+
+proc SelectBrowserOptions {} {
+    global WDBrowseOpt DialogFrame DefPadX DefPadY ActiveDialog ChangeOptions \
+        AlignOptions InternalWindowing BalloonHelp BruteOverwrite BackupLevel \
+        Fr2Options Fr1Options
+
+    set title "Browser Options"
+
+    if {[RegisterFormOrWindow $title browseopt WDBrowseOpt SelectBrowserOptions \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDBrowseOpt.f1
+    frame $WDBrowseOpt.f1.saveopt
+#    frame $WDBrowseOpt.f1.align
+    frame $WDBrowseOpt.f1.check
+    frame $WDBrowseOpt.f1.grid
+    pack $WDBrowseOpt.f1.saveopt $WDBrowseOpt.f1.check $WDBrowseOpt.f1.grid \
+        -side top -fill x -pady 2m
+
+    pack $WDBrowseOpt.f1 -side top -fill x -padx $DefPadX -pady 1m
+
+    label $WDBrowseOpt.f1.saveopt.label -text "Dismissed Objects:" -anchor w
+    radiobutton $WDBrowseOpt.f1.saveopt.save -text "Automatically Save To File" \
+        -variable ChangeOptions -value 0 -anchor w
+    radiobutton $WDBrowseOpt.f1.saveopt.ask -text "Require Confirmations" \
+        -variable ChangeOptions -value 1 -anchor w
+    radiobutton $WDBrowseOpt.f1.saveopt.exit -text "Do Not Save To File" \
+        -variable ChangeOptions -value 2 -anchor w
+    pack $WDBrowseOpt.f1.saveopt.label $WDBrowseOpt.f1.saveopt.save \
+        $WDBrowseOpt.f1.saveopt.ask $WDBrowseOpt.f1.saveopt.exit -side top -fill x
+
+#    label $WDBrowseOpt.f1.align.label -text "Fit Graph Into Canvas:" -anchor w
+#    radiobutton $WDBrowseOpt.f1.align.user -text "Only By User Demand" \
+#        -variable AlignOptions -value 0 -anchor w
+#    radiobutton $WDBrowseOpt.f1.align.trace -text "When Tracing Algorithms" \
+#        -variable AlignOptions -value 1 -anchor w
+#    radiobutton $WDBrowseOpt.f1.align.always -text "Every Time Object Is Drawn" \
+#        -variable AlignOptions -value 2 -anchor w
+#    pack $WDBrowseOpt.f1.align.label $WDBrowseOpt.f1.align.user \
+#        $WDBrowseOpt.f1.align.trace $WDBrowseOpt.f1.align.always -side top -fill x
+
+    checkbutton $WDBrowseOpt.f1.check.popup -text "Pop-Up Infos" \
+        -variable BalloonHelp -anchor w
+    checkbutton $WDBrowseOpt.f1.check.attach -text "Attach Slave Windows" \
+        -variable InternalWindowing -anchor w -command {
+            AdjustDialogPadding
+
+            foreach title $RegisteredDialogs {
+                if {$InternalWindowing} {
+                    destroy $RegisteredPath($title)
+                } else {
+                    DestroyForm $title
+                }
+            }
+
+            SelectBrowserOptions
+        }
+    checkbutton $WDBrowseOpt.f1.check.overwrite \
+        -text "Overwrite Without Warning" -variable BruteOverwrite -anchor w
+    pack $WDBrowseOpt.f1.check.popup $WDBrowseOpt.f1.check.attach \
+        $WDBrowseOpt.f1.check.overwrite -side top -fill x
+
+    label $WDBrowseOpt.f1.grid.backupLabel -text "Undo Stack Size:  " -anchor w
+    grid $WDBrowseOpt.f1.grid.backupLabel \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDBrowseOpt.f1.grid.backupEntry -textvariable BackupLevel \
+        -bg white -width 3
+    grid $WDBrowseOpt.f1.grid.backupEntry \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDBrowseOpt.f1.grid.maxsizeLabel -text "Max Displayed Arcs:  " -anchor w
+    grid $WDBrowseOpt.f1.grid.maxsizeLabel \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDBrowseOpt.f1.grid.maxsizeEntry -textvariable MaxDisplayArcs \
+        -bg white -width 3
+    grid $WDBrowseOpt.f1.grid.maxsizeEntry \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDBrowseOpt.f1.grid 0 -weight 1 -minsize 0
+    grid columnconfig $WDBrowseOpt.f1.grid 1 -weight 1 -minsize 0
+
+
+    DisplayForm $title
+}
+
+SelectBrowserOptions

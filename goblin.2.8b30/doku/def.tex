@@ -1,0 +1,78 @@
+\newenvironment{beweis}{\bigskip\noindent\bf Proof:\rm}{\hfill $\Box$ \bigskip}
+\newtheorem{mytheorem}{Theorem}[section]
+\newtheorem{corollary}[mytheorem]{Corollary}
+\newtheorem{proposition}[mytheorem]{Observation}
+\newtheorem{lemma}[mytheorem]{Lemma}
+
+\newcounter{prozedur}
+\newsavebox{\pname}
+\newenvironment{prozedur}[1]%
+	{\savebox{\pname}{#1}
+	 \refstepcounter{prozedur}
+	 \renewcommand{\baselinestretch}{1}}%
+	{\renewcommand{\baselinestretch}{1.2}}
+\newenvironment{subproc}
+	{\begin{table}[htbp]\begin{quote}\begin{tabbing}\hspace{0.5cm}\set
+	 \hspace{0.5cm}\set\hspace{0.5cm}\set\hspace{0.5cm}\set\hspace{0.5cm}
+	 \set\hspace{0.5cm}\set\kill}
+	{\vspace*{\fill}\normalsize\end{tabbing}\end{quote}
+	 \end{table}}
+\newenvironment{lastproc}
+	{\begin{table}[htp]\begin{quote}\begin{tabbing}
+	 \hspace{0.5cm}\set\hspace{0.5cm}\set\hspace{0.5cm}\set\hspace{0.5cm}
+	 \set\hspace{0.5cm}\set\hspace{0.5cm}\set\kill}%
+	{\vspace*{\fill}
+	 \normalsize\end{tabbing}\end{quote}
+	 \vspace{0.5cm}
+	 \centerline{Procedure \arabic{prozedur}:
+	 \usebox{\pname}}
+	 \end{table}}
+
+\newcommand{\procsize}{\small}
+\newcommand{\tk}[1]{\procsize\bf #1\procsize\rm}
+\newcommand{\set}{\=\procsize}
+\newcommand{\tb}{\>\procsize}
+\newcommand{\nl}{\\\procsize}
+\newcommand{\spc}{\nl}
+
+\newcommand{\none}{NONE}
+\newcommand{\noa}{NO\_ARC}
+
+\newcommand{\nt}[1]{\bf #1\rm \index{#1}}
+\newcommand{\nts}[1]{\bf #1\rm \index{#1}}
+\newcommand{\snt}[2]{\bf #2\rm \index{#1!#2}}
+\newcommand{\snts}[2]{\bf #2\rm \index{#1!#2}}
+
+\newcommand{\partA}{{\cal A}}
+\newcommand{\partB}{{\cal B}}
+\newcommand{\partC}{{\cal C}}
+\newcommand{\partD}{{\cal D}}
+\newcommand{\partS}{{\cal S}}
+\newcommand{\partT}{{\cal T}}
+
+\newcommand{\nws}{{\cal M}}
+\newcommand{\nwa}{{N_{\cal M}}}
+\newcommand{\nwb}{{N_{\cal M}^*}}
+\newcommand{\nwc}{{N_{\cal M}^{\#}}}
+
+\newcommand{\myepsf}[1]{\epsfbox{../images/#1}}
+
+\newcommand{\mod}{\;{\rm mod}\;}
+
+\newcommand{\sample}{\bigskip\\ \noindent\bf Example:\rm}
+\newcommand{\members}{\medskip\noindent\bf Members:\rm}
+\newcommand{\method}{\medskip\noindent\bf Method:\rm}
+\newcommand{\methods}{\medskip\noindent\bf Synopsis:\rm}
+
+\newcommand{\class}[1]{\medskip\noindent{\bf Class:}#1}
+\newcommand{\myinclude}{\medskip\noindent{\bf Include file:} }
+\newcommand{\myincludes}{\medskip\noindent{\bf Include files:} }
+\newenvironment{mymethods}
+	{\noindent\\{\bf Synopsis:}\begin{quote}}%
+	{\end{quote}\bigskip}
+\newenvironment{mysample}
+	{\bigskip\noindent\\{\bf Example:}\begin{quote}}%
+	{\end{quote}}
+\newenvironment{myitemize}
+	{\begin{itemize}\parsep0ex plus1pt minus0pt\itemsep0ex plus1pt minus0pt}%
+	{\end{itemize}}

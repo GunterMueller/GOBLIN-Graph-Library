@@ -1,0 +1,54 @@
+
+#-------------------------------------------------------------------------------
+# Module:     optimizeDataStruct.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of data structures in optimization methods
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowDataStructures {} {
+    global WDDataStruct DefPadX DefPadY
+
+    set title "Data Structures"
+
+    if {[RegisterFormOrWindow $title dataopt WDDataStruct ShowDataStructures \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDDataStruct.heap
+    frame $WDDataStruct.dsu
+    pack $WDDataStruct.heap $WDDataStruct.dsu \
+        -side top -fill x -padx $DefPadX -pady $DefPadY -anchor w
+
+    label $WDDataStruct.heap.label -text "Priority Queues:" -anchor w
+    radiobutton $WDDataStruct.heap.basic -text "Basic Implementation" \
+        -variable goblinMethPQ -value 0 -anchor w
+    radiobutton $WDDataStruct.heap.binary -text "Binary Heaps" \
+        -variable goblinMethPQ -value 1 -anchor w
+    radiobutton $WDDataStruct.heap.fibonacci -text "Fibonacci Heaps" \
+        -variable goblinMethPQ -value 2 -anchor w
+    pack $WDDataStruct.heap.label \
+        $WDDataStruct.heap.basic \
+        $WDDataStruct.heap.binary \
+        $WDDataStruct.heap.fibonacci \
+        -fill x
+
+    label $WDDataStruct.dsu.label -text "Disjoint Set Union:" -anchor w
+    checkbutton $WDDataStruct.dsu.enable -text "Enable Path Compression" \
+        -variable goblinMethDSU -anchor w
+    pack $WDDataStruct.dsu.label \
+        $WDDataStruct.dsu.enable \
+        -fill x
+
+    DisplayForm $title
+}
+
+ShowDataStructures

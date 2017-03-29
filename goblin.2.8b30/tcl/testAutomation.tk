@@ -1,0 +1,228 @@
+
+proc RunTestModule {testUnitFilename testBaseDir inputBaseDir scriptBaseDir outputBaseDir} {
+    global GoblinVersion
+
+    set absoluteTestUnitFilename [file join $testBaseDir $scriptBaseDir $testUnitFilename]
+
+    if {![file exists $absoluteTestUnitFilename]} {return}
+
+    source $absoluteTestUnitFilename
+
+    if {![info exists testTargetFilters]} {
+        error "Missing \"testTargetFilters\"in \"$testUnitFilename\""
+    }
+
+    if {![info exists testTargetFormat]} {
+        set testTargetFormat "gob"
+    }
+
+    set outputPathName [file join $testBaseDir $outputBaseDir [file rootname $testUnitFilename]]
+    file mkdir $outputPathName
+    set reportFile [open [file join $outputPathName "zz_report.tcl"] w]
+
+puts " === $testUnitFilename === "
+
+    puts $reportFile "set testUnitFilename \"$testUnitFilename\""
+    puts $reportFile ""
+
+    set listOfTestTargets [list]
+    foreach {testTargetFilter} $testTargetFilters {
+        set listOfTestTargets [concat $listOfTestTargets \
+            [glob -nocomplain [file join $testBaseDir $inputBaseDir $testTargetFilter]]]
+    }
+
+    set testobject TEST_OBJ
+    set misses 0
+
+    puts $reportFile "set testResults \{ \\"
+
+    foreach {testTarget} $listOfTestTargets {
+        goblin restart
+        goblin messenger restart
+
+        puts $reportFile "  \{ \"$testTarget\" \{ \\"
+puts -nonewline "$testTarget"
+        goblin timer 0 enable
+        set state [catch {goblinImport $testobject "$testTarget" $testTargetFormat} result]
+        goblin timer 0 disable
+        set executionTime [goblin timer 0 prev]
+
+        puts $reportFile "      \{ \"File load\" \\"
+
+        if {$state != 0} {
+            puts $reportFile "        failed \\"
+        } else {
+            puts $reportFile "        success \\"
+        }
+
+        puts $reportFile "        0 \\"
+        puts $reportFile "        $executionTime \\"
+        puts $reportFile "      \} \\"
+
+        if {$state != 0} {
+            continue
+        }
+
+        set outputFilename \
+            [file join $outputPathName [file rootname [file tail $testTarget]]]
+
+        global goblinTraceLevel goblinLogMethods goblinLogResults goblinLogGaps \
+            goblinLogWarnings goblinLogIO goblinCommLevel
+        set goblinTraceLevel 0
+        set goblinLogMethods 1
+        set goblinLogResults 1
+        set goblinLogGaps 1
+        set goblinLogWarnings 1
+        set goblinLogIO 1
+
+        foreach {testStepDescription testStepProcedure} $listOfTestSteps {
+            goblin timer 0 enable
+            set state [catch {eval $testStepProcedure $testobject $outputFilename} result]
+            goblin timer 0 disable
+            set executionTime [goblin timer 0 prev]
+
+            puts $reportFile "      \{ \"$testStepDescription\" \\"
+
+            if {$state != 0} {
+                puts $reportFile "        failed \\"
+                puts $reportFile "        \"$result\" \\"
+            } else {
+                puts $reportFile "        success \\"
+                puts $reportFile "        $result \\"
+            }
+
+            puts $reportFile "        $executionTime \\"
+            puts $reportFile "      \} \\"
+
+            if {$state != 0} {
+                incr misses
+puts -nonewline " !!!"
+                break
+            }
+
+            if {$goblinCommLevel>0 && ![goblin solver running]} {break}
+        }
+puts ""
+
+        $testobject delete
+
+        puts $reportFile "    \} \\"
+        puts $reportFile "  \} \\"
+
+        if {$goblinCommLevel>0 && ![goblin solver running]} {break}
+    }
+
+    puts $reportFile "\}"
+    puts $reportFile ""
+    puts $reportFile "set testCompleted [goblin solver running]"
+    puts $reportFile ""
+    puts $reportFile "set testMisses $misses"
+
+    close $reportFile
+
+    return $misses
+}
+
+proc TestAutomation {testScheduleFilename} {
+    if {![file exists $testScheduleFilename]} {
+        error "File \"$testScheduleFilename\" not found"
+    }
+
+    source $testScheduleFilename
+
+    if {![info exists listOfTestUnits]} {
+        error "Missing \"listOfTestUnits\"in \"$testScheduleFilename\""
+    }
+
+    if {![info exists inputBaseDir]} {
+        set inputBaseDir "input"
+    }
+
+    if {![info exists scriptBaseDir]} {
+        set scriptBaseDir "scripts"
+    }
+
+    if {![info exists outputBaseDir]} {
+        set outputBaseDir "output"
+    }
+
+    set totalMisses 0
+
+    global goblinTraceLevel goblinCommLevel
+    set savedTraceLevel $goblinTraceLevel
+
+    foreach {testUnitFilename} $listOfTestUnits {
+        set currentMisses [RunTestModule \
+            $testUnitFilename [file dirname $testScheduleFilename] \
+            $inputBaseDir $scriptBaseDir $outputBaseDir ]
+        incr totalMisses $currentMisses
+
+        if {$goblinCommLevel>0 && ![goblin solver running]} {break}
+    }
+
+    set goblinTraceLevel $savedTraceLevel
+
+    if {$totalMisses > 0} {
+        error "Test \"$testScheduleFilename\" has ended with $totalMisses failures"
+    }
+
+    if {$goblinCommLevel>0 && ![goblin solver running]} {
+        error "Test \"$testScheduleFilename\" has been interrupted"
+    }
+}
+
+proc AsynchronousTest {testScheduleFilename} {
+    global goblinCommLevel Toolbar UpdateCycle GoblinTclPath SystemTmpDir Log ZipEnabled
+
+    set jobFileName [file join $SystemTmpDir "jobTest.tcl"]
+
+    if {$goblinCommLevel} {
+        set file [open $jobFileName w]
+        puts $file "set SystemTmpDir $SystemTmpDir"
+        puts $file "set ZipEnabled 0"
+        puts $file "source \"[file join $GoblinTclPath fileImport.tk]\""
+        puts $file "source \"[file join $GoblinTclPath fileExport.tk]\""
+        puts $file "source \"[file join $GoblinTclPath testAutomation.tk]\""
+        puts -nonewline $file "set state \[catch \{TestAutomation "
+        puts $file " \"$testScheduleFilename\"\} result\]"
+        puts $file "if \{\$state==0\} \{"
+        puts $file "    goblin solver return 0"
+        puts $file "\} else \{"
+        puts $file "    goblin solver throw \$result"
+        puts $file "\}"
+        close $file
+
+        PostStatusInfo "Test in progress..."
+        $Toolbar.solve configure -image running_solver
+
+        goblin solver thread $jobFileName
+        MessengerSetUploadMode "dynamic"
+
+        while {![goblin solver idle]} {
+            set dummyTimer 0
+            after $UpdateCycle set dummyTimer 1
+            vwait dummyTimer
+            MessengerDynamicUpload
+        }
+
+        set state [catch {goblin solver result} result]
+
+        file delete $jobFileName
+        $Toolbar.solve configure -image start_solver
+        MessengerSetUploadMode "partial"
+    } else {
+        global GoblinTclPath
+        source [file join $GoblinTclPath fileExport.tk]
+
+        set state [catch {TestAutomation $testScheduleFilename} result]
+    }
+
+
+    if {$state == 0} {
+        PostStatusInfo "Test \"$testScheduleFilename\" has been completed"
+    } else {
+        PostStatusInfo $result
+    }
+
+    UpdateMessenger
+}

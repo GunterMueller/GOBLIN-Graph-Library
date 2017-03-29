@@ -1,0 +1,16 @@
+#!./gosh
+
+wm withdraw .
+
+if {![info exists GoblinVersion]} {
+    set GoblinVersion "(uninstalled)"
+    set GoblinTclPath [file join [pwd] tcl]
+}
+
+option add *font -*-helvetica-bold-r-normal--12-*-*-*-p-*-*-*
+
+source [file join $GoblinTclPath mainTitle.tk]
+
+source [file join $GoblinTclPath mainGoblet.tk]
+
+destroy .trailer

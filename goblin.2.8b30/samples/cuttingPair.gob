@@ -1,0 +1,90 @@
+(digraph
+ (definition
+  (nodes 12 12 0)
+  (arcs 23)
+  (incidences
+   (0
+      0  2  5)
+   (1
+     11  1  8)
+   (2
+     13 28 14)
+   (3
+     20 25 23)
+   (4
+     12  7 41 36 17)
+   (5
+      3 30 26)
+   (6
+     37 32  9  4 27 34)
+   (7
+     42 39 10 33 40)
+   (8
+     24 38 45)
+   (9
+     18 22 44 43  6 15)
+   (10
+     29 21 19)
+   (11
+     31 16 35)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    24.000 18.000 74.000 56.000 73.000 70.000 41.000 19.000 49.000 29.000
+    65.000 37.000 60.000 45.000  4.000 64.000 98.000 56.000 78.000 84.000
+    99.000 99.000 68.000)
+  (demand 1.000)
+  (directed )
+ )
+ (geometry
+  (metrics 0)
+  (dim )
+  (coordinates
+   (axis0
+      0.000  4.000 12.000 16.000  8.000  0.000  4.000  8.000 12.000 12.000
+     16.000  4.000)
+   (axis1
+     2.000 0.000 8.000 2.000 6.000 6.000 4.000 2.000 0.000 4.000
+     6.000 8.000)
+  )
+ )
+ (layout
+  (bendSpacing 2.000)
+  (nodeSpacing 2.000)
+  (gridDisplayMode 1)
+  (model 0)
+  (arcWidthMin 2)
+ )
+ (solutions
+  (edgeColour
+    1 1 1 2 1 1 2 2 1 2
+    2 2 2 1 2 1 1 1 1 2
+    0 2 2)
+  (nodeColour
+    1 1 2 2 0 1 1 0 2 2
+    2 1)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             203
+   -yShift             203
+   -xZoom              4.79e+02
+   -yZoom              4.79e+02
+   -legenda            0
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -methCandidates     3
+   -methMaxCut         2
+   -methLocal          0
+   -methPlanarity      0
+   -randGeometry       0)
+)

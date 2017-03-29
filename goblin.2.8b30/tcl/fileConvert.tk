@@ -1,0 +1,273 @@
+
+#-------------------------------------------------------------------------------
+# Module:     convertArchive.tk
+# Activation: Loaded on demand
+# Scope:      Dialog for archive conversions
+#-------------------------------------------------------------------------------
+
+
+source [file join $GoblinTclPath convertArchive.tk]
+
+proc MakeConversionForm {} {
+    global goblinExtension ImportFilter ExportFilter WorkingDir SupportedFormats \
+        WDConvert SourceFormat TargetFormat
+
+    if {![file exists [file dirname $ImportFilter]]} {
+        set ImportFilter [file join [pwd] [file tail $ImportFilter]]
+    }
+
+    if {![file exists [file dirname $ExportFilter]]} {
+        set ExportFilter [file join [pwd] [file tail $ExportFilter]]
+    }
+
+    set WDConvert .convert
+    destroy $WDConvert
+    toplevel $WDConvert
+    wm withdraw $WDConvert
+    wm title $WDConvert "Convert Archive"
+
+    frame $WDConvert.f1
+    label $WDConvert.f1.label -text "Source Archive Filter:" -anchor w
+    entry $WDConvert.f1.entry -textvariable ImportFilter -bg white -width 45
+    pack $WDConvert.f1.label $WDConvert.f1.entry -side top -fill x
+
+    bind $WDConvert.f1.entry <FocusIn> DisplaySourceSelection
+    bind $WDConvert.f1.entry <Return> {focus $WDConvert.f2.entry}
+
+    frame $WDConvert.f2
+    label $WDConvert.f2.label -text "Target Archive Filter:" -anchor w
+    entry $WDConvert.f2.entry -textvariable ExportFilter -bg white -width 45
+    pack $WDConvert.f2.label $WDConvert.f2.entry -side top -fill x
+
+    bind $WDConvert.f2.entry <FocusIn> DisplayTargetSelection
+    bind $WDConvert.f2.entry <Return> ConvertNow
+
+    checkbutton $WDConvert.f2.compress -text "Compress Target Files" \
+        -variable ZipEnabled -anchor w
+    pack $WDConvert.f2.compress -side top -expand 1 -fill x
+
+    frame $WDConvert.f3
+    label $WDConvert.f3.label -anchor w
+    pack $WDConvert.f3.label -side top -fill x
+
+    scrollbar $WDConvert.f3.scroll -command "$WDConvert.f3.list yview"
+    listbox $WDConvert.f3.list -yscrollcommand "$WDConvert.f3.scroll set" -width 25
+    pack $WDConvert.f3.list $WDConvert.f3.scroll -side left -fill y
+
+    frame $WDConvert.f4
+    label $WDConvert.f4.label -anchor w
+    pack $WDConvert.f4.label -side top -fill x
+
+    scrollbar $WDConvert.f4.scroll -command "$WDConvert.f4.list yview"
+    listbox $WDConvert.f4.list -yscrollcommand "$WDConvert.f4.scroll set" -width 30
+    pack $WDConvert.f4.list $WDConvert.f4.scroll -side left -fill y
+
+    DisplaySourceSelection
+
+    bind $WDConvert.f3.list <Double-Button-1> {
+        set thisDir [selection get]
+
+        if {$ConvertAspect=="source"} {
+            if {$thisDir==".."} {
+                set ImportFilter [file join [file dirname [file dirname $ImportFilter]] \
+                    [file tail $ImportFilter] ]
+            } else {
+                set ImportFilter [file join [file dirname $ImportFilter] \
+                    $thisDir [file tail $ImportFilter] ]
+            }
+
+            DisplaySourceSelection
+        } else {
+            if {$thisDir==".."} {
+                set ExportFilter [file join [file dirname [file dirname $ExportFilter]] \
+                    [file tail $ExportFilter] ]
+            } else {
+                set ExportFilter [file join [file dirname $ExportFilter] \
+                    $thisDir [file tail $ExportFilter] ]
+            }
+
+            DisplayTargetSelection
+        }
+    }
+
+    bind $WDConvert.f4.list <Double-Button-1> {
+        if {$ConvertAspect=="source"} {
+            set SourceFormat [selection get]
+            set ImportFilter [file join [file dirname $ImportFilter] \
+                *.[GetFormatProperty $SourceFormat 2] ]
+        } else {
+            set TargetFormat [selection get]
+            set ExportFilter [file join [file dirname $ExportFilter] \
+                *.[GetFormatProperty $TargetFormat 2] ]
+        }
+    }
+
+    frame $WDConvert.buttons
+    button $WDConvert.buttons.convert -text "Start" -command ConvertNow
+    button $WDConvert.buttons.cancel -text "Cancel" -command {
+        destroy $WDConvert
+        cd $WorkingDir
+    }
+
+    pack $WDConvert.buttons.convert $WDConvert.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack $WDConvert.buttons -padx 3m -pady 3m -side bottom
+    pack $WDConvert.f1 $WDConvert.f2 -padx 5m -pady 3m -side top -anchor w -expand 1 -fill x
+    pack $WDConvert.f4 $WDConvert.f3 -padx 5m -pady 3m -side left -anchor w
+
+    bind $WDConvert <FocusOut> {
+        if {[winfo exists $WDConvert]} {
+            raise $WDConvert .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists $WDConvert]} {
+            raise $WDConvert .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDConvert}
+    after 500 {wm resizable $WDConvert 0 0}
+}
+
+proc DisplaySourceSelection {} {
+    global WDConvert ImportFilter SupportedFormats ConvertAspect
+
+    set ConvertAspect "source"
+
+    $WDConvert.f3.label configure -text "Browse Source Path:"
+    $WDConvert.f3.list delete 0 end
+    $WDConvert.f3.list insert end ".."
+
+    foreach i [lsort [glob -nocomplain [file join [file dirname $ImportFilter] *]]] {
+        if {[file isdirectory $i]} {
+            $WDConvert.f3.list insert end [file tail $i]
+        }
+    }
+
+    $WDConvert.f4.label configure -text "Source File Format:"
+    $WDConvert.f4.list delete 0 end
+
+    foreach {format extension ftype restriction importFilter exportFilter} $SupportedFormats {
+        if {$ftype!="object" || !$importFilter} {continue}
+
+        $WDConvert.f4.list insert end $format
+    }
+}
+
+proc DisplayTargetSelection {} {
+    global WDConvert ExportFilter SupportedFormats ConvertAspect
+
+    set ConvertAspect "target"
+
+    $WDConvert.f3.label configure -text "Browse Target Path:"
+    $WDConvert.f3.list delete 0 end
+    $WDConvert.f3.list insert end ".."
+
+    foreach i [lsort [glob -nocomplain [file join [file dirname $ExportFilter] *]]] {
+        if {[file isdirectory $i]} {
+            $WDConvert.f3.list insert end [file tail $i]
+        }
+    }
+
+    $WDConvert.f4.label configure -text "Target File Format:"
+    $WDConvert.f4.list delete 0 end
+
+    foreach {format extension ftype restriction importFilter exportFilter} $SupportedFormats {
+        if {!$exportFilter} {continue}
+
+        $WDConvert.f4.list insert end $format
+    }
+}
+
+proc ConvertNow {} {
+    global WDConvert goblinExtension Convert SourceFormat TargetFormat ImportFilter ExportFilter
+
+    destroy $WDConvert
+
+    set sourceFormatExt [GetFormatProperty $SourceFormat 2]
+    set targetFormatExt [GetFormatProperty $TargetFormat 2]
+    set targetFormatClass [GetFormatProperty $TargetFormat 3]
+
+    ConvertArchive $ImportFilter $ExportFilter \
+        $sourceFormatExt $targetFormatExt $targetFormatClass
+}
+
+proc ConvertArchive {sourceFilter targetFilter sourceFormat targetFormat targetType} {
+    global goblinExtension goblinCommLevel GoblinTclPath Toolbar UpdateCycle \
+        SystemTmpDir ZipEnabled ZipExtension ZipCommand
+
+    set dirList [list ""]
+    set objectName "convertObject"
+    set state 0
+    set result 0
+
+    if {![file isdirectory [file dirname $sourceFilter]]} {
+        AcknowledgementMessage "Cannot read files from \"[file dirname $sourceFilter]\""
+        return
+    }
+
+    PostStatusInfo  "Converting archive \"$sourceFilter\"..."
+
+    if {!$goblinCommLevel} {
+        source [file join $GoblinTclPath fileImport.tk]
+        source [file join $GoblinTclPath fileExport.tk]
+
+        SynchronConvertArchive "$sourceFilter" "$targetFilter" "$sourceFormat" "$targetFormat" "$targetType"
+    } else {
+        set jobFileName [file join $SystemTmpDir "jobConvert.tcl"]
+
+        set file [open $jobFileName w]
+        puts $file "set SystemTmpDir \"$SystemTmpDir\""
+        puts $file "set ZipCommand \"$ZipCommand\""
+        puts $file "set ZipExtension \"$ZipExtension\""
+        puts $file "set ZipEnabled $ZipEnabled"
+        puts $file "source \"[file join $GoblinTclPath fileImport.tk]\""
+        puts $file "source \"[file join $GoblinTclPath fileExport.tk]\""
+        puts $file "source \"[file join $GoblinTclPath convertArchive.tk]\""
+        puts $file "set state \[catch \{SynchronConvertArchive \\"
+        puts $file "    \"$sourceFilter\" \"$targetFilter\" \\"
+        puts $file "    \"$sourceFormat\" \"$targetFormat\" \"$targetType\" 1\} result\]"
+        puts $file "if \{\$state==0\} \{"
+        puts $file "    goblin solver return \$result"
+        puts $file "\} else \{"
+        puts $file "    goblin solver throw \$result"
+        puts $file "\}"
+        close $file
+
+        $Toolbar.solve configure -image running_solver
+
+        goblin solver thread $jobFileName
+
+        while {![goblin solver idle]} {
+            set dummyTimer 0
+            after $UpdateCycle set dummyTimer 1
+            vwait dummyTimer
+
+            if {$goblinCommLevel>=2} {
+                UpdateActiveDialogs
+                UpdateMessenger
+            }
+        }
+
+        set state [catch {goblin solver result} result]
+
+        if {$state != 0} {
+            AcknowledgementMessage "Job execution failed: $result"
+        }
+
+        file delete $jobFileName
+
+        $Toolbar.solve configure -image start_solver
+    }
+
+    if {$state == 0} {
+        if {$result==0} {
+            PostStatusInfo  "Archive \"$sourceFilter\" has been converted"
+        } {
+            PostStatusInfo  "Archive conversion has been interrupted"
+        }
+    }
+}

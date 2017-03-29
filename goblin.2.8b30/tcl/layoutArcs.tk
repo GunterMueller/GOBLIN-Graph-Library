@@ -1,0 +1,617 @@
+
+#-------------------------------------------------------------------------------
+# Module:     layoutArcs.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of graph arc display
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowADisplayOptions {} {
+    global WDArcDisplay DefPadX UploadData
+
+    set title "Arc Display Options"
+    set updateOnly true
+    set focussedGraph [GetFocussedObject]
+
+    set UploadData(arcLabelFormat) [$focussedGraph layout info -arcLabelFormat]
+    set UploadData(arcWidthMin)    [$focussedGraph layout info -arcWidthMin]
+    set UploadData(arcWidthMax)    [$focussedGraph layout info -arcWidthMax]
+    set UploadData(arcFontSize)    [$focussedGraph layout info -arcFontSize]
+    set UploadData(arrowSize)      [$focussedGraph layout info -arrowSize]
+
+
+    if {![RegisterFormOrWindow $title arcdisplay WDArcDisplay ShowADisplayOptions \
+            "Done"          {
+                UpdateArcLayoutParameters
+            } \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        set updateOnly false
+
+        frame $WDArcDisplay.options
+        pack $WDArcDisplay.options -fill both -padx $DefPadX -pady 3m
+
+        set rowNr 0
+
+        label $WDArcDisplay.options.arcLabelLabel -text "Label Selection: " \
+            -anchor w
+        grid $WDArcDisplay.options.arcLabelLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcLabelSelect "-width 15"
+        grid $WDArcDisplay.options.arcLabelSelect \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.formatStringLabel -text "Format String: " \
+            -anchor w
+        grid $WDArcDisplay.options.formatStringLabel \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+        entry $WDArcDisplay.options.formatStringString \
+            -textvariable UploadData(arcLabelFormat) -bg white -width 20
+        grid $WDArcDisplay.options.formatStringString \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        bind $WDArcDisplay.options.formatStringString <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutStringValue $targetGraph arcLabelFormat]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDArcDisplay.options.formatStringString <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutStringValue $targetGraph arcLabelFormat]} {
+                PropagateModifications $targetGraph
+            }
+            focus $WDArcDisplay.options.fontSizeFrame.value
+        }
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.fontTypeLabel -text "Font Type: " \
+            -anchor w
+        grid $WDArcDisplay.options.fontTypeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcFontSelect
+        grid $WDArcDisplay.options.arcFontSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.fontSizeLabel -text "Font Size: " \
+            -anchor w
+        grid $WDArcDisplay.options.fontSizeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        frame $WDArcDisplay.options.fontSizeFrame
+        grid $WDArcDisplay.options.fontSizeFrame -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+        entry $WDArcDisplay.options.fontSizeFrame.value \
+            -textvariable UploadData(arcFontSize) -bg white -width 5
+        label $WDArcDisplay.options.fontSizeFrame.label -text " % of Default Size" \
+            -anchor w
+
+        pack $WDArcDisplay.options.fontSizeFrame.label -side right
+        pack $WDArcDisplay.options.fontSizeFrame.value -expand true -fill both -side left
+
+        bind $WDArcDisplay.options.fontSizeFrame.value <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcFontSize]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDArcDisplay.options.fontSizeFrame.value <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcFontSize]} {
+                PropagateModifications $targetGraph
+            }
+
+            focus $WDArcDisplay.options.arcWidthFrame.minValue
+        }
+
+
+        incr rowNr
+
+        frame $WDArcDisplay.options.separator$rowNr -height 3m
+        grid $WDArcDisplay.options.separator$rowNr \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.subgraphLabel -text "Arc Display: " \
+            -anchor w
+        grid $WDArcDisplay.options.subgraphLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcVisibilitySelect "-width 25"
+        grid $WDArcDisplay.options.arcVisibilitySelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arcWidthLabel -text "Arc Width Mode: " \
+            -anchor w
+        grid $WDArcDisplay.options.arcWidthLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcWidthSelect
+        grid $WDArcDisplay.options.arcWidthSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arcWidthDefLabel -text "Arc Width Range: " \
+            -anchor w
+        grid $WDArcDisplay.options.arcWidthDefLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        frame $WDArcDisplay.options.arcWidthFrame
+        grid $WDArcDisplay.options.arcWidthFrame -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+        entry $WDArcDisplay.options.arcWidthFrame.minValue \
+            -textvariable UploadData(arcWidthMin) -bg white -width 5
+        label $WDArcDisplay.options.arcWidthFrame.label1 -text " to " \
+            -anchor center
+        entry $WDArcDisplay.options.arcWidthFrame.maxValue \
+            -textvariable UploadData(arcWidthMax) -bg white -width 5
+        label $WDArcDisplay.options.arcWidthFrame.label2 -text " pt" \
+            -anchor e
+        pack $WDArcDisplay.options.arcWidthFrame.minValue \
+             $WDArcDisplay.options.arcWidthFrame.label1 \
+             $WDArcDisplay.options.arcWidthFrame.maxValue \
+             $WDArcDisplay.options.arcWidthFrame.label2 \
+            -expand true -fill both -side left
+
+        bind $WDArcDisplay.options.arcWidthFrame.minValue <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcWidthMin]} {
+                PropagateModifications $targetGraph
+            }
+
+            if {$UploadData(arcWidthMin)>$UploadData(arcWidthMax)} {
+                set UploadData(arcWidthMax) $UploadData(arcWidthMin)
+
+                if {[UpdateLayoutNumericValue $targetGraph arcWidthMax]} {
+                    PropagateModifications $targetGraph
+                }
+            }
+
+            focus $WDArcDisplay.options.arcWidthFrame.maxValue
+        }
+
+        bind $WDArcDisplay.options.arcWidthFrame.minValue <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcWidthMin]} {
+                PropagateModifications $targetGraph
+            }
+
+            if {$UploadData(arcWidthMin)>$UploadData(arcWidthMax)} {
+                set UploadData(arcWidthMax) $UploadData(arcWidthMin)
+
+                if {[UpdateLayoutNumericValue $targetGraph arcWidthMax]} {
+                    PropagateModifications $targetGraph
+                }
+
+                focus $WDArcDisplay.options.arcWidthFrame.maxValue
+            }
+        }
+
+        bind $WDArcDisplay.options.arcWidthFrame.maxValue <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcWidthMax]} {
+                PropagateModifications $targetGraph
+            }
+
+            if {$UploadData(arcWidthMin)>$UploadData(arcWidthMax)} {
+                set UploadData(arcWidthMin) $UploadData(arcWidthMax)
+
+                if {[UpdateLayoutNumericValue $targetGraph arcWidthMin]} {
+                    PropagateModifications $targetGraph
+                }
+
+                focus $WDArcDisplay.options.arcWidthFrame.minValue
+            } else {
+
+                focus $WDArcDisplay.options.arrowSizeFrame.value
+            }
+        }
+
+        bind $WDArcDisplay.options.arcWidthFrame.maxValue <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arcWidthMax]} {
+                PropagateModifications $targetGraph
+            }
+
+            if {$UploadData(arcWidthMin)>$UploadData(arcWidthMax)} {
+                set UploadData(arcWidthMin) $UploadData(arcWidthMax)
+
+                if {[UpdateLayoutNumericValue $targetGraph arcWidthMin]} {
+                    PropagateModifications $targetGraph
+                }
+
+                focus $WDArcDisplay.options.arcWidthFrame.minValue
+            }
+        }
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arcStippleLabel -text "Arc Stipple Mode: " \
+            -anchor w
+        grid $WDArcDisplay.options.arcStippleLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcStippleSelect
+        grid $WDArcDisplay.options.arcStippleSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arcStyleLabel -text "Line Style: " \
+            -anchor w
+        grid $WDArcDisplay.options.arcStyleLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.lineShapeSelect
+        grid $WDArcDisplay.options.lineShapeSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.colourLabel -text "Colour Display: " \
+            -anchor w
+        grid $WDArcDisplay.options.colourLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arcColourSelect
+        grid $WDArcDisplay.options.arcColourSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        frame $WDArcDisplay.options.separator$rowNr -height 3m
+        grid $WDArcDisplay.options.separator$rowNr \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arrowLabel2 -text "Arrow Display: " \
+            -anchor w
+        grid $WDArcDisplay.options.arrowLabel2 -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arrowSelect
+        grid $WDArcDisplay.options.arrowSelect -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arrowLabel -text "Arrow Placement: " \
+            -anchor w
+        grid $WDArcDisplay.options.arrowLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        MakePulldownMenuButton $WDArcDisplay.options.arrowPlace
+        grid $WDArcDisplay.options.arrowPlace -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+
+        incr rowNr
+
+        label $WDArcDisplay.options.arrowSizeLabel -text "Arrow Size: " \
+            -anchor w
+        grid $WDArcDisplay.options.arrowSizeLabel -sticky news -padx 1m \
+            -row $rowNr -column 0 -rowspan 1 -columnspan 1
+
+        frame $WDArcDisplay.options.arrowSizeFrame
+        grid $WDArcDisplay.options.arrowSizeFrame -sticky news -padx 1m \
+            -row $rowNr -column 1 -rowspan 1 -columnspan 1
+
+        entry $WDArcDisplay.options.arrowSizeFrame.value -textvariable UploadData(arrowSize) -bg white -width 5
+        label $WDArcDisplay.options.arrowSizeFrame.label -text " % of Default Size" \
+            -anchor w
+
+        pack $WDArcDisplay.options.arrowSizeFrame.label -side right
+        pack $WDArcDisplay.options.arrowSizeFrame.value -expand true -fill both -side left
+
+        bind $WDArcDisplay.options.arrowSizeFrame.value <FocusOut> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arrowSize]} {
+                PropagateModifications $targetGraph
+            }
+        }
+
+        bind $WDArcDisplay.options.arrowSizeFrame.value <Return> {
+            set targetGraph [GetFocussedObject]
+
+            if {[UpdateLayoutNumericValue $targetGraph arrowSize]} {
+                PropagateModifications $targetGraph
+            }
+
+            focus $WDArcDisplay.options.formatStringString
+        }
+
+
+        grid columnconfig $WDArcDisplay.options 0 -weight 1 -minsize 0
+        grid columnconfig $WDArcDisplay.options 1 -weight 1 -minsize 0
+
+
+        DisplayForm $title
+
+        focus $WDArcDisplay.options.formatStringString
+    }
+
+    AttachFontTypeMenu $WDArcDisplay.options.arcFontSelect arcFontType ApplyArcFontSelection
+
+    set listOfArcLabelOptions { \
+        "Apply Format String"     0 \
+        "No Labels"               1 \
+        "Indices {0,1,2,..}"      2 \
+        "Upper Capacity Bounds"   3 \
+        "Subgraph Multiplicities" 4 \
+        "Length Labels"           5 \
+        "Reduced Length Labels"   6 \
+        "Lower Capacity Bounds"   7 \
+        "Indices {1,2,3,..}"      8 \
+        "Edge Colours"            9 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arcLabelSelect 5 \
+        [lindex $listOfArcLabelOptions [expr 2*[ExtractArcLabelMode]]] \
+        $listOfArcLabelOptions ApplyArcLabelSelection
+
+
+    set listOfArcVisibilityOptions { \
+        "Hide All Arcs"             0 \
+        "Subgraph Arcs Only"        1 \
+        "Predecessor Arcs Only"     2 \
+        "Subgraph and Predecessors" 3 \
+        "Show All Arcs"             4 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arcVisibilitySelect 5 \
+        [lindex $listOfArcVisibilityOptions [expr [$focussedGraph layout info -arcVisibilityMode]*2]] \
+        $listOfArcVisibilityOptions ApplyArcVisibilitySelection
+
+
+    set listOfArcWidthOptions { \
+        "Uniform Width"            0 \
+        "Bold Predecessors"        1 \
+        "Bold Subgraph Arcs"       2 \
+        "Flow Linear Growth"       3 \
+        "Flow Logarithmic Growth"  4 \
+        "Empty / Free / Full Arcs" 5 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arcWidthSelect 5 \
+        [lindex $listOfArcWidthOptions [expr [$focussedGraph layout info -arcWidthMode]*2]] \
+        $listOfArcWidthOptions ApplyArcWidthSelection
+
+
+    set listOfArcStippleOptions { \
+        "Uniform Solid"             0 \
+        "Stippled Predecessors"     1 \
+        "Free Arcs Stippled"        2 \
+        "Fractional Arcs Stippled " 3 \
+        "Expose Edge Colours"       4 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arcStippleSelect 5 \
+        [lindex $listOfArcStippleOptions [expr [$focussedGraph layout info -arcStippleMode]*2]] \
+        $listOfArcStippleOptions ApplyArcStippleSelection
+
+
+    set listOfLineShapeOptions { \
+        "Open Polygones"        0 \
+        "Approximating Splines" 1 \
+        "Rectilinear Polygones" 2 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.lineShapeSelect 5 \
+        [lindex $listOfLineShapeOptions [expr [$focussedGraph layout info -arcShapeMode]*2]] \
+        $listOfLineShapeOptions ApplyLineShapeSelection
+
+
+    set listOfArcColourOptions { \
+        "Disabled (All Black)"      0 \
+        "Colour Table Lookup"       1 \
+        "Repeat The Table"          2 \
+        "Gradient Colours"          3 \
+        "Highlight Predecessors"    4 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arcColourSelect 5 \
+        [lindex $listOfArcColourOptions [expr 2*[$focussedGraph layout info -arcColourMode]]] \
+        $listOfArcColourOptions ApplyArcColourSelection
+
+
+    set listOfArrowDisplayOptions { \
+        "Directed Arcs Only"    0 \
+        "No Arrows At All"      1 \
+        "All Arcs With Arrows"  2 \
+        "In Direction Of Flow"  3 \
+        "Predecessor Arcs"      4 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arrowSelect 5 \
+        [lindex $listOfArrowDisplayOptions [expr 2*[$focussedGraph layout info -arrowDisplayMode]]] \
+        $listOfArrowDisplayOptions ApplyArrowDisplaySelection
+
+
+    set listOfArrowPosOptions { \
+        "Aligned With Nodes"   0 \
+        "Centered in Segments" 1 \
+    }
+
+    AttachSelectionForm $WDArcDisplay.options.arrowPlace 5 \
+        [lindex $listOfArrowPosOptions [expr 2*[$focussedGraph layout info -arrowPosMode]]] \
+        $listOfArrowPosOptions ApplyArrowPosSelection
+}
+
+proc ExtractArcLabelMode {} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcLabelFormat]==""} {return 1}
+
+    set arcLabelMode 0
+    set num [scan [$objectName layout info -arcLabelFormat] "#%i%s" arcLabelMode remainder]
+
+    if {$num!=1} {return 0}
+
+    return [expr $arcLabelMode+1]
+
+    return 0
+}
+
+proc ApplyArcLabelSelection {arcLabelMode} {
+    set objectName [GetFocussedObject]
+
+    if {$arcLabelMode==0} {return}
+
+    if {$arcLabelMode==1} {
+        if {   [$objectName layout info -arcLabelFormat]!=""   \
+            && [$objectName layout info -arcLabelFormat]!="#0" \
+        } {
+            $objectName layout configure -arcLabelFormat ""
+            PropagateModifications $objectName
+        }
+
+        return
+    }
+
+    if {![string equal [$objectName layout info -arcLabelFormat] "#[expr $arcLabelMode-1]"]} {
+        $objectName layout configure -arcLabelFormat "#[expr $arcLabelMode-1]"
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArcFontSelection {arcFontType} {
+    global WDArcDisplay
+
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcFontType]!=$arcFontType} {
+        $objectName layout configure -arcFontType $arcFontType
+        UpdateFontDisplay $WDArcDisplay.options.arcFontSelect $arcFontType
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArcVisibilitySelection {arcVisibilityMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcVisibilityMode]!=$arcVisibilityMode} {
+        $objectName layout configure -arcVisibilityMode $arcVisibilityMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArcWidthSelection {arcWidthMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcWidthMode]!=$arcWidthMode} {
+        $objectName layout configure -arcWidthMode $arcWidthMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArcStippleSelection {arcStippleMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcStippleMode]!=$arcStippleMode} {
+        $objectName layout configure -arcStippleMode $arcStippleMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyLineShapeSelection {lineShapeMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcShapeMode]!=$lineShapeMode} {
+        $objectName layout configure -arcShapeMode $lineShapeMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArcColourSelection {arcColourMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arcColourMode]!=$arcColourMode} {
+        $objectName layout configure -arcColourMode $arcColourMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArrowDisplaySelection {arrowMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arrowDisplayMode]!=$arrowMode} {
+        $objectName layout configure -arrowDisplayMode $arrowMode
+        PropagateModifications $objectName
+    }
+}
+
+proc ApplyArrowPosSelection {arrowPosMode} {
+    set objectName [GetFocussedObject]
+
+    if {[$objectName layout info -arrowPosMode]!=$arrowPosMode} {
+        $objectName layout configure -arrowPosMode $arrowPosMode
+        PropagateModifications $objectName
+    }
+}
+
+proc UpdateArcLayoutParameters {} {
+    set objectName [GetFocussedObject]
+
+    if {[UpdateLayoutStringValue $objectName arcLabelFormat]} {
+        PropagateModifications $objectName
+    }
+
+    if {[UpdateLayoutNumericValue $objectName arcFontSize]} {
+        PropagateModifications $objectName
+    }
+
+    if {[UpdateLayoutNumericValue $objectName arcWidthMin]} {
+        PropagateModifications $objectName
+    }
+
+    if {[UpdateLayoutNumericValue $objectName arcWidthMax]} {
+        PropagateModifications $objectName
+    }
+
+    if {[UpdateLayoutNumericValue $objectName arrowSize]} {
+        PropagateModifications $objectName
+    }
+}
+
+ShowADisplayOptions

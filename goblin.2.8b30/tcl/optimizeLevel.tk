@@ -1,0 +1,99 @@
+
+#-------------------------------------------------------------------------------
+# Module:     optimizeLevel.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Selection of the optimization levels
+#-------------------------------------------------------------------------------
+
+
+
+proc SelectOptimizationLevel {} {
+    global WDOptLevel DefPadX
+
+    set title "Optimization Level"
+
+    if {[RegisterFormOrWindow $title optlevel WDOptLevel SelectOptimizationLevel \
+            "Done"          {
+                if {![QualifiedInt $goblinMethCandidates -1 50000] ||
+                    ![QualifiedInt $goblinMaxBBIterations -1 50000] ||
+                    ![QualifiedInt $goblinMaxBBNodes 1 50000]
+                } {
+                    return
+                }
+            } \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDOptLevel.solve
+    frame $WDOptLevel.options
+    checkbutton $WDOptLevel.local -variable goblinMethLocal -anchor w \
+        -text "If Available, Use Local Search Scheme"
+    frame $WDOptLevel.candidates
+    pack $WDOptLevel.solve $WDOptLevel.options $WDOptLevel.local \
+        -side top -fill x -padx  $DefPadX -pady 3m
+
+    label $WDOptLevel.solve.label -text "General Optimization Level:" -anchor w
+    radiobutton $WDOptLevel.solve.heuristic -text "Only Heuristic Solutions" \
+        -variable goblinMethSolve -value 0 -anchor w
+    radiobutton $WDOptLevel.solve.lowerBound -text "Compute Dual Bounds" \
+        -variable goblinMethSolve -value 1 -anchor w
+    radiobutton $WDOptLevel.solve.combBB -text "Combinatorial Branch and Bound" \
+        -variable goblinMethSolve -value 2 -anchor w
+    radiobutton $WDOptLevel.solve.intBB -text "Integer Branch and Bound" \
+        -variable goblinMethSolve -value 3 -anchor w
+    pack $WDOptLevel.solve.label $WDOptLevel.solve.heuristic \
+        $WDOptLevel.solve.lowerBound $WDOptLevel.solve.combBB \
+        $WDOptLevel.solve.intBB -fill x
+
+    label $WDOptLevel.options.bbLabel1 -text "Branching Iterations (1000s):" \
+        -anchor w
+    grid $WDOptLevel.options.bbLabel1 \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDOptLevel.options.iterations -textvariable goblinMaxBBIterations \
+        -bg white -width 5
+    grid $WDOptLevel.options.iterations \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDOptLevel.options.bbLabel2 -text "Active Branch Nodes (100s):" \
+        -anchor w
+    grid $WDOptLevel.options.bbLabel2 \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDOptLevel.options.nodes -textvariable goblinMaxBBNodes \
+        -bg white -width 5
+    grid $WDOptLevel.options.nodes \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    frame $WDOptLevel.options.dummy
+    grid $WDOptLevel.options.dummy \
+        -row 2 -column 1 -rowspan 1 -columnspan 2 -sticky we -pady 2m
+
+    label $WDOptLevel.options.candLabel1 \
+        -text "Do Not Use Candidate Subgraphs" -anchor w
+    grid $WDOptLevel.options.candLabel1 \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    radiobutton $WDOptLevel.options.disable -value -1 -anchor w \
+        -variable goblinMethCandidates
+    grid $WDOptLevel.options.disable \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDOptLevel.options.candLabel2 -anchor w \
+        -text "Minimum Degree in Subgraph:"
+    grid $WDOptLevel.options.candLabel2 \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDOptLevel.options.candidates \
+        -textvariable goblinMethCandidates -bg white -width 2
+    grid $WDOptLevel.options.candidates \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDOptLevel.options 0 -weight 1 -minsize 0
+    grid columnconfig $WDOptLevel.options 1 -weight 1 -minsize 0
+
+
+    DisplayForm $title
+}
+
+SelectOptimizationLevel

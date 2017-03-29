@@ -1,0 +1,155 @@
+
+#-------------------------------------------------------------------------------
+# Module:     layoutNodes.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration of graph node display
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowNDisplayOptions {} {
+    global goblinNodeStyle goblinNodeLabels goblinNodeColours \
+        goblinNodeFormatting newNodeFormatting WDNodeDisplay DefPadX
+
+    set title "Node Display Options"
+    set updateOnly true
+
+    if {![RegisterFormOrWindow $title nodedisplay WDNodeDisplay ShowNDisplayOptions \
+            "Done"          {
+                goblin configure -nodeFormatting $newNodeFormatting
+                PropagateModifications
+            } \
+            "Apply"         {
+                goblin configure -nodeFormatting $newNodeFormatting
+                PropagateModifications
+            } \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        set newNodeFormatting $goblinNodeFormatting
+        set updateOnly false
+
+        frame $WDNodeDisplay.options
+        pack $WDNodeDisplay.options -fill both -padx $DefPadX -pady 3m
+
+
+        label $WDNodeDisplay.options.formatStringLabel -text "Label Format: " \
+            -anchor w
+        grid $WDNodeDisplay.options.formatStringLabel \
+            -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+        entry $WDNodeDisplay.options.formatStringString \
+            -textvariable newNodeFormatting -bg white -width 15
+        grid $WDNodeDisplay.options.formatStringString \
+            -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        frame $WDNodeDisplay.options.separator -height 3m
+        grid $WDNodeDisplay.options.separator \
+            -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+
+        label $WDNodeDisplay.options.nodeLabelLabel -text "Node Labels: " \
+            -anchor w
+        grid $WDNodeDisplay.options.nodeLabelLabel \
+            -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menubutton  $WDNodeDisplay.options.nodeLabelSelect \
+            -menu $WDNodeDisplay.options.nodeLabelSelect.menu \
+            -anchor w -bg white -relief ridge -width 15
+        grid $WDNodeDisplay.options.nodeLabelSelect \
+            -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menu $WDNodeDisplay.options.nodeLabelSelect.menu -tearoff false
+
+
+        label $WDNodeDisplay.options.nodeColourLabel -text "Node Colours: " \
+            -anchor w
+        grid $WDNodeDisplay.options.nodeColourLabel \
+            -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menubutton  $WDNodeDisplay.options.nodeColourSelect \
+            -menu $WDNodeDisplay.options.nodeColourSelect.menu \
+            -anchor w -bg white -relief ridge
+        grid $WDNodeDisplay.options.nodeColourSelect \
+            -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menu $WDNodeDisplay.options.nodeColourSelect.menu -tearoff false
+
+
+        label $WDNodeDisplay.options.nodeShapeLabel -text "Node Style: " -anchor w
+        grid $WDNodeDisplay.options.nodeShapeLabel \
+            -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menubutton  $WDNodeDisplay.options.nodeShapeSelect \
+            -menu $WDNodeDisplay.options.nodeShapeSelect.menu \
+            -anchor w -bg white -relief ridge
+        grid $WDNodeDisplay.options.nodeShapeSelect \
+            -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+        menu $WDNodeDisplay.options.nodeShapeSelect.menu -tearoff false
+
+
+        grid columnconfig $WDNodeDisplay.options 0 -weight 1 -minsize 0
+        grid columnconfig $WDNodeDisplay.options 1 -weight 1 -minsize 0
+
+        focus $WDNodeDisplay.options.formatStringString
+
+        DisplayForm $title
+    }
+
+    foreach {i text} { \
+        0 "No Labels" \
+        1 "Indices {0,1,2,..}" \
+        6 "Indices {1,2,3,..}" \
+        5 "Demands" \
+        2 "Distance Labels" \
+        3 "Potentials" \
+        4 "Colours" \
+    } {
+        if {!$updateOnly} {
+            $WDNodeDisplay.options.nodeLabelSelect.menu add command \
+                -label "#$i $text" \
+                -command "set goblinNodeLabels $i; $WDNodeDisplay.options.nodeLabelSelect configure -text \"$text\""
+        }
+
+        if {$goblinNodeLabels == $i} {
+            $WDNodeDisplay.options.nodeLabelSelect configure -text "$text"
+        }
+    }
+
+    foreach {i text} { \
+        0 "Uncoloured" \
+        3 "Demand Nodes" \
+        1 "Distance Labels" \
+        2 "Fixed Colours" \
+        4 "Smooth Colours" \
+    } {
+        if {!$updateOnly} {
+            $WDNodeDisplay.options.nodeColourSelect.menu add command \
+                -label $text \
+                -command "set goblinNodeColours $i; $WDNodeDisplay.options.nodeColourSelect configure -text \"$text\""
+        }
+
+        if {$goblinNodeColours == $i} {
+            $WDNodeDisplay.options.nodeColourSelect configure -text "$text"
+        }
+    }
+
+    foreach {i text} { \
+        0 "Dots" \
+        1 "Circles" \
+        2 "Boxes" \
+    } {
+        if {!$updateOnly} {
+            $WDNodeDisplay.options.nodeShapeSelect.menu add command \
+                -label $text \
+                -command "set goblinNodeStyle $i; $WDNodeDisplay.options.nodeShapeSelect configure -text \"$text\""
+        }
+
+        if {$goblinNodeStyle == $i} {
+            $WDNodeDisplay.options.nodeShapeSelect configure -text "$text"
+        }
+    }
+}
+
+ShowNDisplayOptions

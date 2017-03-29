@@ -1,0 +1,111 @@
+
+#-------------------------------------------------------------------------------
+# Module:     menuInfo.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Info menu item and bindings
+#
+# Updated:
+#-------------------------------------------------------------------------------
+
+
+
+menu .mbar.info.menu -tearoff false
+.mbar.info.menu add command -label "Problem Statistics..." \
+    -accelerator Shift+Ctrl+I \
+    -command {source [file join $GoblinTclPath infoStatistics.tk]}
+
+if {![catch {goblin size} dummy]} {
+    .mbar.info.menu add command -label "System Ressources..." \
+        -accelerator Shift+Ctrl+J \
+        -command {source [file join $GoblinTclPath infoRessources.tk]}
+    bind . <Control-J> {source [file join $GoblinTclPath infoRessources.tk]}
+}
+
+.mbar.info.menu add command -label "Timers..." \
+    -accelerator Shift+Ctrl+K \
+    -command {source [file join $GoblinTclPath infoTimers.tk]}
+.mbar.info.menu add command -label "Modules..." \
+    -command {source [file join $GoblinTclPath infoModules.tk]}
+.mbar.info.menu add command -label "Authors..." \
+    -command {source [file join $GoblinTclPath infoAuthors.tk]}
+.mbar.info.menu add command -label "Bibliography..." \
+    -command {source [file join $GoblinTclPath infoBibliography.tk]}
+.mbar.info.menu add command -label "About GOBLIN..." \
+    -command AboutGOBLIN
+.mbar.info.menu add command -label "Licence Agreement..." \
+    -command ShowLGPL
+
+proc ShowLGPL {} {
+    global GoblinTclPath LGPL
+    set LGPL .lgpl
+    destroy $LGPL
+    toplevel $LGPL
+    wm title $LGPL "GOBLIN Licence Agreement"
+
+    set LGPLView $LGPL.view
+    frame $LGPLView
+    pack $LGPLView -side top -fill both -expand yes -padx 1m -pady 1m
+
+    set LGPLText $LGPLView.text
+    set LGPLXScroll $LGPLView.xscroll
+    set LGPLYScroll $LGPLView.yscroll
+    set LGPLDelete $LGPLView.delete
+    text $LGPLText -bg ivory \
+        -relief sunken -borderwidth 2 \
+        -xscrollcommand "$LGPLXScroll set" \
+        -yscrollcommand "$LGPLYScroll set"
+
+    scrollbar $LGPLXScroll -orient horiz -command "$LGPLText xview" -width 3.5m
+    scrollbar $LGPLYScroll -command "$LGPLText yview" -width 3.5m
+    button $LGPLDelete -command {destroy $LGPL} -padx 0 -pady 0 -image del_button 
+
+    grid $LGPLText -in $LGPLView \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $LGPLXScroll \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $LGPLYScroll \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $LGPLDelete \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid rowconfig    $LGPLView 0 -weight 1 -minsize 0
+    grid columnconfig $LGPLView 0 -weight 1 -minsize 0
+
+    $LGPLText delete 1.0 end
+    set LGPLStream [open [file join $GoblinTclPath LGPL]]
+
+    while {![eof $LGPLStream]} {
+        $LGPLText insert end [read $LGPLStream 1000]
+    }
+}
+
+
+bind . <Control-I> {source [file join $GoblinTclPath infoStatistics.tk]}
+bind . <Control-K> {source [file join $GoblinTclPath infoTimers.tk]}
+
+
+proc ApplyTimerSelection {timerIndex} {
+    global ThisTimer ThisModule WDTimers WDModules
+
+    if {$ThisTimer==$timerIndex} {return}
+
+    set ThisTimer $timerIndex
+    set ThisModule -1
+
+    for {set i 0} {$i<[goblin #modules]} {incr i} {
+        if {[goblin module $i timer]==$timerIndex} {
+            set ThisModule $i
+            break
+        }
+    }
+
+    if {[info exists WDModules] && [winfo exists $WDModules]} {
+        # Refresh the module display
+        AttachModuleSelectionForm $ThisModule
+        UpdateModule
+    }
+
+    if {[info exists WDTimers] && [winfo exists $WDTimers]} {
+        # Refresh the timer display
+        UpdateTimer $ThisTimer
+    }
+}

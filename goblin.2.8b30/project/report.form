@@ -1,0 +1,50 @@
+--------------------------------------------------------------------------------
+|                            GOBLIN Bug Report Form                            |
+--------------------------------------------------------------------------------
+
+
+Report Author:                   [                                             ]
+Correspondence Address (e-mail): [                                             ]
+Submission date:                 [                                             ]
+
+
+Problem Classification:
+
+ ( ) Installation Problem
+ ( ) Bug in GOBLIN Core Library
+ ( ) Bug in GOSH Interpreter
+ ( ) Bug in GOBLET Graph Browser
+ ( ) Insufficient Support of GOSH/GOBLET for Library Functions
+ ( ) Undocumented Library Functionality
+ ( ) 
+
+
+Problem Description:
+
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+
+
+Proposed Improvements:
+
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+[                                                                              ]
+
+
+--------------------------------------------------------------------------------
+
+Remarks:
+
+1. Submit this form to: goblin@math.uni-augsburg.de
+2. If possible, add some test data (choose problems small as possible)
+3. Make sure that the bug can be reproduced with the information submitted by
+   you.
+

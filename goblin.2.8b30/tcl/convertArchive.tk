@@ -1,0 +1,78 @@
+
+#-------------------------------------------------------------------------------
+# Module:     convertArchive.tk
+# Activation: Loaded on demand in slave threads
+# Scope:      Convert all *.gob files found in a file system
+#-------------------------------------------------------------------------------
+
+
+proc SynchronConvertArchive {sourceFilter targetFilter sourceFormat targetFormat targetType {threaded 0}} {
+    set someError ""
+    set sourceDir [file dirname $sourceFilter]
+    set targetDir [file dirname $targetFilter]
+    set sourceExt [file extension $sourceFilter]
+    set targetExt [file extension $targetFilter]
+    set rootDir [file dirname $sourceDir]
+    set dirList [list ""]
+    set objectName "convertObject"
+
+    if {![file isdirectory $rootDir]} {
+        error "Cannot read files from \"$rootDir\""
+    }
+
+    while {[llength $dirList]>0 && (!$threaded || [goblin solver running])} {
+        set thisDir [lindex $dirList 0]
+        set dirList [lreplace $dirList 0 0]
+        set fileList [list]
+
+        foreach i [lsort [glob -nocomplain [file join $sourceDir $thisDir *]]] {
+            if {![file isdirectory $i]} {
+                if {[file extension $i]=="$sourceExt"} {
+                    lappend fileList [file tail [file rootname $i]]
+                }
+            } else {
+                lappend dirList [file join $thisDir [file tail $i]]
+            }
+        }
+
+        if {[llength $fileList]==0} {continue}
+
+#        puts "Processing directory >[file join $targetDir $thisDir]<"
+
+        file mkdir [file join $targetDir $thisDir]
+
+        foreach i $fileList {
+            if {$threaded && ![goblin solver running]} {break}
+
+            set sourceFileName [file join $sourceDir $thisDir $i]
+            set targetFileName [file join $targetDir $thisDir $i]
+            puts  "Converting file \"$sourceFileName\" to \"$targetFileName\""
+
+            set state [catch {eval goblinImport \
+                $objectName $sourceFileName$sourceExt $sourceFormat -spawn} result]
+
+            if {$state == 0} {
+                set state [catch {eval ExportAndZip $objectName \
+                    $targetFileName$targetExt $targetFormat $targetType} result]
+                $objectName delete
+
+                if {$state != 0} {
+                    puts "ExportAndZip $objectName $targetFileName$targetExt $targetFormat $targetType"
+                }
+            } else {
+                puts "goblinImport $objectName $sourceFileName$sourceExt $sourceFormat -spawn"
+            }
+
+            if {$state != 0} {
+                puts "=> $result"
+                set someError $result
+            }
+        }
+    }
+
+    if {$someError!=""} {error $someError}
+
+    if {$threaded && ![goblin solver running]} {return 1}
+
+    return 0
+}

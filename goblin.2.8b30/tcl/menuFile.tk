@@ -1,0 +1,855 @@
+
+#-------------------------------------------------------------------------------
+# Module:     menuFile.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      File menu item, bindings, some small dialogs
+#             Resuming sessions
+#             Browser shutdown
+#             Transitions from one graph object to another
+#-------------------------------------------------------------------------------
+
+
+
+proc MakeFileMenu {} {
+    global ZipEnabled
+
+    destroy .mbar.file.menu
+
+    menu .mbar.file.menu -tearoff false
+    menu .mbar.file.menu.new -tearoff false
+    .mbar.file.menu add cascade -label "New" -underline 0 \
+        -menu .mbar.file.menu.new
+
+    menu .mbar.file.menu.new.void -tearoff false
+    .mbar.file.menu.new add cascade -label "Void" -underline 0 \
+        -menu .mbar.file.menu.new.void
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Mixed Graph" {"Number of Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin mixedGraph -nodes $ConstructorArg0 $newObject
+            $newObject configure -metricType disabled
+            $newObject layout circular
+        }
+        "Graph" {"Number of Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin sparseGraph -nodes $ConstructorArg0 $newObject
+            $newObject configure -metricType disabled
+            $newObject layout circular
+        }
+        "Digraph" {"Number of Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin sparseDiGraph -nodes $ConstructorArg0 $newObject
+            $newObject configure -metricType disabled
+            $newObject layout circular
+        }
+        "Bigraph" {"Left Hand Nodes" 5 "Right Hand Nodes" 5} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin sparseBiGraph -leftNodes $ConstructorArg0 \
+                -rightNodes $ConstructorArg1 $newObject
+            $newObject configure -metricType disabled
+
+            for {set i 0} {$i<$ConstructorArg0} {incr i} {
+                $newObject node $i configure -nodeColour 0
+            }
+
+            for {set i 0} {$i<$ConstructorArg1} {incr i} {
+                $newObject node [expr $i+$ConstructorArg0] configure -nodeColour 1
+            }
+
+            if {$ConstructorArg0>0 && $ConstructorArg1>0} {
+                $newObject layout layered -colours -horizontal
+            }
+        }
+        "Linear Program" {"Restrictions" 5 "Variables" 5} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin mip $newObject $ConstructorArg0 $ConstructorArg1
+        }
+    } {
+        .mbar.file.menu.new.void add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    menu .mbar.file.menu.new.complete -tearoff false
+    .mbar.file.menu.new add cascade -label "Complete" -underline 0 \
+        -menu .mbar.file.menu.new.complete
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Graph" {"Number of Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin denseGraph -nodes $ConstructorArg0 $newObject
+            $newObject configure -metricType disabled
+            $newObject layout circular
+        }
+        "Digraph" {"Number of Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin denseDiGraph -nodes $ConstructorArg0 $newObject
+            $newObject configure -metricType disabled
+            $newObject layout circular
+        }
+        "Bigraph" {"Left Hand Nodes" 5 "Right Hand Nodes" 5} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin denseBiGraph -leftNodes $ConstructorArg0 \
+                -rightNodes $ConstructorArg1 $newObject
+            $newObject configure -metricType disabled
+
+            for {set i 0} {$i<$ConstructorArg0} {incr i} {
+                $newObject node $i configure -nodeColour 0
+            }
+
+            for {set i 0} {$i<$ConstructorArg1} {incr i} {
+                $newObject node [expr $i+$ConstructorArg0] configure -nodeColour 1
+            }
+
+            $newObject layout circular
+        }
+        "Square Grid Completion" {"Exterior Edge length" 8} 0 {
+            global ConstructorArg0
+            goblin gridCompletion -rows $ConstructorArg0 \
+                -square $newObject
+        }
+        "Triangular Grid Completion" {"Exterior Edge length" 10} 0 {
+            global ConstructorArg0
+            goblin gridCompletion -rows $ConstructorArg0 \
+                -triangular $newObject
+        }
+        "Hexagonal Grid Completion" {"Exterior Edge length" 5} 0 {
+            global ConstructorArg0
+            goblin gridCompletion -rows $ConstructorArg0 \
+                -hexagonal $newObject
+        }
+    } {
+        .mbar.file.menu.new.complete add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    menu .mbar.file.menu.new.grid -tearoff false
+    .mbar.file.menu.new add cascade -label "Grid" -underline 0 \
+        -menu .mbar.file.menu.new.grid
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Square Open" {"Rows" 4 "Colums" 3} 7 {
+            global ConstructorArg0 ConstructorArg1
+            goblin openGrid -rows $ConstructorArg0 -columns $ConstructorArg1 \
+                -square $newObject
+        }
+        "Triangular Open" {"Rows" 4 "Colums" 3} 7 {
+            global ConstructorArg0 ConstructorArg1
+            goblin openGrid -rows $ConstructorArg0 -columns $ConstructorArg1 \
+                -triangular $newObject
+        }
+        "Hexagonal Open" {"Rows" 4 "Colums" 5} 7 {
+            global ConstructorArg0 ConstructorArg1
+            goblin openGrid -rows $ConstructorArg0 -columns $ConstructorArg1 \
+                -hexagonal $newObject
+        }
+        "Quadrilateral Polar" {"Rows" 2 "Colums" 4 "Poles" 0} 7 {
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2
+            goblin polarGrid -rows $ConstructorArg0 -columns $ConstructorArg1 \
+                -poles $ConstructorArg2 -quadrilateral -disc $newObject
+        }
+        "Triangular Polar" {"Rows" 1 "Colums" 3 "Poles" 1} 7 {
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2
+            goblin polarGrid -rows $ConstructorArg0 -columns $ConstructorArg1 \
+                -poles $ConstructorArg2 -triangular -disc $newObject
+        }
+        "Quadrilateral Torus Grid" {"Horizontal Skew" 1 "Height" 2 "Vertical Skew" -1 "Width" 2} 0 {
+            # Defaults are for K_5
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2 ConstructorArg3
+            goblin toroidalGrid -quadrilateral -map -lineParameters \
+                $ConstructorArg0 $ConstructorArg1 $ConstructorArg2 $ConstructorArg3 $newObject
+        }
+        "Triangular Torus Grid" {"Horizontal Skew" 1 "Height" 3 "Vertical Skew" -1 "Width" 2} 0 {
+            # Defaults are for K_7
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2 ConstructorArg3
+            goblin toroidalGrid -triangular -map -lineParameters \
+                $ConstructorArg0 $ConstructorArg1 $ConstructorArg2 $ConstructorArg3 $newObject
+        }
+        "Hexagonal Torus Grid" {"Horizontal Skew" 0 "Height" 3 "Vertical Skew" 0 "Width" 3} 0 {
+            # Defaults are for K_3_3
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2 ConstructorArg3
+            goblin toroidalGrid -hexagonal -map -lineParameters \
+                $ConstructorArg0 $ConstructorArg1 $ConstructorArg2 $ConstructorArg3 $newObject
+        }
+    } {
+        .mbar.file.menu.new.grid add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    menu .mbar.file.menu.new.regular -tearoff false
+    .mbar.file.menu.new add cascade -label "Regular" -underline 0 \
+        -menu .mbar.file.menu.new.regular
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Moebius Ladder / Lattice" {"Nodes" 10} 0 {
+            global ConstructorArg0
+            goblin moebiusLadder -nodes $ConstructorArg0 $newObject
+        }
+        "Generalized Petersen Graph" {"Perimeter" 5 "Skew" 2} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin generalizedPetersen -perimeter $ConstructorArg0 -skew $ConstructorArg1 $newObject
+        }
+        "2-Subset Graph" {"Ground Set Cardinality" 4} 0 {
+            global ConstructorArg0
+            goblin triangularGraph -cardinality $ConstructorArg0 $newObject
+        }
+        "Intersection Graph" {
+            "Ground Set Cardinality" 7 "Subset Cardinality" 3 "Minimum Intersection" 0 "Maximum Intersection" 0
+        } 0 {
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2 ConstructorArg3
+            goblin intersectionGraph -groundSet $ConstructorArg0 -subset $ConstructorArg1 \
+                -intersection $ConstructorArg2 $ConstructorArg3 $newObject
+        }
+    } {
+        .mbar.file.menu.new.regular add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    menu .mbar.file.menu.new.recurrent -tearoff false
+    .mbar.file.menu.new add cascade -label "Recurrent" -underline 0 \
+        -menu .mbar.file.menu.new.recurrent
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Regular Tree" {"Nodes" * "Depth" 3 "Deg" 2} 8 {
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2
+            goblin regularTree -nodes $ConstructorArg0 -depth $ConstructorArg1 \
+                -deg $ConstructorArg2 $newObject
+        }
+        "Butterfly Graph" {"Length" 3 "Base" 2} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin butterflyGraph -length $ConstructorArg0 -base $ConstructorArg1 $newObject
+        }
+        "Cyclic Butterfly" {"Length" 3 "Base" 2} 0 {
+            global ConstructorArg0 ConstructorArg1
+            goblin cyclicButterfly -length $ConstructorArg0 -base $ConstructorArg1 $newObject
+        }
+        "Sierpinski Triangle" {"Depth" 3} 0 {
+            global ConstructorArg0
+            goblin sierpinskiTriangle -depth $ConstructorArg0 $newObject
+        }
+        "Mycielskian Graph" {"Depth" 3} 0 {
+            global ConstructorArg0
+            goblin mycielskianGraph -depth $ConstructorArg0 $newObject
+        }
+    } {
+        .mbar.file.menu.new.recurrent add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    menu .mbar.file.menu.new.random -tearoff false
+    .mbar.file.menu.new add cascade -label "Random" -underline 0 \
+        -menu .mbar.file.menu.new.random
+
+    foreach {templateName argList accelerator constructorMethod} {
+        "Permutation Graph" {"Nodes" 9} 0 {
+            global ConstructorArg0
+
+            if {![QualifiedInt $ConstructorArg0 1 30000]} {
+                return "Faulty parameter set"
+            }
+
+            goblin permutationGraph -nodes $ConstructorArg0 $newObject
+        }
+        "Threshold Graph" {"Nodes" 9 "Threshold" 0 "Lower Bound" -5 "Upper Bound" 10} 0 {
+            global ConstructorArg0 ConstructorArg1 ConstructorArg2 ConstructorArg3
+
+            if {![QualifiedInt $ConstructorArg0 1 30000] ||
+                ![QualifiedInt $ConstructorArg1 -30000 30000] ||
+                ![QualifiedInt $ConstructorArg2 -30000 30000] ||
+                ![QualifiedInt $ConstructorArg3 -30000 30000]
+            } {
+                return "Faulty parameter set"
+            }
+
+            goblin thresholdGraph  -nodes $ConstructorArg0  -threshold $ConstructorArg1 \
+                -min $ConstructorArg2  -max $ConstructorArg3  $newObject
+        }
+        "Interval Graph" {"Nodes" 9 "Range" 15} 0 {
+            global ConstructorArg0 ConstructorArg1
+
+            if {![QualifiedInt $ConstructorArg0 1 30000] ||
+                ![QualifiedInt $ConstructorArg1 -30000 30000]
+            } {
+                return "Faulty parameter set"
+            }
+
+            goblin intervalGraph  -nodes $ConstructorArg0  -range $ConstructorArg1 $newObject
+        }
+    } {
+        .mbar.file.menu.new.random add command -label "$templateName..." -underline $accelerator \
+            -command [list SaveAndNewObject newObject $templateName $argList $constructorMethod]
+    }
+
+
+    .mbar.file.menu add command -label "Open / Merge..." -accelerator Ctrl+O \
+        -command SaveAndOpen
+    .mbar.file.menu add command -label Save -accelerator Ctrl+S \
+        -command SaveFile
+    .mbar.file.menu add separator
+    .mbar.file.menu add command -label "Print Object..." \
+        -accelerator Ctrl+P -command PrintLayout
+
+    menu .mbar.file.menu.saveAs -tearoff false
+    .mbar.file.menu add command -label "Save As..." -underline 5 \
+        -command ObjectExport
+    .mbar.file.menu add command -label "Convert Archive..." \
+        -underline 0 -command {
+            source [file join $GoblinTclPath fileConvert.tk]
+            MakeConversionForm
+        }
+
+    menu .mbar.file.menu.compression -tearoff false
+    .mbar.file.menu add cascade -label "Compression" -underline 0 \
+        -menu .mbar.file.menu.compression
+    .mbar.file.menu.compression add command -underline 0 \
+        -command {UpdateCompressionMode [expr 1-$ZipEnabled]}
+    .mbar.file.menu.compression add command -label "Setup..." \
+        -command SetCompression -underline 0
+    UpdateCompressionMode $ZipEnabled
+
+    .mbar.file.menu add command -label "Save Settings" -underline 0 \
+        -command SaveSettings
+    .mbar.file.menu add separator
+    .mbar.file.menu add command -label Quit -accelerator Ctrl+Q \
+        -command SaveAndQuit
+}
+
+proc ChooseObjectName {} {
+    global ObjectCounter
+
+    if {![info exists ObjectCounter]} {
+        set ObjectCounter 1
+        set objectName "GOB1"
+    } else {
+        incr ObjectCounter
+        set objectName "GOB$ObjectCounter"
+    }
+
+    return $objectName
+}
+
+proc GetFocussedObject {} {
+    global FocussedObject
+    return $FocussedObject
+}
+
+proc SetFocusOnObject {objectName} {
+    global FocussedObject
+    set FocussedObject $objectName
+}
+
+proc SaveAndNewObject {newObjectName templateName argList constructorMethod} {
+    global GoblinTclPath PromptCommand
+
+    source [file join $GoblinTclPath fileNewObject.tk]
+    set PromptCommand [list NewObject $newObjectName $templateName $argList $constructorMethod]
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc SaveAndOpen {} {
+    global GoblinTclPath PromptCommand
+
+    set PromptCommand "source [file join $GoblinTclPath fileOpen.tk]"
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc OpenFile {} {
+    global OrigFileName FileName TraceDir \
+        goblinExtension Unchanged ThisBackup ZipEnabled ZipExtension UnzipCommand
+
+    if {[file exists $OrigFileName.$goblinExtension]} {
+        UpdateCompressionMode 0
+    } else {
+        if {[file exists $OrigFileName.$goblinExtension$ZipExtension]} {
+            UpdateCompressionMode 1
+        } else {
+            return
+        }
+    }
+
+    EndSession [GetFocussedObject]
+    set FileName [file join $TraceDir [file tail $OrigFileName]]
+    ResumeSession
+
+    if {[file exists $FileName.backup$ThisBackup.$goblinExtension] &&
+        ![file exists $FileName.failed]
+    } {
+        file copy -force $FileName.backup$ThisBackup.$goblinExtension \
+            $FileName.$goblinExtension
+        set Unchanged 0
+    } else {
+        if {$ZipEnabled} {
+            file copy -force $OrigFileName.$goblinExtension$ZipExtension \
+                $FileName.$goblinExtension$ZipExtension
+            eval exec $UnzipCommand $FileName.$goblinExtension$ZipExtension
+        } else {
+            file copy -force $OrigFileName.$goblinExtension \
+                $FileName.$goblinExtension
+        }
+
+        set Unchanged 1
+    }
+
+    AsynchronousImport [GetFocussedObject] "$FileName.$goblinExtension" gob
+
+    if {$Unchanged} {
+        InitFile
+    } else {
+        InitFile
+        set Unchanged 0
+    }
+}
+
+proc AsynchronousImport {objectName fileName format {options ""}} {
+    global goblinCommLevel Toolbar UpdateCycle GoblinTclPath SystemTmpDir
+
+    if {$goblinCommLevel} {
+        set jobFileName [file join $SystemTmpDir "jobExport.tcl"]
+
+        set file [open $jobFileName w]
+        puts $file "source \"[file join $GoblinTclPath fileImport.tk]\""
+        puts -nonewline $file "set state \[catch \{goblinImport GOB "
+        puts $file " \"$fileName\" $format $options\} result\]"
+        puts $file "if \{\$state==0\} \{"
+        puts $file "    goblin solver return \[GOB handle\]"
+        puts $file "\} else \{"
+        puts $file "    goblin solver throw \$result"
+        puts $file "\}"
+        close $file
+
+        PostStatusInfo "file import in progress..."
+        $Toolbar.solve configure -image running_solver
+
+        goblin solver thread $jobFileName
+
+        while {![goblin solver idle]} {
+            set dummyTimer 0
+            after $UpdateCycle set dummyTimer 1
+            vwait dummyTimer
+        }
+
+        set state [catch {goblin solver result} result]
+
+        # Get access to the object loaded into the temporary thread
+
+        if {$state == 0} {
+            goblin alias $objectName $result
+        }
+
+        file delete $jobFileName
+        $Toolbar.solve configure -image start_solver
+    } else {
+        set state [catch {eval goblinImport $objectName \
+            $fileName $format $options} result]
+    }
+
+    if {$state != 0} {
+        AcknowledgementMessage $result
+        error "$result"
+    } else {
+        PostStatusInfo  "File \"$objectName\" has been loaded"
+    }
+
+    $objectName set name [file rootname $fileName]
+}
+
+proc InitFile {} {
+    global FileName OrigFileName Unchanged FileCounter SolverData \
+        goblinTraceCounter AlignOnOpen StartCompleted \
+        ThisBackup FirstBackup LastBackup SavedBackup CanvasRegion \
+        goblinPixelWidth goblinPixelHeight
+
+    # The assignment of screen units is needed here to have the values in the
+    # very first backup file (which is used for the initial display):
+    set goblinPixelWidth  [expr (0.0000001 + [winfo screenmmwidth  .]) / [winfo screenwidth  .] ]
+    set goblinPixelHeight [expr (0.0000001 + [winfo screenmmheight .]) / [winfo screenheight .] ]
+
+    if {$OrigFileName=="unnamed" && $StartCompleted} {
+        DeleteTempFiles
+        goblin restart
+    }
+
+    set initObject [GetFocussedObject]
+    $initObject set name $FileName
+    $initObject master
+
+    wm title . "GOBLET: [file tail $OrigFileName]"
+
+    set Unchanged 1
+    set FileCounter 1
+    set FirstBackup 1
+    set ThisBackup 1
+    set LastBackup 1
+    set SavedBackup 1
+    set SolverData(command) ""
+
+    DownloadArcLabels $initObject ""
+    DownloadNodeLabels $initObject ""
+
+    if {[$initObject info -mipObject] || [$initObject #nodes]>0} {
+        $initObject write $FileName.backup$ThisBackup.gob
+    }
+
+    if {[winfo exists $CanvasRegion]} {InitDisplay}
+
+    UpdateActiveDialogs
+    UpdateMessenger
+    MakeMenus $initObject
+    PostStatusInfo "$OrigFileName"
+}
+
+proc SaveFile {} {
+    global OrigFileName goblinExtension Unchanged ZipEnabled \
+        ZipCommand ThisBackup SavedBackup
+
+    [GetFocussedObject] write $OrigFileName.$goblinExtension
+
+    if {$ZipEnabled} {
+        eval exec $ZipCommand $OrigFileName.$goblinExtension
+    }
+
+    wm title . "GOBLET: [file tail $OrigFileName]"
+    set Unchanged 1
+    set SavedBackup $ThisBackup
+}
+
+proc ObjectExport {} {
+    global GoblinTclPath
+
+    source [file join $GoblinTclPath fileSaveAs.tk]
+    MakeExportForm
+}
+
+proc PrintLayout {} {
+    global WDPrintQueue
+
+    set WDPrintQueue .printQueue
+
+    destroy $WDPrintQueue
+    toplevel $WDPrintQueue
+    wm withdraw $WDPrintQueue
+    wm title $WDPrintQueue "Print Layout"
+
+    frame $WDPrintQueue.frame
+    pack $WDPrintQueue.frame -padx 2m -pady 3m -side top -anchor w
+
+    label $WDPrintQueue.frame.text -text "Print Queue:  "
+    entry $WDPrintQueue.frame.entry -textvariable PrintCommand \
+        -bg white -width 19
+    pack $WDPrintQueue.frame.text $WDPrintQueue.frame.entry \
+        -side left -fill x -expand 1
+    bind $WDPrintQueue.frame.entry <Return> {
+        PrintLayoutExec [GetFocussedObject]
+        destroy $WDPrintQueue
+    }
+
+    focus $WDPrintQueue.frame.entry
+
+    bind $WDPrintQueue <FocusOut> {
+        if {[winfo exists .printQueue]} {
+            raise .printQueue .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .printQueue]} {
+            raise .printQueue .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDPrintQueue}
+    after 500 {wm resizable $WDPrintQueue 0 0}
+}
+
+proc PrintLayoutExec {objectName} {
+    global FileName FileCounter PrintCommand goblinExtension Mode ThisBackup
+
+    if {$Mode=="navigate"} {
+        set printObject [ChooseObjectName]
+        set printFile $FileName.trace$FileCounter
+        goblinImport $printObject $printFile.$goblinExtension gob -spawn
+    } else {
+        set printObject $objectName
+        set printFile $FileName.backup$ThisBackup
+        $objectName write $printFile.$goblinExtension
+    }
+
+    if {[$printObject info -mipObject] || ![$printObject layout info -exists]} {
+        $printObject export ascii $printFile.ascii
+        exec $PrintCommand $printFile.ascii
+        file delete $printFile.ascii
+    } else {
+        $printObject export xfig $printFile.fig
+        exec fig2dev -L ps $printFile.fig $printFile.ps
+        exec $PrintCommand $printFile.ps
+        file delete $printFile.ps
+        file delete $printFile.fig
+    }
+
+    if {$Mode=="navigate"} {$printObject delete}
+}
+
+proc SaveAndQuit {} {
+    global Unchanged GoblinTclPath PromptCommand
+    set PromptCommand QuitGoblet
+    source [file join $GoblinTclPath fileChanges.tk]
+}
+
+proc SetCompression {} {
+    global WDCompression ZipCommand UnzipCommand ZipExtension
+
+    set WDCompression .compression
+
+    destroy $WDCompression
+    toplevel $WDCompression
+    wm withdraw $WDCompression
+    wm title $WDCompression "File Compression"
+
+    frame $WDCompression.frame
+    pack $WDCompression.frame -padx 2m -pady 3m -side top -anchor w
+
+    label $WDCompression.frame.textzip -text "zip:  "
+    grid $WDCompression.frame.textzip -in $WDCompression.frame \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDCompression.frame.entryzip -textvariable ZipCommand \
+        -bg white -width 19
+    grid $WDCompression.frame.entryzip -in $WDCompression.frame \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    bind $WDCompression.frame.entryzip <Return> {
+        focus $WDCompression.frame.entryunzip
+    }
+
+    label $WDCompression.frame.textunzip -text "unzip:  "
+    grid $WDCompression.frame.textunzip -in $WDCompression.frame \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDCompression.frame.entryunzip -textvariable UnzipCommand \
+        -bg white -width 19
+    grid $WDCompression.frame.entryunzip -in $WDCompression.frame \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    bind $WDCompression.frame.entryunzip <Return> {
+        focus $WDCompression.frame.entryext
+    }
+
+    label $WDCompression.frame.textext -text "extension:  "
+    grid $WDCompression.frame.textext -in $WDCompression.frame \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    entry $WDCompression.frame.entryext -textvariable ZipExtension \
+        -bg white -width 16
+    grid $WDCompression.frame.entryext -in $WDCompression.frame \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    bind $WDCompression.frame.entryext <Return> {
+        destroy $WDCompression
+    }
+
+    grid columnconfig $WDCompression.frame 0 -weight 1 -minsize 0
+    grid columnconfig $WDCompression.frame 1 -weight 1 -minsize 0
+
+    focus $WDCompression.frame.entryzip
+
+    bind $WDCompression <FocusOut> {
+        if {[winfo exists .compression]} {
+            raise .compression .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .compression]} {
+            raise .compression .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDCompression}
+    after 500 {wm resizable $WDCompression 0 0}
+}
+
+proc UpdateCompressionMode {zipEnabled} {
+    global ZipEnabled
+
+    set ZipEnabled $zipEnabled
+
+    if {$ZipEnabled} {
+        .mbar.file.menu.compression entryconfigure 0 -label "Disable"
+    } else {
+        .mbar.file.menu.compression entryconfigure 0 -label "Enable"
+    }
+}
+
+proc SaveSettings {} {
+    destroy .saveChanges
+    toplevel .saveChanges
+    wm withdraw .saveChanges
+    wm title .saveChanges "GOBLET Prompt"
+
+    global FileName
+
+    frame .saveChanges.buttons
+    button .saveChanges.buttons.cancel -text "Cancel" -command { \
+        destroy .saveChanges
+    }
+
+    button .saveChanges.buttons.save -text "Yes" -command { \
+        goblin export settings
+        destroy .saveChanges
+    }
+
+    pack .saveChanges.buttons.save .saveChanges.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack .saveChanges.buttons -padx 3m -pady 3m -side bottom
+
+    label .saveChanges.warn -image msg_warn
+    message .saveChanges.msg -width 10c \
+        -text "Save changes to .goshrc ?"
+    pack .saveChanges.warn .saveChanges.msg -padx 2m -pady 3m -side left
+
+    focus .saveChanges.buttons.save
+
+    bind .saveChanges <FocusOut> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow .saveChanges}
+    after 500 {wm resizable .saveChanges 0 0}
+}
+
+proc QuitGoblet {} {
+    if {![goblin solver idle]} {
+        PostStatusInfo "Stop solver before exiting!"
+        return
+    }
+
+    goblin restart
+    goblin messenger restart
+    EndSession [GetFocussedObject]
+    exit
+}
+
+proc RestartEngine {} {
+    if {![goblin solver idle]} {return}
+
+    goblin restart
+    goblin messenger restart
+
+    global FileName goblinExtension
+    catch {
+        foreach {x} [glob $FileName.trace*.$goblinExtension] {
+            file delete $x
+        }
+    }
+
+    global FileCounter CanvasRegion PrevTime TotalTime
+
+    set FileCounter 1
+    set TotalTime 0
+    set PrevTime idle
+
+    if {[winfo exists $CanvasRegion]} {InitDisplay}
+
+    UpdateMessenger
+}
+
+proc DeleteTempFiles {} {
+    global FileName goblinExtension
+    catch {
+        foreach {x} [glob $FileName.*.$goblinExtension] {
+            file delete $x
+        }
+    }
+
+    file delete -force $FileName.$goblinExtension
+    file delete -force $FileName.failed
+    file delete -force $FileName.resume
+}
+
+proc EndSession {objectName} {
+    $objectName delete
+    DeleteTempFiles
+}
+
+proc ResumeSession {} {
+    global FileName goblinExtension goblinTraceCounter ThisBackup
+
+    set max 0
+    catch {
+        foreach {x} [glob $FileName.trace*.$goblinExtension] {
+            set item [string trim [file extension [file rootname \
+                [file tail $x]]] .]
+            scan $item "trace%u" index 
+
+            if {$max<$index} {set max $index}
+        }
+    }
+    set goblinTraceCounter $max
+
+    file delete -force $FileName.tcl
+
+    if {[file exists $FileName.backup$ThisBackup.$goblinExtension]} {
+        if {![file exists $FileName.resume]} {
+            set resumeID [open $FileName.resume w]
+            close $resumeID
+            destroy .trailer
+            AcknowledgementMessage "Old session has been resumed!"
+        } else {
+            file rename -force $FileName.resume $FileName.failed
+            AcknowledgementMessage "Resume of old session has failed!"
+        }
+    }
+}
+
+proc AcknowledgementMessage {msgText} {
+    PostStatusInfo $msgText
+
+    destroy .info
+    toplevel .info
+    wm withdraw .info
+    wm title .info "GOBLIN Info"
+
+    frame .info.frame
+    pack .info.frame -padx 2m -pady 3m -side top -anchor w
+
+    label .info.frame.warn -image msg_warn
+    message .info.frame.msg -width 200 -anchor w -text $msgText
+    pack .info.frame.warn .info.frame.msg -side left -padx 2m
+
+    frame .info.buttons
+    pack .info.buttons -padx 3m -pady 3m -side bottom
+    button .info.buttons.ok -text "OK" -command {destroy .info}
+    pack .info.buttons.ok -side left -fill x -padx 2m
+
+    focus .info.buttons.ok
+
+    bind .info <FocusOut> {
+        if {[winfo exists .info]} {
+            raise .info .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .info]} {
+            raise .info .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow .info}
+    after 500 {wm resizable .info 0 0}
+}
+
+wm protocol . WM_DELETE_WINDOW SaveAndQuit
+
+bind . <Control-o> {SaveAndOpen}
+bind . <Control-q> {SaveAndQuit}
+bind . <Control-p> {PrintLayoutExec [GetFocussedObject]}
+bind . <Control-s> {SaveFile}

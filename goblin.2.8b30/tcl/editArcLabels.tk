@@ -1,0 +1,173 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editArcLabels.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Dialog for editing arc labels
+#-------------------------------------------------------------------------------
+
+
+proc SetArcAttributes {} {
+    global WDArcAttribs DefPadX currentArc ThisArc LArcFrame RegisteredPath \
+        ThisHead ThisTail Mode ThisEdgeColour
+
+    set title "Arc Attributes"
+
+    if {[RegisterFormOrWindow $title arcLabels WDArcAttribs SetArcAttributes \
+            "Done"          {
+                set focussedGraph [GetFocussedObject]
+
+                if {[QualifiedArcAttributes $focussedGraph]} {
+                    UploadArcLabels $focussedGraph
+                    DownloadArcLabels $focussedGraph ""
+                } else {
+                    return
+                }
+            } \
+            "Apply"         {
+                set focussedGraph [GetFocussedObject]
+
+                if {[QualifiedArcAttributes $focussedGraph]} {
+                    UploadArcLabels $focussedGraph
+                }
+            } \
+            "Nodes"         {
+                if {[QualifiedArcAttributes $focussedGraph]} {
+                    source [file join $GoblinTclPath editNodeLabels.tk]
+                }
+            } \
+            ""              {} \
+        ]
+    } {
+        focus $LArcFrame.index
+        return
+    }
+
+    set LArcFrame $WDArcAttribs.lframe
+    frame $LArcFrame
+
+    label $LArcFrame.indexText -text "Arc Index:" -anchor w
+    grid $LArcFrame.indexText -in $LArcFrame \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.index -textvariable ThisArc -width 5 -bg white
+    grid $LArcFrame.index -in $LArcFrame \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LArcFrame.indexTail -anchor w -textvariable ThisTail
+    grid $LArcFrame.indexTail -in $LArcFrame \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    label $LArcFrame.indexHead -anchor w -textvariable ThisHead
+    grid $LArcFrame.indexHead -in $LArcFrame \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    frame $LArcFrame.dummy
+    grid $LArcFrame.dummy -in $LArcFrame \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+
+    label $LArcFrame.lowerText -text "Lower Bound:" -anchor w
+    grid $LArcFrame.lowerText -in $LArcFrame \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.lower -textvariable ThisLower -bg white -width 10
+    grid $LArcFrame.lower -in $LArcFrame \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LArcFrame.upperText -text "Upper Bound:" -anchor w
+    grid $LArcFrame.upperText -in $LArcFrame \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.upper -textvariable ThisUpper -bg white -width 10
+    grid $LArcFrame.upper -in $LArcFrame \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LArcFrame.lengthText -text "Length:" -anchor w
+    grid $LArcFrame.lengthText -in $LArcFrame \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.length -textvariable ThisLength -bg white -width 10
+    grid $LArcFrame.length -in $LArcFrame \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LArcFrame.colourText -text "Colour:" -anchor w
+    grid $LArcFrame.colourText -in $LArcFrame \
+        -row 6 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.colour -textvariable ThisEdgeColour -bg white -width 10
+    grid $LArcFrame.colour -in $LArcFrame \
+        -row 6 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LArcFrame.subgraphText -text "Subgraph:" -anchor w
+    grid $LArcFrame.subgraphText -in $LArcFrame \
+        -row 7 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LArcFrame.subgraph -textvariable ThisSubgraph -bg white -width 10
+    grid $LArcFrame.subgraph -in $LArcFrame \
+        -row 7 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    grid columnconfig $LArcFrame 0 -weight 1 -minsize 0
+    grid columnconfig $LArcFrame 1 -weight 1 -minsize 0
+
+    pack $LArcFrame -side top -padx $DefPadX -pady 3m -fill x -expand 1
+
+    bind $LArcFrame.index    <Return> {focus $LArcFrame.lower}
+    bind $LArcFrame.lower    <Return> {focus $LArcFrame.upper}
+    bind $LArcFrame.upper    <Return> {focus $LArcFrame.length}
+    bind $LArcFrame.length   <Return> {focus $LArcFrame.colour}
+    bind $LArcFrame.colour   <Return> {focus $LArcFrame.subgraph}
+    bind $LArcFrame.subgraph <Return> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedArcAttributes $focussedGraph]} {
+            UploadArcLabels $focussedGraph
+            incr ThisArc
+            if {$ThisArc==[$focussedGraph #edges]} {
+                set ThisArc 0
+            }
+            DownloadArcLabels $focussedGraph $ThisArc
+        }
+        focus $LArcFrame.index
+    }
+
+    bind $LArcFrame.index <FocusOut> {
+        set focussedGraph [GetFocussedObject]
+
+        if {$ThisArc!="" && \
+            ( [string equal $Mode "change labels"]  || \
+              [string equal $Mode "display object"] || \
+              [string equal $Mode "navigate"] ) } \
+        {
+            if {![QualifiedArc $focussedGraph $ThisArc]} {
+                focus $LArcFrame.index
+            } else {
+                DownloadArcLabels $focussedGraph $ThisArc
+            }
+        }
+    }
+
+    bind $LArcFrame.index <Up> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedArcAttributes $focussedGraph]} {
+            UploadArcLabels $focussedGraph
+            incr ThisArc -1
+            if {$ThisArc==-1} {
+                set ThisArc [expr {[$focussedGraph #edges]-1}]
+            }
+            DownloadArcLabels $focussedGraph $ThisArc
+        }
+    }
+
+    bind $LArcFrame.index <Down> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedArcAttributes $focussedGraph]} {
+            UploadArcLabels $focussedGraph
+            incr ThisArc
+            if {$ThisArc==[$focussedGraph #edges]} {
+                set ThisArc 0
+            }
+            DownloadArcLabels $focussedGraph $ThisArc
+        }
+    }
+
+    focus $LArcFrame.index
+
+
+    DisplayForm $title
+}
+
+SetArcAttributes

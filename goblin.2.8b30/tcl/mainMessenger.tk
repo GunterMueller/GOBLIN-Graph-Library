@@ -1,0 +1,792 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainMessenger.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Display structured logging information
+#             Searching a logfile
+#             Logfile upload from GOBLIN messenger
+#-------------------------------------------------------------------------------
+
+
+
+# Data Initialization
+
+set MsgData(searchModeNum) 0
+set MsgData(searchModeStr) "-nocase"
+set MsgData(searchDir) 0
+set MsgData(searchText) ""
+
+set MsgData(uploadMode) "partial"
+set MsgData(numLinesFile) 0
+set MsgData(numVisibleLines) 1
+set MsgData(finalVisibleLine) 0
+
+# Number of buffered lines is still hard-coded in messenger.cpp
+set MsgData(numLinesLoaded) [goblin messenger #bufferSize]
+
+
+proc ViewMessenger {} {
+    global InternalWindowing Log CanvasRegion GoblinTclPath \
+        LogFile LogView LogText LogXScroll LogYScroll LogBar
+
+    # Deleting a huge amount of text in the widget takes extremely long. Why?
+    # As a workaround, delete the entire widget.
+    if {true || ![info exists Log] || ![winfo exists $Log] || ![winfo exists $CanvasRegion]} {
+        if {!$InternalWindowing && [winfo exists $CanvasRegion]} {
+            set Log .log
+            destroy $Log
+            toplevel $Log
+            wm title $Log "GOBLIN Messenger"
+            wm protocol $Log WM_DELETE_WINDOW DestroyLogFile
+        } else {
+            global Workspace InternalLog CanvasRegion DialogRegion \
+                BrowserBalance DialogBalance
+            destroy .log
+            set Log $InternalLog
+            destroy $InternalLog
+            frame $Log
+            if {[winfo exists $CanvasRegion] || [winfo exists $DialogRegion]} {
+                SplitWorkspace
+            } else {
+                pack $Log -side top -fill both -expand yes -padx 1m -pady 1m
+            }
+        }
+
+        set dummyFrame $Log.dummyFrame
+        frame $dummyFrame -relief raised -borderwidth 1
+        pack $dummyFrame -side left -fill y
+
+        set LogBar $dummyFrame.bar
+        frame $LogBar
+        pack $LogBar -side top -anchor n
+
+        set LogView $Log.view
+        frame $LogView
+        pack $LogView -side top -fill both -expand yes
+
+        set LogText $LogView.text
+        set LogXScroll $LogView.xscroll
+        set LogYScroll $LogView.yscroll
+        set LogDelete $LogView.delete
+        text $LogText -bg ivory  -font {courier 12} \
+            -padx 2m -pady 2m -takefocus 1 \
+            -relief sunken -borderwidth 2 -wrap none \
+            -xscrollcommand "$LogXScroll set" \
+            -yscrollcommand MessengerYScrollSet
+
+        bind $LogText <Control-f> SearchLogFile
+        bind $LogText <Button-1> {focus $LogText}
+        bind $LogBar <Configure> {}
+
+        $LogText see end
+        $LogText tag configure tag0 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag1 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag2 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag3 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag4 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag5 -foreground red -font {courier 12 bold}
+        $LogText tag configure tag7 -foreground red3
+        $LogText tag configure tag8 -foreground blue
+        $LogText tag configure tag9 -foreground blue
+        $LogText tag configure tag10 -foreground brown3 -font {courier 12 bold}
+        $LogText tag configure tag11 -foreground brown3 -font {courier 12 bold}
+        $LogText tag configure tag12 -foreground magenta3 -font {courier 12 bold}
+        $LogText tag configure tag13 -foreground darkGrey -font {courier 12 bold}
+        $LogText tag configure tag14 -foreground darkGrey -font {courier 12 bold}
+        $LogText tag configure tag15 -foreground darkGrey -font {courier 12 bold}
+        $LogText tag configure tag16 -foreground green4 -font {courier 12 bold}
+        $LogText tag configure tag17 -foreground darkGreen
+        $LogText tag configure tag18 -foreground blue3 -font {courier 12 bold}
+        $LogText tag configure tag19 -foreground blue2 -font {courier 12}
+        $LogText tag configure tag20 -foreground blue
+        $LogText tag configure tag21 -foreground blue
+        $LogText tag configure tag22 -foreground black -font {courier 12 bold}
+        $LogText tag configure tag23 -foreground steelBlue -font {courier 12 bold}
+        $LogText tag configure tag24 -foreground dodgerBlue4 -font {courier 12 bold}
+
+        for {set i 0} {$i<[goblin #modules]} {incr i} {
+            $LogText tag bind mod$i <Button-3> [format { \
+                global ThisModule
+                set ThisModule %1$s
+                MessengerContextMenu [winfo pointerx $LogText] \
+                    [winfo pointery $LogText]} $i]
+        }
+
+        scrollbar $LogXScroll -orient horiz -command "$LogText xview" -width 3.5m
+        scrollbar $LogYScroll -command MessengerYViewSet -width 3.5m
+        button $LogDelete -command DestroyLogFile -padx 0 -pady 0 -image del_button 
+
+        grid $LogText -in $LogView \
+            -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+        grid $LogXScroll \
+            -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+        grid $LogYScroll \
+            -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+        grid $LogDelete \
+            -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+        grid rowconfig    $LogView 0 -weight 1 -minsize 0
+        grid columnconfig $LogView 0 -weight 1 -minsize 0
+    }
+
+    LoadLogFile
+    MakeLogBar [GetFocussedObject]
+}
+
+
+proc MessengerYViewSet {cmd yViewData {unitSpec ""}} {
+    global MsgData
+
+    if {$MsgData(uploadMode)!="partial"} {
+        # LogText shows the full transscript
+        global LogText
+
+        if {$unitSpec!=""} {
+            $LogText yview $cmd $yViewData $unitSpec
+        } else {
+            $LogText yview $cmd $yViewData
+        }
+
+        return
+    }
+
+    if {$cmd=="moveto"} {
+        set newFinalVisibleLine [expr round($MsgData(numLinesFile)*$yViewData)+$MsgData(numVisibleLines)-1]
+    } else {
+        if {$unitSpec=="units"} {
+            set newFinalVisibleLine [expr $MsgData(finalVisibleLine)+$yViewData]
+        } else {
+            # $unitSpec=="pages". Let pages overlap by 10% lines as in the original scroll protocol
+            set newFinalVisibleLine \
+                [expr $MsgData(finalVisibleLine)+round($yViewData*$MsgData(numVisibleLines)*0.9)]
+        }
+    }
+
+    MessengerMovetoLine $newFinalVisibleLine
+}
+
+
+proc MessengerYScrollSet {minViz maxViz} {
+    global LogYScroll MsgData
+
+    if {$MsgData(uploadMode)=="exhaustive"} {
+        # LogText shows the full transscript
+        $LogYScroll set $minViz $maxViz
+        return
+    }
+
+    if {$MsgData(uploadMode)=="dynamic"} {
+        # LogText shows the most recent messages. Disable scroll
+        $LogYScroll set 0 1
+        return
+    }
+
+    if {$MsgData(finalVisibleLine)<$MsgData(numLinesLoaded)} {
+        set firstLoadedLine 0
+    } else {
+        set firstLoadedLine [expr $MsgData(finalVisibleLine)-$MsgData(numLinesLoaded)]
+    }
+
+    set newNumVisibleLines [expr round((2.0*$MsgData(numLinesLoaded))*($maxViz-$minViz))]
+
+    if {$newNumVisibleLines==0} {return}
+
+    if {$newNumVisibleLines!=$MsgData(numVisibleLines)} {
+        set MsgData(numVisibleLines) $newNumVisibleLines
+        set newFinalVisibleLine [expr $MsgData(numLinesFile)-1]
+    } else {
+        if {$MsgData(finalVisibleLine)<$MsgData(numLinesLoaded)} {
+            set newFinalVisibleLine \
+                [expr $firstLoadedLine + round($maxViz*(2.0*$MsgData(numLinesLoaded))) - 1]
+        } else {
+            set newFinalVisibleLine \
+                [expr $firstLoadedLine + round($maxViz*(2.0*$MsgData(numLinesLoaded))) + 0]
+        }
+
+        if {   $newFinalVisibleLine>=$MsgData(numLinesFile) \
+            && $MsgData(finalVisibleLine)==[expr $MsgData(numLinesFile)-1] } {
+            # This catches the situation when the tail of the transcript is
+            # displayed, and the text widget, by some key event, scrolls to
+            # the trailing empty lines. Just undo the scroll operation
+
+            if {$newFinalVisibleLine<$MsgData(numLinesLoaded)} {
+                set relFirstVisibleLine [expr $MsgData(finalVisibleLine)-$MsgData(numVisibleLines) + 1]
+            } else {
+                set relFirstVisibleLine [expr $MsgData(numLinesLoaded)-$MsgData(numVisibleLines) + 0]
+            }
+
+            set yviewRatio [expr $relFirstVisibleLine / (2.0*$MsgData(numLinesLoaded)) ]
+
+            global LogText
+            $LogText yview moveto $yviewRatio
+            return
+        }
+    }
+
+    MessengerMovetoLine $newFinalVisibleLine
+
+    if {$MsgData(numLinesFile)>0} {
+        $LogYScroll set [expr ($MsgData(firstVisibleLine)+0.0)/$MsgData(numLinesFile)] \
+                        [expr ($MsgData(finalVisibleLine)+1.0)/$MsgData(numLinesFile)]
+    } else {
+        $LogYScroll set 0.0 1.0
+    }
+}
+
+
+proc MessengerMovetoLine {newFinalVisibleLine} {
+    global MsgData LogText
+
+    if {$newFinalVisibleLine>[expr $MsgData(numLinesFile)-1]} {
+        set newFinalVisibleLine [expr $MsgData(numLinesFile)-1]
+    }
+
+    if {$newFinalVisibleLine<[expr $MsgData(numVisibleLines)-1]} {
+        set newFinalVisibleLine [expr $MsgData(numVisibleLines)-1]
+    }
+
+    if {$newFinalVisibleLine==$MsgData(finalVisibleLine)} {return}
+
+    goblin messenger read $newFinalVisibleLine
+    UploadMessages
+
+    if {$newFinalVisibleLine<$MsgData(numLinesLoaded)} {
+        set relFirstVisibleLine [expr $newFinalVisibleLine-$MsgData(numVisibleLines) + 1]
+    } else {
+        set relFirstVisibleLine [expr $MsgData(numLinesLoaded)-$MsgData(numVisibleLines) + 0]
+    }
+
+    # Make the end of the uploaded part visible, but not the subsequent empty lines
+    set yviewRatio [expr $relFirstVisibleLine / (2.0*$MsgData(numLinesLoaded)) ]
+    $LogText yview moveto $yviewRatio
+
+    # The insertion point is set such that a subsequent
+    # <Key-Up> event triggers the correct scroll event
+    if {$newFinalVisibleLine<$MsgData(finalVisibleLine)} {
+        $LogText mark set insert [expr $relFirstVisibleLine+1].0
+    } else {
+        $LogText mark set insert [expr $relFirstVisibleLine+$MsgData(numVisibleLines)].0
+    }
+
+    set MsgData(finalVisibleLine) $newFinalVisibleLine
+    set MsgData(firstVisibleLine) [expr $newFinalVisibleLine-$MsgData(numVisibleLines)+1]
+}
+
+
+proc MessengerDynamicUpload {} {
+    global MsgData LogText
+
+    if {   [info exists LogText]           \
+        && [winfo exists $LogText]         \
+        && $MsgData(uploadMode)=="dynamic" \
+    } {
+        UploadMessages
+    }
+}
+
+
+proc MessengerSetUploadMode {newMode} {
+    global MsgData WDSearch LogText Log
+
+    if {$MsgData(uploadMode)==$newMode} {
+        return
+    }
+
+    if {$MsgData(uploadMode)=="partial"} {
+        if {![goblin solver idle]} {
+            goblin messenger read [expr [goblin messenger #numLines]-1]
+            set MsgData(uploadMode) "dynamic"
+            if {[info exists LogText] && [winfo exists $LogText]} {
+                UploadMessages
+                MakeLogBar [GetFocussedObject]
+            }
+        } else {
+            set MsgData(uploadMode) "exhaustive"
+            LoadLogFile
+            SearchLogFile
+            MakeLogBar [GetFocussedObject]
+        }
+    } else {
+        set MsgData(uploadMode) "partial"
+        # In principle, a LoadLogFile operation is sufficient. But the
+        # times for clearing the text widget content are inacceptable.
+        if {[info exists Log] && [winfo exists $Log]} {ViewMessenger}
+
+        if {[info exists WDSearch] && [winfo exists $WDSearch]} {
+            DestroyFormOrWindow "Find in Messages" $WDSearch
+        }
+    }
+}
+
+
+proc MessengerContextMenu {x y} {
+    global ThisModule
+
+    destroy .contextMenu
+    menu .contextMenu -tearoff false
+
+    .contextMenu add command -label "Show Module Info" \
+        -command {
+            destroy .contextMenu
+            set ThisTimer -1
+            source [file join $GoblinTclPath infoModules.tk]
+        }
+
+    .contextMenu add command -label "Show Timer" \
+        -command {
+            destroy .contextMenu
+            set ThisTimer [goblin module $ThisModule timer]
+            source [file join $GoblinTclPath infoTimers.tk]
+        }
+
+    set tmpRef [goblin module $ThisModule implementor1]
+
+    if {$tmpRef!=[goblin #authors]} {
+        .contextMenu add command -label "Show Main Author" \
+            -command {
+                destroy .contextMenu
+                set ThisAuthor [goblin module $ThisModule implementor1]
+                source [file join $GoblinTclPath infoAuthors.tk]
+                ShowAuthors
+            }
+    }
+
+    set tmpRef [goblin module $ThisModule original_reference]
+
+    if {$tmpRef!=[goblin #references]} {
+        .contextMenu add command -label "Show Bibliography" \
+            -command {
+                destroy .contextMenu
+                set ThisReference [goblin module $ThisModule original_reference]
+                source [file join $GoblinTclPath infoBibliography.tk]
+                ShowBibliography
+            }
+    }
+
+    tk_popup .contextMenu $x $y
+}
+
+
+image create photo log_first -file [file join $GoblinTclPath logFirst.gif]
+image create photo log_prev -file [file join $GoblinTclPath logPrev.gif]
+image create photo log_next -file [file join $GoblinTclPath logNext.gif]
+image create photo log_last -file [file join $GoblinTclPath logLast.gif]
+image create photo log_search -file [file join $GoblinTclPath logSearch.gif]
+image create photo log_dynamic -file [file join $GoblinTclPath logDynamic.gif]
+image create photo log_partial -file [file join $GoblinTclPath logPartial.gif]
+
+proc MakeLogBar {focussedObject} {
+    global Log LogBar MsgData
+
+    if {![info exists Log] || ![winfo exists $Log]} {return}
+
+    if {![winfo ismapped $LogBar]} {
+        if {[catch {tkwait visibility $LogBar}]!=0} {
+            # Do not complain if the window is destroyed before it can be mapped
+            return
+        }
+    }
+    set height [winfo height $Log]
+
+    destroy $LogBar.mode
+    destroy $LogBar.first
+    destroy $LogBar.prev
+    destroy $LogBar.next
+    destroy $LogBar.last
+    bind $Log.dummyFrame <Configure> {}
+
+    if {$MsgData(uploadMode)=="exhaustive"} {
+        set numIcons 5
+        set idxIcon 1
+
+        MakeArrowUp LogBar $LogBar.up $height $numIcons
+
+        MakeIcon LogBar $LogBar.mode log_partial {
+            MessengerSetUploadMode "partial"
+        } {quit search mode} $height $idxIcon $numIcons
+
+        incr idxIcon
+        MakeIcon LogBar $LogBar.first log_first LogFindFirst \
+            {find first} $height $idxIcon $numIcons
+
+        incr idxIcon
+        MakeIcon LogBar $LogBar.prev log_prev LogFindPrev \
+            {find previous} $height $idxIcon $numIcons
+
+        incr idxIcon
+        MakeIcon LogBar $LogBar.next log_next LogFindNext \
+            {find next} $height $idxIcon $numIcons
+
+        incr idxIcon
+        MakeIcon LogBar $LogBar.last log_last LogFindLast \
+            {find last} $height $idxIcon $numIcons
+
+        MakeArrowDown LogBar $LogBar.down $height $numIcons
+
+        bind $Log.dummyFrame <Configure> {MakeLogBar [GetFocussedObject]}
+    } else {
+        MakeArrowUp LogBar $LogBar.up $height 1
+
+        if {$MsgData(uploadMode)=="partial"} {
+            if {![goblin solver idle]} {
+                MakeIcon LogBar $LogBar.mode log_dynamic {
+                    MessengerSetUploadMode "dynamic"
+                } {cyclic upload} $height 1 1
+            } else {
+                MakeIcon LogBar $LogBar.mode log_search {
+                    MessengerSetUploadMode "exhaustive"
+                } {search transcript} $height 1 1
+            }
+        } else {
+            MakeIcon LogBar $LogBar.mode log_partial {
+                MessengerSetUploadMode "partial"
+            } {manual upload} $height 1 1
+        }
+
+        MakeArrowDown LogBar $LogBar.down $height 1
+    }
+}
+
+
+# image create photo msg_stop -file [file join $GoblinTclPath msgStop.gif]
+# image create photo msg_warn -file [file join $GoblinTclPath msgWarn.gif]
+# image create photo open_fold -file [file join $GoblinTclPath openFold.t.gif]
+# image create photo close_fold -file [file join $GoblinTclPath closeFold.t.gif]
+
+proc UpdateMessenger {} {
+    global Log
+    if {[info exists Log] && [winfo exists $Log]} {LoadLogFile}
+}
+
+
+proc LoadLogFile {} {
+    global LogStream LogText LogFile GoblinTclPath StartCompleted MsgData
+
+    if {!$StartCompleted} {return}
+
+    if {$MsgData(uploadMode) == "partial"} {
+        set MsgData(numLinesFile) [goblin messenger #numLines]
+        set MsgData(numVisibleLines) 0
+        set MsgData(finalVisibleLine) -1
+        UploadMessages
+        return
+    }
+
+    if [catch {open "| cat < \"$LogFile\""} LogStream] {
+        AcknowledgementMessage "Could not open logfile"
+        return
+    }
+
+    $LogText configure -state normal
+    $LogText delete 1.0 end
+    set firstLine true
+
+    while {[gets $LogStream thisLine]>=0} {
+        set ret [scan $thisLine {%d %d %d %d} thisClass thisModule thisObj thisDepth]
+        if {$ret==1} {
+            set ret [scan $thisLine {%d %d * %d} thisClass thisModule thisDepth]
+            set thisObj "*"
+        }
+
+        if {$ret<=0} {continue}
+
+        if {!$firstLine} {$LogText insert end "\n"}
+
+        # if {$thisClass<6} {
+        #     $LogText image create end -image msg_stop -pady 3
+        # }
+        # if {$thisClass==7} {
+        #     $LogText image create end -image msg_warn -pady 3
+        # }
+        $LogText insert end "[string range $thisLine 21 end]" \
+            [list tag$thisClass mod$thisModule]
+        set firstLine false
+    }
+
+    close $LogStream
+    $LogText see "insert linestart"
+    $LogText configure -state disabled
+}
+
+
+proc UploadMessages {} {
+    global LogText OldClass MsgData
+
+    set uploadMode $MsgData(uploadMode)
+
+    $LogText configure -state normal
+    $LogText delete 1.0 end
+    goblin messenger reset
+    set OldClass 22
+
+    if {$uploadMode=="exhaustive" && [goblin messenger void]} {
+        $LogText configure -state disabled
+        return
+    }
+
+    $LogText mark set insert end
+    $LogText delete "insert linestart" end
+
+    set uploading [expr ![goblin messenger eof]]
+    for {set i 1} {$i<[expr 2*$MsgData(numLinesLoaded)]} {incr i} {
+        if {!$uploading} {
+            if {$uploadMode=="dynamic"} {
+                break
+            }
+
+            if {$uploadMode=="partial"} {
+                # These line should be invisible
+                $LogText insert end "\n"
+                # $LogText insert end "X[expr $i]X\n"
+            }
+
+            continue
+        }
+
+        set thisText   [goblin messenger text]
+        set thisClass  [goblin messenger class]
+        set thisHandle [goblin messenger handle]
+        set thisLevel  [goblin messenger level]
+        set thisModule [goblin messenger module]
+
+        if {$thisClass!=6} {
+            # if {$thisClass<6} {
+            #     $LogText image create end -image msg_stop -pady 3
+            # }
+            # if {$thisClass==7} {
+            #     $LogText image create end -image msg_warn -pady 3
+            # }
+            $LogText insert end [string repeat "  " $thisLevel] tag19
+            $LogText insert end "$thisText\n" [list tag$thisClass mod$thisModule]
+            set OldClass $thisClass
+        } else {
+            $LogText insert end "$thisText\n" tag$OldClass
+        }
+
+        if {[goblin messenger eof]} {
+            if {$uploading} {
+                set uploading 0
+                set displayPos [$LogText index end]
+            }
+        } else {
+            goblin messenger skip
+        }
+    }
+
+    if {$uploadMode!="partial"} {
+        $LogText see "insert linestart"
+    }
+
+    $LogText configure -state disabled
+}
+
+
+proc SearchLogFile {} {
+    global LogStream Log GoCommand UploadCommand MsgData
+
+    set GoCommand {
+        global MsgData
+
+        if {$MsgData(searchDir)==0} {
+            LogFindNext
+        } else {
+            LogFindPrev
+        }
+    }
+
+    set UploadCommand {}
+
+
+    global WDSearch DefPadX MsgData
+
+    set title "Find in Messages"
+
+    if {[RegisterFormOrWindow $title deleteSolution WDSearch SearchLogFile \
+            "Done"          {} \
+            "Search"        $GoCommand \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDSearch.frame
+    label $WDSearch.frame.text -text "Search string:" -anchor w
+    entry $WDSearch.frame.entry -textvariable MsgData(searchText) -bg white -width 25
+    pack $WDSearch.frame.text $WDSearch.frame.entry -side left -padx 1m \
+        -fill x -expand 1
+    bind $WDSearch.frame.entry <Return> {
+        eval $GoCommand
+        focus $WDSearch.frame.entry
+    }
+
+    frame $WDSearch.options
+    label $WDSearch.options.label -text "Search" -anchor w
+    grid $WDSearch.options.label \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    MakePulldownMenuButton $WDSearch.options.dirSelect "-width 9"
+    grid $WDSearch.options.dirSelect \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    set listOfDirections { "Forward" 0 "Backward" 1 }
+
+    MakePulldownMenuButton $WDSearch.options.modeSelect "-width 20"
+    grid $WDSearch.options.modeSelect \
+        -row 0 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    set listOfModes { "Literally" 0 "Case Sensitive" 1 "by Regular Expression" 2 }
+
+    grid columnconfig $WDSearch.options 0 -weight 0 -minsize 0
+    grid columnconfig $WDSearch.options 1 -weight 1 -minsize 0
+    grid columnconfig $WDSearch.options 2 -weight 1 -minsize 0
+
+
+    AttachSelectionForm $WDSearch.options.dirSelect 5 \
+        [lindex $listOfDirections [expr 2*$MsgData(searchDir)]] \
+        $listOfDirections ApplySearchDirSelection
+
+    AttachSelectionForm $WDSearch.options.modeSelect 5 \
+        [lindex $listOfModes [expr 2*$MsgData(searchModeNum)]] \
+        $listOfModes ApplySearchModeSelection
+
+
+    pack $WDSearch.frame $WDSearch.options -side top -padx $DefPadX \
+        -pady 3m -expand yes -fill x
+
+    focus $WDSearch.frame.entry
+
+
+    DisplayForm $title
+}
+
+proc ApplySearchDirSelection {direction} {
+    global MsgData
+
+    set MsgData(searchDir) $direction
+}
+
+proc ApplySearchModeSelection {mode} {
+    global MsgData
+
+    set MsgData(searchModeNum) $mode
+
+    switch $mode {
+        0 {set MsgData(searchModeStr) "-nocase"}
+        1 {set MsgData(searchModeStr) "-exact"}
+        2 {set MsgData(searchModeStr) "-regexp"}
+    }
+}
+
+proc LogFindNext {} {
+    global LogText MsgData
+
+    focus $LogText
+
+    if {$MsgData(searchText)==""} {
+        set lSelTag [$LogText tag ranges sel]
+        if {[llength $lSelTag]==0} {
+            return
+        } else {
+            set MsgData(searchText) [$LogText get [lindex $lSelTag 0] [lindex $lSelTag 1]]
+        }
+    }
+
+    set nextOccurence \
+        [$LogText search -forward $MsgData(searchModeStr) $MsgData(searchText) "insert +1 chars" end]
+
+    if {$nextOccurence!=""} {
+        $LogText tag remove sel 1.0 end
+        $LogText mark set insert $nextOccurence
+        $LogText tag add sel insert \
+            "insert +[string length $MsgData(searchText)] chars"
+        $LogText see insert
+    }
+}
+
+proc LogFindPrev {} {
+    global LogText MsgData
+
+    focus $LogText
+
+    if {$MsgData(searchText)==""} {
+        set lSelTag [$LogText tag ranges sel]
+        if {[llength $lSelTag]==0} {
+            return
+        } else {
+            set MsgData(searchText) [$LogText get [lindex $lSelTag 0] [lindex $lSelTag 1]]
+           $LogText mark set insert [lindex $lSelTag 0]
+        }
+    }
+
+    set prevOccurence \
+        [$LogText search -backward $MsgData(searchModeStr) $MsgData(searchText) "insert -1 chars" 1.0]
+
+    if {$prevOccurence!=""} {
+        $LogText tag remove sel 1.0 end
+        $LogText mark set insert $prevOccurence
+        $LogText tag add sel insert \
+            "insert +[string length $MsgData(searchText)] chars"
+        $LogText see insert
+    }
+}
+
+proc LogFindLast {} {
+    global LogText MsgData
+
+    focus $LogText
+
+    if {$MsgData(searchText)==""} {
+        set lSelTag [$LogText tag ranges sel]
+        if {[llength $lSelTag]==0} {
+            return
+        } else {
+            set MsgData(searchText) [$LogText get [lindex $lSelTag 0] [lindex $lSelTag 1]]
+        }
+    }
+
+    set lastOccurence \
+        [$LogText search -backward $MsgData(searchModeStr) $MsgData(searchText) end 1.0]
+
+    if {$lastOccurence!=""} {
+        $LogText tag remove sel 1.0 end
+        $LogText mark set insert $lastOccurence
+        $LogText tag add sel insert \
+            "insert +[string length $MsgData(searchText)] chars"
+        $LogText see insert
+    }
+}
+
+proc LogFindFirst {} {
+    global LogText MsgData
+
+    focus $LogText
+
+    if {$MsgData(searchText)==""} {
+        set lSelTag [$LogText tag ranges sel]
+        if {[llength $lSelTag]==0} {
+            return
+        } else {
+            set MsgData(searchText) [$LogText get [lindex $lSelTag 0] [lindex $lSelTag 1]]
+        }
+    }
+
+    set firstOccurence \
+        [$LogText search -forward $MsgData(searchModeStr) $MsgData(searchText) 1.0 end]
+
+    if {$firstOccurence!=""} {
+        $LogText tag remove sel 1.0 end
+        $LogText mark set insert $firstOccurence
+        $LogText tag add sel insert \
+            "insert +[string length $MsgData(searchText)] chars"
+        $LogText see insert
+    }
+}
+
+proc DestroyLogFile {} {
+    global Log
+    destroy $Log
+    InitDisplay
+}

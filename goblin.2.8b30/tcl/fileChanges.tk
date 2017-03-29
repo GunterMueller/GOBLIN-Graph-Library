@@ -1,0 +1,93 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileChanges.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Prompt for saving or discarding current object
+#-------------------------------------------------------------------------------
+
+
+
+global ChangeOptions Unchanged FileName
+
+if {![goblin solver idle]} {
+    PostStatusInfo "problem solver is active"
+    return
+}
+
+if {$Unchanged==1 || $ChangeOptions==2} {
+    eval $PromptCommand
+    return
+}
+
+if {$ChangeOptions==0} {
+    SaveFile
+    eval $PromptCommand
+    return
+}
+
+destroy .saveChanges
+toplevel .saveChanges
+wm withdraw .saveChanges
+wm title .saveChanges "GOBLET Prompt"
+
+frame .saveChanges.buttons
+
+    button .saveChanges.buttons.save -text "Yes" -command { \
+        SaveFile
+        destroy .saveChanges
+        eval $PromptCommand
+    }
+
+    button .saveChanges.buttons.proceed -text "No" -command { \
+        destroy .saveChanges
+        eval $PromptCommand
+    }
+
+    button .saveChanges.buttons.cancel -text "Cancel" -command { \
+        destroy .saveChanges
+    }
+
+    pack .saveChanges.buttons.save .saveChanges.buttons.proceed \
+         .saveChanges.buttons.cancel -side left -fill x -padx 3m
+
+pack .saveChanges.buttons -padx 3m -pady 3m -side bottom
+
+frame .saveChanges.frame
+pack .saveChanges.frame -padx 4m -pady 3m -side top -anchor w
+
+label .saveChanges.frame.warn -image msg_warn
+message .saveChanges.frame.msg -width 10c \
+    -text "Save changes to [file tail $FileName]?"
+pack .saveChanges.frame.warn .saveChanges.frame.msg -padx 2m -side left
+
+bind .saveChanges.buttons.save <Return> { \
+    SaveFile
+    destroy .saveChanges
+    eval $PromptCommand
+}
+
+bind .saveChanges.buttons.proceed <Return> { \
+    destroy .saveChanges
+    eval $PromptCommand
+}
+
+bind .saveChanges.buttons.cancel <Return> { \
+    destroy .saveChanges
+}
+
+focus .saveChanges.buttons.save
+
+bind .saveChanges <FocusOut> {
+    if {[winfo exists .saveChanges]} {
+        raise .saveChanges .
+    }
+}
+
+bind . <FocusIn> {
+    if {[winfo exists .saveChanges]} {
+        raise .saveChanges .
+    }
+}
+
+after 500 {AdjustWithRootWindow .saveChanges}
+after 500 {wm resizable .saveChanges 0 0}

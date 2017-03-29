@@ -1,0 +1,211 @@
+
+#-------------------------------------------------------------------------------
+# Module:     menuBrowser.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Browser menu item and bindings
+#             Writing browser configuration to file
+#-------------------------------------------------------------------------------
+
+
+
+menu .mbar.browser.menu -tearoff false
+.mbar.browser.menu add command -label "Toggle Editor/Navigator" \
+    -accelerator Ctrl+D -command ToggleBrowser
+.mbar.browser.menu add command -label "Snapshot Image" \
+    -accelerator Ctrl+T -command DisplayNewLayout
+.mbar.browser.menu add command -label "View/Update Messenger" \
+    -accelerator Ctrl+L -command {ViewMessenger}
+.mbar.browser.menu add separator
+.mbar.browser.menu add command -label "Tracing Options..." \
+    -accelerator Shift+Ctrl+T -command SourceTraceOpt
+.mbar.browser.menu add command -label "Browser Options..." \
+    -accelerator Shift+Ctrl+B -command SourceBrowseOpt
+.mbar.browser.menu add command -label "Logging Options..." \
+    -accelerator Shift+Ctrl+L -command SourceLogOpt
+.mbar.browser.menu add command -label "Save Browser Settings" \
+    -command SaveBrowserSettings -underline 0
+.mbar.browser.menu add separator
+.mbar.browser.menu add command -label "Run Unit Tests..." \
+    -command SourceTestAutomation
+
+proc AdjustDialogPadding {} {
+    global InternalWindowing DefPadX DefPadY
+
+    if {$InternalWindowing} {
+        set DefPadX "1m"
+        set DefPadY "3m"
+    } else {
+        set DefPadX "10m"
+        set DefPadY "5m"
+    }
+}
+
+proc SourceTraceOpt {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath browserTraceOpt.tk]
+}
+
+proc SourceBrowseOpt {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath browserOptions.tk]
+}
+
+proc SourceLogOpt {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath browserLogOpt.tk]
+}
+
+proc SourceTestAutomation {} {
+    global GoblinTclPath UnitTestFileName WDUnitTest
+
+    if {![info exists UnitTestFileName]} {
+        set UnitTestFileName [file join [file dirname $GoblinTclPath] test "unitTest.tcl"]
+    }
+
+
+    set WDUnitTest .unitTest
+
+    destroy $WDUnitTest
+    toplevel $WDUnitTest
+    wm withdraw $WDUnitTest
+    wm title $WDUnitTest "Unit Tests"
+
+    frame $WDUnitTest.frame
+    pack $WDUnitTest.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDUnitTest.frame.text -text "Test Collection File Name:  "
+    entry $WDUnitTest.frame.entry -textvariable UnitTestFileName \
+        -bg white -width 40
+    pack $WDUnitTest.frame.text $WDUnitTest.frame.entry \
+        -side left -fill x -expand 1
+
+    bind $WDUnitTest.frame.entry <Return> {
+        destroy $WDUnitTest
+        source [file join $GoblinTclPath testAutomation.tk]
+        AsynchronousTest $UnitTestFileName
+    }
+
+    focus $WDUnitTest.frame.entry
+
+    bind $WDUnitTest <FocusOut> {
+        if {[winfo exists $UnitTestFileName]} {
+            raise $WDUnitTest .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists $UnitTestFileName]} {
+            raise $UnitTestFileName .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDUnitTest}
+    after 500 {wm resizable $WDUnitTest 0 0}
+}
+
+proc SourceTestAutomationOld {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath testAutomation.tk]
+    AsynchronousTest "[file join [pwd] test fullTest.tcl]"
+}
+
+proc WriteBrowserSettings {fileName} {
+    global PreviousVersion GoblinVersion PrintCommand \
+        ZipCommand UnzipCommand ZipExtension ZipEnabled \
+        BalloonHelp goblinCommLevel goblinLPDisplay \
+        SingleStep UpdateCycle BackupLevel InternalWindowing \
+        ChangeOptions AlignOptions BruteOverwrite BrowserBalance \
+        DialogBalance SepWidth MaxDisplayArcs
+
+    set file [open "$fileName" w]
+
+    puts $file "set PreviousVersion \"$GoblinVersion\""
+    puts $file "set PrintCommand \"$PrintCommand\""
+    puts $file "set ZipCommand \"$ZipCommand\""
+    puts $file "set UnzipCommand \"$UnzipCommand\""
+    puts $file "set ZipExtension \"$ZipExtension\""
+    puts $file "set ZipEnabled $ZipEnabled"
+    puts $file "set BalloonHelp $BalloonHelp"
+    puts $file "set goblinCommLevel $goblinCommLevel"
+    puts $file "set goblinLPDisplay $goblinLPDisplay"
+    puts $file "set SingleStep $SingleStep"
+    puts $file "set UpdateCycle $UpdateCycle"
+    puts $file "set BackupLevel $BackupLevel"
+    puts $file "set InternalWindowing $InternalWindowing"
+    puts $file "set ChangeOptions $ChangeOptions"
+    puts $file "set AlignOptions $AlignOptions"
+    puts $file "set BruteOverwrite $BruteOverwrite"
+    puts $file "set BrowserBalance $BrowserBalance"
+    puts $file "set DialogBalance $DialogBalance"
+    puts $file "set SepWidth $SepWidth"
+    puts $file "set InitialWidth [winfo width .]"
+    puts $file "set InitialHeight [winfo height .]"
+    puts $file "set MaxDisplayArcs $MaxDisplayArcs"
+
+    close $file
+}
+
+proc SaveBrowserSettings {} {
+    destroy .saveChanges
+    toplevel .saveChanges
+    wm withdraw .saveChanges
+    wm title .saveChanges "GOBLET Prompt"
+
+    global FileName
+
+    frame .saveChanges.buttons
+    button .saveChanges.buttons.cancel -text "Cancel" -command { \
+        destroy .saveChanges
+    }
+
+    button .saveChanges.buttons.save -text "Yes" -command { \
+        destroy .saveChanges
+
+        global BrowserSettings
+        WriteBrowserSettings "$BrowserSettings"
+    }
+
+    pack .saveChanges.buttons.save .saveChanges.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack .saveChanges.buttons -padx 3m -pady 3m -side bottom
+
+    label .saveChanges.warn -image msg_warn
+    message .saveChanges.msg -width 10c \
+        -text "Save current browser settings ?"
+    pack .saveChanges.warn .saveChanges.msg -padx 2m -pady 3m -side left
+
+    focus .saveChanges.buttons.save
+
+    bind .saveChanges <FocusOut> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow .saveChanges}
+    after 500 {wm resizable .saveChanges 0 0}
+}
+
+proc ToggleBrowser {} {
+    global goblinTraceCounter Mode
+
+    if {[string equal $Mode "display object"] || [string equal $Mode "trace"]} {
+        InitNavigator
+    } else {
+        DisplayObject
+    }
+}
+
+bind . <Control-d> {ToggleBrowser}
+bind . <Control-l> {ViewMessenger}
+bind . <Control-T> {SourceTraceOpt}
+bind . <Control-B> {SourceBrowseOpt}
+bind . <Control-L> {SourceLogOpt}

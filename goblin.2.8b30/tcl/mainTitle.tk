@@ -1,0 +1,44 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainTitle.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Start screen
+#-------------------------------------------------------------------------------
+
+
+proc AboutGOBLIN {} {
+    toplevel .trailer
+    wm geometry .trailer \
+        600x400+[expr ([winfo screenwidth .]-600)/2]+[expr ([winfo screenheight .]-400)/2]
+
+    canvas .trailer.canvasRegion -bg ivory2
+    pack .trailer.canvasRegion -side top -fill both -expand yes -padx 1m -pady 1m
+
+    global GoblinVersion
+    .trailer.canvasRegion create text 40 30 -text "GOBLIN Graph Library $GoblinVersion" -anchor nw \
+        -font -*-helvetica-bolditalic-i-normal--24-*-*-*-p-*-*-*
+
+    .trailer.canvasRegion create text 550 320 -anchor e \
+        -text "A C++ Class Library for Graph Optimization and Network Programming Problems" \
+        -font -*-helvetica--r-narrow--14-*-*-*-p-*-*-*
+    .trailer.canvasRegion create text 550 340 -anchor e \
+        -text "Written by Dr.Christian Fremuth-Paeger and others (c) 1998-2009" \
+        -font -*-helvetica--r-narrow--14-*-*-*-p-*-*-*
+    .trailer.canvasRegion create text 550 360 -anchor e \
+        -text "See the module data base for a list of contributions" \
+        -font -*-helvetica--r-narrow--14-*-*-*-p-*-*-*
+
+    global GoblinTclPath
+    image create photo tclLogo -file [file join $GoblinTclPath tclLogo.gif]
+    .trailer.canvasRegion create image 550 180 -image tclLogo -anchor e
+
+    image create photo demo -file [file join $GoblinTclPath gobletTitle.gif]
+    .trailer.canvasRegion create image 40 180 -image demo -anchor w
+
+    wm overrideredirect .trailer 1
+    bind .trailer <Button-1> {destroy .trailer}
+}
+
+AboutGOBLIN
+
+update idletasks

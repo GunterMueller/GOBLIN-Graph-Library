@@ -1,0 +1,96 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editDelete.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Dialog for deletion of potential solutions
+#-------------------------------------------------------------------------------
+
+
+
+proc DeleteSolutions {} {
+    global WDDelete DefPadX RegistersToDelete RegistersToPreserve MapRegisterToDescr
+
+    set title "Select Registers to Delete"
+
+    if {[RegisterFormOrWindow $title deleteSolution WDDelete DeleteSolutions \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+            "Delete Now"    DeleteSelection \
+        ]
+    } {
+        return
+    }
+
+
+    foreach {register registerDescr} {
+        -subgraph       "Subgraph multiplicities"    \
+        -predecessorArc "Predecessor Arcs"           \
+        -potential      "Node Potentials"            \
+        -partition      "Node Partition"             \
+        -nodeColour     "Node Colours"               \
+        -distance       "Node Distance Labels"       \
+        -edgeColour     "Edge Colours"               \
+    } {
+        set MapRegisterToDescr($register) $registerDescr
+    }
+
+    frame $WDDelete.f1
+    label $WDDelete.f1.label -text "Registers to Delete:" -anchor w
+    pack $WDDelete.f1.label -side top -fill x
+
+    scrollbar $WDDelete.f1.scroll -width 3.5m -command "$WDDelete.f1.list yview"
+    listbox $WDDelete.f1.list -yscrollcommand "$WDDelete.f1.scroll set" \
+        -width 20 -height 3 -bg white
+
+    foreach {register} $RegistersToDelete {
+        $WDDelete.f1.list insert end $MapRegisterToDescr($register)
+    }
+
+    pack $WDDelete.f1.scroll -side right -fill y
+    pack $WDDelete.f1.list -side left -fill both -expand 1
+
+    bind $WDDelete.f1.list <Double-Button-1> {
+        if {[llength $RegistersToDelete]==0} {return}
+        set thisIndex [$WDDelete.f1.list index active]
+        set thisRegister [lindex $RegistersToDelete $thisIndex]
+        lappend RegistersToPreserve $thisRegister
+        $WDDelete.f2.list insert end $MapRegisterToDescr($thisRegister)
+        set RegistersToDelete [lreplace $RegistersToDelete $thisIndex $thisIndex]
+        $WDDelete.f1.list delete active
+    }
+
+
+    frame $WDDelete.f2
+    label $WDDelete.f2.label -text "Preserved Registers:" -anchor w
+    pack $WDDelete.f2.label -side top -fill x
+
+    scrollbar $WDDelete.f2.scroll -width 3.5m -command "$WDDelete.f2.list yview"
+    listbox $WDDelete.f2.list -yscrollcommand "$WDDelete.f2.scroll set" \
+        -width 20 -height 3 -bg white
+
+    foreach {register} $RegistersToPreserve {
+        $WDDelete.f2.list insert end $MapRegisterToDescr($register)
+    }
+
+    pack $WDDelete.f2.scroll -side right -fill y
+    pack $WDDelete.f2.list -side left -fill both -expand 1
+
+    bind $WDDelete.f2.list <Double-Button-1> {
+        if {[llength $RegistersToPreserve]==0} {return}
+        set thisIndex [$WDDelete.f2.list index active]
+        set thisRegister [lindex $RegistersToPreserve $thisIndex]
+        lappend RegistersToDelete $thisRegister
+        $WDDelete.f1.list insert end $MapRegisterToDescr($thisRegister)
+        set RegistersToPreserve [lreplace $RegistersToPreserve $thisIndex $thisIndex]
+        $WDDelete.f2.list delete active
+    }
+
+    pack $WDDelete.f1 $WDDelete.f2 -padx $DefPadX -pady 3m -side top -fill x
+
+
+    DisplayForm $title
+}
+
+DeleteSolutions

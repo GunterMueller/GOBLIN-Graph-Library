@@ -1,0 +1,652 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileImport.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Import filters for graph objects
+#-------------------------------------------------------------------------------
+
+
+proc goblinImport {object fileName format {options ""}} {
+
+    # Native GOBLIN Format
+
+    if {[string equal $format "gob"]} {
+        eval goblin read $options $object "$fileName"
+        return
+    }
+
+
+    # CPLEX MPS Format
+    if {[string equal $format "mps"]} {
+        goblin mip $object 10 10 20
+        $object read mps $fileName
+        return
+    }
+
+
+    # CPLEX BAS Format
+
+    if {[string equal $format "bas"]} {
+        $object read bas $fileName
+        return
+    }
+
+
+    # Naive adjacency matrix formats
+
+    if {[string equal $format "scm"]} {
+        eval goblin read -format squareUCap $options $object "$fileName"
+        return
+    }
+
+    if {[string equal $format "tcm"]} {
+        eval goblin read -format triangularUCap $options $object "$fileName"
+        return
+    }
+
+    if {[string equal $format "slm"]} {
+        eval goblin read -format squareLength $options $object "$fileName"
+        return
+    }
+
+    if {[string equal $format "tlm"]} {
+        eval goblin read -format triangularLength $options $object "$fileName"
+        return
+    }
+
+
+    # DIMACS Formats
+
+    if {[string equal $format "edge"]} {
+        eval goblin read -format dimacsEdge $options $object "$fileName"
+        return
+    }
+
+    if {[string equal $format "min"]} {
+        eval goblin read -format dimacsMin $options $object "$fileName"
+        return
+    }
+
+    if {[string equal $format "geom"]} {
+        eval goblin read -format dimacsGeom $options $object "$fileName"
+        return
+    }
+
+
+    global goblinRandGeometry goblinRandLength goblinRandUCap goblinRandLCap
+    set goblinRandGeometry 0
+    set goblinRandLength 0
+    set goblinRandUCap 0
+    set goblinRandLCap 0
+
+    if {[string equal $format "max"]} {
+        global goblinSource goblinTarget
+
+        set file [open "$fileName" r]
+        set n 0
+
+        while {[gets $file thisLine] >= 0} {
+            if {[scan $thisLine "p max %d %d" n m]==2} {
+                if {$n<=0 || $m<=0} {
+                    close $file
+                    error "Insufficient problem dimensions"
+                }
+
+                goblin sparseDiGraph -nodes $n $object
+                $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+                    -nodeDemand 0 -metricType disabled
+            }
+
+            if {[scan $thisLine "n %d %s" u type]==2} {
+                if {$u>$n || $u<1} {
+                    close $file
+                    $object delete
+                    error "Node index exeeds problem dimension"
+                }
+
+                if {[string equal $type "s"]} {set goblinSource [expr $u-1]}
+                if {[string equal $type "t"]} {set goblinTarget [expr $u-1]}
+            }
+
+            if {[scan $thisLine "a %d %d %f" u v cap]==3} {
+                if {$u>$n || $u<1 || $v>$n || $v<1} {
+                    close $file
+                    $object delete
+                    error "Node index exeeds problem dimension"
+                }
+
+                set a [expr {2*[$object arc insert [expr {$u-1}] [expr {$v-1}]]}]
+                $object arc $a configure -upperBound $cap
+            }
+        }
+
+        close $file
+
+        if {$n==0} {error "Missing problem line"}
+
+        if {[string equal $goblinSource "*"] || [string equal $goblinTarget "*"]} {
+            $object delete
+            error "Missing source and/or target node"
+        }
+
+        $object configure -sourceNode $goblinSource -targetNode $goblinTarget
+        return
+    }
+
+    if {[string equal $format "asn"]} {
+        set file [open "$fileName" r]
+        set n 0
+
+        while {[gets $file thisLine] >= 0} {
+            if {[scan $thisLine "p asn %d %d" n m]==2} {
+                if {$n<=0 || $m<=0} {
+                    close $file
+                    error "Insufficient problem dimensions"
+                }
+
+                goblin sparseDiGraph -nodes $n $object
+                $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+                    -nodeDemand 1 -metricType disabled
+            }
+
+            if {[scan $thisLine "n %d %s" u type]==2} {
+                if {$u>$n || $u<1} {
+                    close $file
+                    $object delete
+                    error "Node index exeeds problem dimension"
+                }
+
+                if {[string equal $type "s"]} {
+                    $object node [expr {$u-1}] configure -nodeDemand -1
+                } else {
+                    $object node [expr {$u-1}] configure -nodeDemand 1
+                }
+            }
+
+            if {[scan $thisLine "a %d %d %f" u v length]==3} {
+                if {$u>$n || $u<1 || $v>$n || $v<1} {
+                    close $file
+                    $object delete
+                    error "Node index exeeds problem dimension"
+                }
+
+                set a [expr {2*[$object arc insert [expr {$u-1}] [expr {$v-1}]]}]
+                $object arc $a configure -edgeLength $length
+            }
+        }
+
+        close $file
+
+        if {$n==0} {error "Missing problem line"}
+
+        return
+    }
+
+
+    # Steinlib Formats
+
+    if {[string equal $format "stp"]} {
+        set file [open "$fileName" r]
+        set n 0
+
+        while {[gets $file thisLine]>=0 && \
+            ![string equal -nocase $thisLine "EOF"] && \
+            ![string equal -nocase $thisLine "SECTION Graph"]} {}
+
+        if {![string equal -nocase $thisLine "SECTION Graph"]} {
+            close $file
+            error "Missing Graph section"
+        }
+
+        gets $file thisLine
+        if {[scan $thisLine "Nodes %d" n]!=1 || $n<1} {
+            close $file
+            error "Expected a positive number of nodes"
+        }
+
+        gets $file thisLine
+        if {[scan $thisLine "Edges %d" m]!=1 || $m<1} {
+            close $file
+            error "Expected a positive number of edges"
+        }
+
+        goblin sparseGraph -nodes $n $object
+        $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+            -nodeDemand 1 -metricType disabled
+        set objectType "unknown"
+
+        while {[gets $file thisLine]>=0 && \
+            ![string equal -nocase $thisLine "EOF"] && \
+            ![string equal -nocase $thisLine "END"]} {
+            if {$thisLine==""} {continue}
+
+            set u 0
+            set v 0
+            set length 1
+
+            if {[scan $thisLine "E %d %d %f" u v length]>=2} {
+                if {$objectType=="unknown"} {
+                    set objectType "undirected"
+                    goblin sparseGraph -nodes $n $object
+                    $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+                        -nodeDemand 0 -metricType disabled
+                } else {
+                    if {$objectType=="directed"} {
+                        close $file
+                        $object delete
+                        error "Mixed graphs are not supported"
+                    }
+                }
+            }
+
+            if {[scan $thisLine "A %d %d %f" u v length]>=2} {
+                if {$objectType=="unknown"} {
+                    set objectType "directed"
+                    goblin sparseDiGraph -nodes $n $object
+                    $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+                        -nodeDemand 0 -metricType disabled
+                } else {
+                    if {$objectType=="undirected"} {
+                        close $file
+                        $object delete
+                        error "Mixed graphs are not supported"
+                    }
+                }
+            }
+
+            if {$u>$n || $u<1 || $v>$n || $v<1} {
+                close $file
+                if {$objectType!="unknown"} {$object delete}
+                error "Node index exeeds problem dimension"
+            }
+
+            set a [expr {2*[$object arc insert [expr {$u-1}] [expr {$v-1}]]}]
+            $object arc $a configure -edgeLength $length
+        }
+
+        while {[gets $file thisLine]>=0 && \
+            ![string equal -nocase $thisLine "EOF"] && \
+            ![string equal -nocase $thisLine "SECTION Terminals"]} {}
+
+        if {![string equal -nocase $thisLine "SECTION Terminals"]} {
+            close $file
+            $object delete
+            error "Missing Terminals section"
+        }
+
+        gets $file thisLine
+        if {[scan $thisLine "Terminals %d" n]!=1 || $n<1} {
+            close $file
+            $object delete
+            error "Expected a positive number of terminals"
+        }
+
+        while {[gets $file thisLine]>=0 && \
+            ![string equal -nocase $thisLine "EOF"] && \
+            ![string equal -nocase $thisLine "END"]} {
+
+            if {[scan $thisLine "T %d" u]>=1} {
+                $object node [expr {$u-1}] configure -nodeDemand 1
+            } else {
+                close $file
+                $object delete
+                error "Expected terminal declaration"
+            }
+        }
+
+        while {[gets $file thisLine]>=0 && \
+            ![string equal -nocase $thisLine "EOF"] && \
+            ![string equal -nocase $thisLine "SECTION Coordinates"]} {}
+
+            if {[string equal -nocase $thisLine "SECTION Coordinates"]} {
+                while {[gets $file thisLine]>=0 && \
+                    ![string equal -nocase $thisLine "EOF"] && \
+                    ![string equal -nocase $thisLine "END"]} {
+
+                if {[scan $thisLine "DD %d %f %f" u x y]>=1 ||
+                    [scan $thisLine "DDD %d %f %f" u x y]>=1} {
+                    $object layout point [expr {$u-1}] placeAt $x $y
+                } else {
+                    close $file
+                    $object delete
+                    error "Expected node coordinates"
+                }
+            }
+        }
+
+        close $file
+
+        return
+    }
+
+
+    # TSPLIB Formats
+
+    if {[string equal $format "tsp"]} {
+            set file [open "$fileName" r]
+
+        set display_data ""
+        while {[gets $file thisLine]>=0 && \
+                [scan $thisLine {%[A-_] : %s} spec value]==2} {
+            if {[string equal $spec "TYPE"]} {set type $value}
+            if {[string equal $spec "DIMENSION"]} {set n $value}
+            if {[string equal $spec "EDGE_WEIGHT_TYPE"]} {set geometry $value}
+            if {[string equal $spec "EDGE_WEIGHT_FORMAT"]} {set format $value}
+            if {[string equal $spec "DISPLAY_DATA_TYPE"]} {set display_data $value}
+        }
+
+        if {![info exists type]} {
+            close $file
+            error "Missing TYPE specifier"
+        }
+        if {![string equal $type "TSP"]} {
+            close $file
+            error "TYPE must be TSP"
+        }
+        if {![info exists n]} {
+            close $file
+            error "Missing DIMENSION specifier"
+        }
+        if {![info exists geometry]} {
+            close $file
+            error "Missing EDGE_WEIGHT_TYPE specifier"
+        }
+
+        goblin denseGraph -nodes $n $object
+        $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+            -nodeDemand 2 -metricType disabled
+
+        if {[string equal $geometry "EXPLICIT"]} {
+
+            if {![info exists format]} {
+                close $file
+                $object delete
+                error "Missing EDGE_WEIGHT_FORMAT specifier"
+            }
+
+            if {![string equal [string trim $thisLine] "EDGE_WEIGHT_SECTION"]} {
+                close $file
+                $object delete
+                error "Missing EDGE_WEIGHT_SECTION specifier"
+            }
+
+            $object configure -metricType disabled
+            gets $file thisLine
+            set thisLine [string trim $thisLine]
+
+            if {[string equal $format "LOWER_DIAG_ROW"]} {
+                set iLower {0}
+                set iUpper {$n}
+                set jLower {0}
+                set jUpper {$i+1}
+            } else {
+                if {[string equal $format "UPPER_DIAG_ROW"]} {
+                    set iLower {0}
+                    set iUpper {$n}
+                    set jLower {$i}
+                    set jUpper {$n}
+                } else {
+                    if {[string equal $format "UPPER_ROW"]} {
+                        set iLower {0}
+                        set iUpper {$n-1}
+                        set jLower {$i+1}
+                        set jUpper {$n}
+                    } else {
+                        if {[string equal $format "FULL_MATRIX"]} {
+                            set iLower {0}
+                            set iUpper {$n}
+                            set jLower {0}
+                            set jUpper {$n}
+                        } else {
+                            close $file
+                            $object delete
+                            error "EDGE_WEIGHT_FORMAT: $format not supported in GOBLIN"
+                        }
+                    }
+                }
+            }
+
+            for {set i [expr $iLower]} {$i<[expr $iUpper]} {incr i} {
+                for {set j [expr $jLower]} {$j<[expr $jUpper]} {incr j} {
+                    if {[scan $thisLine {%[0-9]} thisWeight]==0} {
+                        close $file
+                        $object delete
+                        error "Parse error in EDGE_WEIGHT_SECTION"
+                    }
+
+                    $object arc [$object adjacency $i $j] configure -edgeLength $thisWeight
+
+                    set firstBlank [string first " " $thisLine]
+                    incr firstBlank
+                    if {$firstBlank>0} {
+                        set thisLine [string range $thisLine $firstBlank end]
+                        set thisLine [string trim $thisLine]
+                    } else {
+                        gets $file thisLine
+                        set thisLine [string trim $thisLine]
+                    }
+                }
+            }
+
+            for {set i 0} {$i<$n} {incr i} {
+                $object arc [$object adjacency $i $i] configure -edgeLength *
+            }
+
+            if {[string equal $display_data "TWOD_DISPLAY"]} {
+                if {![string equal [string trim $thisLine] "DISPLAY_DATA_SECTION"]} {
+                    close $file
+                    $object delete
+                    error "Missing DISPLAY_DATA_SECTION specifier"
+                }
+
+                while {[gets $file thisLine] >= 0 && \
+                        ![string equal [string trim $thisLine] "EOF"]} {
+                    if {[scan $thisLine "%d %f %f" u x y]==3} {
+                        $object layout point [expr $u-1] placeAt $x $y
+                    }
+                }
+            }
+        } else {
+            if {[string equal $geometry "EUC_2D"]} {
+                $object configure -metricType euclidian
+            } else {
+                if {[string equal $geometry "MAX_2D"]} {
+                    $object configure -metricType maximum
+                } else {
+                    if {[string equal $geometry "MAN_2D"]} {
+                        $object configure -metricType manhattan
+                    } else {
+                        if {[string equal $geometry "GEO"]} {
+                            $object configure -metricType spheric
+                        } else {
+                            close $file
+                            $object delete
+                            error "Format EDGE_WEIGHT_TYPE: $geometry is not supported"
+                        }
+                    }
+                }
+            }
+
+            if {![string equal [string trim $thisLine] "NODE_COORD_SECTION"]} {
+                close $file
+                $object delete
+                error "Missing NODE_COORD_SECTION specifier"
+            }
+
+            while {[gets $file thisLine] >= 0 && \
+                    ![string equal [string trim $thisLine] "EOF"]} {
+                if {[scan $thisLine "%d %f %f" u x y]==3} {
+                    $object layout point [expr $u-1] placeAt $x $y
+                }
+            }
+        }
+
+        close $file
+        return
+    }
+
+    if {[string equal $format "atsp"]} {
+        set file [open "$fileName" r]
+
+        set display_data ""
+        while {[gets $file thisLine]>=0 && \
+                [scan $thisLine {%[A-_] : %s} spec value]==2} {
+            if {[string equal $spec "TYPE"]} {set type $value}
+            if {[string equal $spec "DIMENSION"]} {set n $value}
+            if {[string equal $spec "EDGE_WEIGHT_TYPE"]} {set geometry $value}
+            if {[string equal $spec "EDGE_WEIGHT_FORMAT"]} {set format $value}
+            if {[string equal $spec "DISPLAY_DATA_TYPE"]} {set display_data $value}
+        }
+
+        if {![info exists type]} {
+            close $file
+            error "Missing TYPE specifier"
+        }
+        if {![string equal $type "ATSP"]} {
+            close $file
+            error "TYPE must be ATSP"
+        }
+        if {![info exists n]} {
+            close $file
+            error "Missing DIMENSION specifier"
+        }
+        if {![info exists geometry]} {
+            close $file
+            error "Missing EDGE_WEIGHT_TYPE specifier"
+        }
+
+        goblin denseDiGraph -nodes $n $object
+        $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+            -nodeDemand 0 -metricType disabled
+
+        if {[string equal $geometry "EXPLICIT"]} {
+            if {![info exists format]} {
+                close $file
+                $object delete
+                error "Missing EDGE_WEIGHT_FORMAT specifier"
+            }
+
+            if {![string equal [string trim $thisLine] "EDGE_WEIGHT_SECTION"]} {
+                close $file
+                $object delete
+                error "Missing EDGE_WEIGHT_SECTION specifier"
+            }
+
+            $object configure -metricType disabled
+            gets $file thisLine
+            set thisLine [string trim $thisLine]
+
+            if {[string equal $format "FULL_MATRIX"]} {
+                set iLower {0}
+                set iUpper {$n}
+                set jLower {0}
+                set jUpper {$n}
+            } else {
+                close $file
+                $object delete
+                error "EDGE_WEIGHT_FORMAT: $format not supported in GOBLIN"
+            }
+
+            for {set i [expr $iLower]} {$i<[expr $iUpper]} {incr i} {
+                for {set j [expr $jLower]} {$j<[expr $jUpper]} {incr j} {
+                    if {[scan $thisLine {%[0-9]} thisWeight]==0} {
+                        close $file
+                        $object delete
+                        error "Parse error in EDGE_WEIGHT_SECTION"
+                    }
+
+                    $object arc [$object adjacency $i $j] configure -edgeLength $thisWeight
+
+                    set firstBlank [string first " " $thisLine]
+                    incr firstBlank
+                    if {$firstBlank>0} {
+                        set thisLine [string range $thisLine $firstBlank end]
+                        set thisLine [string trim $thisLine]
+                    } else {
+                        gets $file thisLine
+                        set thisLine [string trim $thisLine]
+                    }
+                }
+            }
+
+            for {set i 0} {$i<$n} {incr i} {
+                $object arc [$object adjacency $i $i] configure -edgeLength *
+            }
+
+            if {[string equal $display_data "TWOD_DISPLAY"]} {
+                if {![string equal [string trim $thisLine] "DISPLAY_DATA_SECTION"]} {
+                    close $file
+                    $object delete
+                    error "Missing DISPLAY_DATA_SECTION specifier"
+                }
+
+                while {[gets $file thisLine] >= 0 && \
+                        ![string equal [string trim $thisLine] "EOF"]} {
+                    if {[scan $thisLine "%d %f %f" u x y]==3} {
+                        $object layout point [expr $u-1] placeAt $x $y
+                    }
+                }
+            }
+        } else {
+            close $file
+            $object delete
+            error "Format EDGE_WEIGHT_TYPE: $geometry is not supported"
+        }
+
+        close $file
+        return
+    }
+
+    if {[string equal $format "hcp"]} {
+        set file [open "$fileName" r]
+
+        while {[gets $file thisLine]>=0 && \
+                [scan $thisLine {%[A-_] : %s} spec value]==2} {
+            if {[string equal $spec "TYPE"]} {set type $value}
+            if {[string equal $spec "DIMENSION"]} {set n $value}
+            if {[string equal $spec "EDGE_DATA_FORMAT"]} {set format $value}
+        }
+
+        if {![info exists type]} {
+            close $file
+            error "Missing TYPE specifier"
+        }
+        if {![string equal $type "HCP"]} {
+            close $file
+            error "TYPE must be HCP"
+        }
+        if {![info exists n]} {
+            close $file
+            error "Missing DIMENSION specifier"
+        }
+        if {![info exists format]} {
+            close $file
+            error "Missing EDGE_DATA_FORMAT specifier"
+        }
+
+        if {![string equal [string trim $thisLine] "EDGE_DATA_SECTION"]} {
+            close $file
+            error "Missing EDGE_DATA_SECTION specifier"
+        }
+
+        goblin sparseGraph -nodes $n $object
+        $object configure -upperBound 1 -lowerBound 0 -edgeLength 1 \
+            -nodeDemand 2 -metricType disabled
+
+        if {[string equal $format "EDGE_LIST"]} {
+            while {[gets $file thisLine]>=0 && \
+                [scan $thisLine {%d %d} head tail]==2} {
+                $object arc insert [expr $head-1] [expr $tail-1]
+            }
+        } else {
+            close $file
+            $object delete
+            error "Format EDGE_DATA_TYPE: $format is not supported"
+        }
+
+        close $file
+        return
+    }
+
+    error "Unknown Format: $format"
+}

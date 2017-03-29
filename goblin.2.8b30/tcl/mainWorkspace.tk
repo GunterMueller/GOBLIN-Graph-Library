@@ -1,0 +1,803 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainWorkspace.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Splitting the workspace into canvas, messenger and dialog region
+#             Scrollbars, separators and alignment of the workspace elements
+#             Generic dialog form
+#-------------------------------------------------------------------------------
+
+
+
+set Workspace .workspace
+frame $Workspace
+pack $Workspace -side top -after .infobar -fill both -expand yes
+
+set CanvasRegion $Workspace.fcanvas
+set InternalLog $Workspace.flogging
+set DialogRegion $Workspace.fdialog
+
+proc SplitWorkspace {} {
+    global Workspace CanvasRegion InternalLog DialogRegion DialogView \
+        BrowserBalance DialogBalance SepWidth \
+        DialogSeparator RegisteredDialogs
+
+    if {[winfo exists $DialogRegion]} {
+        set thisDialogBalance 1.0
+
+        if {$DialogBalance<$thisDialogBalance && \
+            [llength $RegisteredDialogs]>0
+        } {
+            set thisDialogBalance $DialogBalance
+        }
+
+        place $DialogRegion -in $Workspace -relx $thisDialogBalance -rely 0 \
+            -relwidth [expr 1-$thisDialogBalance] -relheight 1 -anchor nw
+
+        if {[winfo exists $InternalLog]} {
+            if {[winfo exists $CanvasRegion]} {
+                place $CanvasRegion -in $Workspace -relx 0 -rely 0 -anchor nw \
+                    -relwidth $thisDialogBalance -relheight $BrowserBalance
+                place $InternalLog -in $Workspace -relx 0 -rely $BrowserBalance \
+                    -relwidth $thisDialogBalance -relheight [expr 1-$BrowserBalance] \
+                    -anchor nw
+                MakeCanvasSeparator
+            } else {
+                place $InternalLog -in $Workspace -relx 0 -rely 0 \
+                    -relwidth $thisDialogBalance -relheight 1 -anchor nw
+            }
+        } else {
+            place $CanvasRegion -in $Workspace -relx 0 -rely 0 -anchor nw \
+                -relwidth $thisDialogBalance -relheight 1
+        }
+    } else {
+        if {[winfo exists $InternalLog]} {
+            if {[winfo exists $CanvasRegion]} {
+                place $CanvasRegion -in $Workspace -relx 0 -rely 0 -anchor nw \
+                    -relwidth 1 -relheight $BrowserBalance
+                place $InternalLog -in $Workspace -relx 0 -rely $BrowserBalance \
+                    -relwidth 1 -relheight [expr 1-$BrowserBalance] -anchor nw
+                MakeCanvasSeparator
+            } else {
+                place $InternalLog -in $Workspace -relx 0 -rely 0 \
+                    -relwidth 1 -relheight 1 -anchor nw
+            }
+        } else {
+            place $CanvasRegion -in $Workspace -relx 0 -rely 0 \
+                -relwidth 1 -relheight 1 -anchor nw
+        }
+    }
+}
+
+
+# Canvas Region
+
+proc InitCanvasRegion {{textMode 0}} {
+    global Workspace CanvasRegion c xscroll yscroll savedMaxSize \
+        BrowserBalance InternalLog CanvasSeparator CanvasToolbar CanvasView \
+        SavedXScrollPos SavedYScrollPos InternalWindowing DialogBalance \
+        DialogRegion
+
+    set CanvasView $CanvasRegion.view
+
+    set xscroll $CanvasView.xscroll
+    set yscroll $CanvasView.yscroll
+
+    if {[winfo exists $xscroll]} {
+        set SavedXScrollPos [lindex [$xscroll get] 0]
+        set SavedYScrollPos [lindex [$yscroll get] 0]
+    } else {
+        set SavedXScrollPos 0
+        set SavedYScrollPos 0
+    }
+
+    destroy $CanvasRegion
+    frame $CanvasRegion
+
+    if {$InternalWindowing} {
+        SplitWorkspace
+    } else {
+        if {[winfo exists $InternalLog]} {
+            destroy $InternalLog
+            pack $CanvasRegion -side top -fill both -expand yes -padx 1m -pady 1m
+            ViewMessenger
+        } else {
+            pack $CanvasRegion -side top -fill both -expand yes -padx 1m -pady 1m
+        }
+    }
+
+    set CanvasToolbar $CanvasRegion.bar
+    frame $CanvasToolbar -relief raised -borderwidth 1
+    pack $CanvasToolbar -side left -fill y
+
+    frame $CanvasView
+    pack $CanvasView -side top -fill both -expand yes
+
+    set c $CanvasView.canvas
+
+    if {$textMode==0} {
+        canvas $c -bg ivory \
+            -relief sunken -borderwidth 2 \
+            -xscrollcommand "$xscroll set" \
+            -yscrollcommand "$yscroll set"
+    } else {
+        text $c -bg ivory -font {courier 12 bold} \
+            -padx 2m -pady 2m -wrap none -takefocus 1 \
+            -relief sunken -borderwidth 2 \
+            -xscrollcommand "$xscroll set" \
+            -yscrollcommand "$yscroll set"
+    }
+
+    bind $c <Button-1> {focus $c}
+    # $c create image 10 10 -image wallpaper -anchor nw
+
+    set canvasDelete $CanvasView.delete
+    scrollbar $yscroll -command "$c yview" -width 3.5m
+    scrollbar $xscroll -orient horiz -command "$c xview" -width 3.5m
+    button $canvasDelete -command {DestroyCanvasRegion} -padx 0 -pady 0 \
+        -image del_button
+
+    grid $c \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $yscroll \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $xscroll \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $canvasDelete \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    if {[winfo exists $InternalLog]} {MakeCanvasSeparator}
+
+    grid rowconfig    $CanvasView 0 -weight 1 -minsize 0
+    grid columnconfig $CanvasView 0 -weight 1 -minsize 0
+}
+
+proc DestroyCanvasRegion {} {
+    global CanvasRegion
+    destroy $CanvasRegion
+    ViewMessenger
+}
+
+proc BackupScrollPos {} {
+    global CanvasView c SavedXScrollPos SavedYScrollPos CanvasMargin
+
+    $c configure -scrollregion [list \
+        [expr [lindex [$c bbox all] 0]-$CanvasMargin] \
+        [expr [lindex [$c bbox all] 1]-$CanvasMargin] \
+        [expr [lindex [$c bbox all] 2]+$CanvasMargin] \
+        [expr [lindex [$c bbox all] 3]+$CanvasMargin] ]
+
+    set xscroll $CanvasView.xscroll
+    set yscroll $CanvasView.yscroll
+    $c xview moveto $SavedXScrollPos
+    $c yview moveto $SavedYScrollPos
+    eval $xscroll set [$c xview]
+    eval $yscroll set [$c yview]
+}
+
+proc MakeCanvasSeparator {} {
+    global CanvasRegion CanvasSeparator CanvasView Workspace SepWidth
+    set CanvasSeparator $CanvasView.sep
+    if {![winfo exists $CanvasView]} {return}
+
+    destroy $CanvasSeparator
+    frame $CanvasSeparator -height $SepWidth -bg grey
+    $CanvasSeparator config -cursor sizing
+    bind $CanvasSeparator <Button-1> {
+        global InternalWindowing InternalLog BrowserBalance Workspace
+        if {![winfo exists $InternalLog] && $InternalWindowing} {
+            set BrowserBalance 1.0
+            ViewMessenger
+        }
+        $Workspace config -cursor sizing
+
+        toplevel .volatileBar
+        wm geometry .volatileBar \
+            [expr [winfo width $CanvasSeparator]]x$SepWidth+[expr \
+                [winfo rootx $CanvasSeparator]]+[expr [winfo rooty \
+                $CanvasSeparator]]
+        frame .volatileBar.bar -height $SepWidth -bg darkgrey
+        pack .volatileBar.bar -fill both
+        wm overrideredirect .volatileBar 1
+    }
+
+    bind $CanvasSeparator <B1-Motion> {
+        set movedY [winfo pointery $CanvasSeparator]
+        if {$movedY<[expr round([winfo rooty $Workspace]+[winfo height $Workspace]*0.1)]} {
+            set movedY [expr round([winfo rooty $Workspace]+[winfo height $Workspace]*0.1)]
+        }
+        if {$movedY>[expr [winfo rooty $Workspace]+[winfo height $Workspace]-$SepWidth]} {
+            set movedY [expr [winfo rooty $Workspace]+[winfo height $Workspace]-$SepWidth]
+        }
+        wm geometry .volatileBar \
+            [expr [winfo width $CanvasSeparator]]x$SepWidth+[expr \
+                [winfo rootx $CanvasSeparator]]+$movedY
+    }
+
+    bind $CanvasSeparator <ButtonRelease-1> {
+        global CanvasSeparator BrowserBalance CanvasRegion InternalLog \
+            InternalWindowing Workspace DialogBalance
+        if {!$InternalWindowing} {return}
+
+        set BrowserBalance [expr {([winfo pointery $CanvasRegion] \
+            -[winfo rooty $Workspace] +0.01) / [winfo height $Workspace]}]
+        if {$BrowserBalance<0.1} {set BrowserBalance 0.1}
+        if {$BrowserBalance>1} {set BrowserBalance 1}
+        SplitWorkspace
+        $Workspace config -cursor left_ptr
+        destroy .volatileBar
+    }
+    grid $CanvasSeparator \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky news
+    grid rowconfig    $CanvasView 0 -weight 1 -minsize 0
+}
+
+
+# Dialog Region
+
+proc InitDialogRegion {} {
+    global DialogRegion DialogView DialogCanvas DialogFrame \
+        RegisteredDialogs DialogSeparator Workspace
+
+    if {[winfo exists $DialogRegion]} {
+        return
+    }
+
+    frame $DialogRegion
+    pack $DialogRegion -side left -fill both -expand yes -padx 1m -pady 1m
+
+    set DialogView $DialogRegion.sub
+    frame $DialogView
+
+    MakeDialogSeparator
+
+    grid $DialogSeparator \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky nws
+    grid $DialogView \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    grid rowconfig $DialogRegion 0 -weight 1 -minsize 0
+    grid columnconfig $DialogRegion 0 -weight 0 -minsize 0
+    grid columnconfig $DialogRegion 1 -weight 1 -minsize 0
+
+
+    set dialogDelete $DialogView.delete
+    button $dialogDelete -padx 0 -pady 0 -image del_button \
+    -command {
+        global RegisteredDialogs
+
+        foreach title $RegisteredDialogs {DestroyForm $title}
+    }
+
+    set DialogCanvas $DialogView.canvas
+    set dialogScroll $DialogView.yscroll
+
+    scrollbar $dialogScroll -command "$DialogCanvas yview" -width 3.5m
+    canvas $DialogCanvas -yscrollcommand "$dialogScroll set"
+
+    grid $DialogCanvas \
+        -row 0 -column 0 -rowspan 2 -columnspan 1 -sticky news
+    grid $dialogScroll \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    grid $dialogDelete \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    grid rowconfig    $DialogView 0 -weight 1 -minsize 0
+    grid columnconfig $DialogView 0 -weight 1 -minsize 0
+
+    set DialogFrame $DialogCanvas.frame
+    set f [frame $DialogFrame]
+    $DialogCanvas create window 1 1 -anchor nw -window $f
+
+    bind $Workspace <Configure> {AlignActiveDialog}
+}
+
+proc MakeDialogSeparator {} {
+    global DialogRegion DialogSeparator Workspace DialogBalance SepWidth
+
+    set DialogSeparator $DialogRegion.sep
+
+    if {[winfo exists $DialogSeparator]} {return}
+
+    frame $DialogSeparator -width $SepWidth -bg grey
+    $DialogSeparator config -cursor sizing
+
+    bind $DialogSeparator <Button-1> {
+        $Workspace config -cursor sizing
+
+        toplevel .volatileBar
+        wm geometry .volatileBar \
+            [expr $SepWidth]x[expr [winfo width $DialogSeparator]]+[expr \
+                [winfo rootx $DialogSeparator]]+[expr [winfo rooty \
+                $DialogSeparator]]
+        frame .volatileBar.bar -width $SepWidth -bg darkgrey
+        pack .volatileBar.bar -fill both
+        wm overrideredirect .volatileBar 1
+    }
+
+    bind $DialogSeparator <B1-Motion> {
+        set movedX [winfo pointerx $DialogSeparator]
+
+        if {$movedX<[expr round([winfo rootx $Workspace]+[winfo width $Workspace]*0.1)]} {
+            set movedX [expr round([winfo rootx $Workspace]+[winfo width $Workspace]*0.1)]
+        }
+
+        if {$movedX>[expr [winfo rootx $Workspace]+[winfo width $Workspace]-$SepWidth]} {
+            set movedX [expr [winfo rootx $Workspace]+[winfo width $Workspace]-$SepWidth]
+        }
+
+        wm geometry .volatileBar \
+            [expr $SepWidth]x[expr [winfo height $DialogSeparator]]+$movedX+[expr \
+                [winfo rooty $DialogSeparator]]
+    }
+
+    bind $DialogSeparator <ButtonRelease-1> {
+        global DialogBalance DialogRegion Workspace DialogFrame SepWidth
+
+        set DialogBalance [expr {([winfo pointerx $DialogRegion] \
+            -[winfo rootx $Workspace] +0.01) / [winfo width $Workspace]}]
+
+        if {$DialogBalance<0.1} {set DialogBalance 0.1}
+        if {$DialogBalance>0.99} {set DialogBalance 0.99}
+
+        set maxWidth [winfo reqwidth $DialogFrame]
+        set minDialogBalance \
+            [expr 1-($SepWidth.0+$maxWidth.0+12)/([winfo width .]-60)]
+
+        if {$minDialogBalance>$DialogBalance} {
+            set DialogBalance $minDialogBalance
+        }
+
+        SplitWorkspace
+        $Workspace config -cursor left_ptr
+        destroy .volatileBar
+    }
+}
+
+proc RegisterFormOrWindow {
+    title winName pathName procNameActivate nameDestroy bodyDestroy \
+    nameApply bodyApply nameLink bodyLink nameNew bodyNew
+    {nameErase ""} {bodyErase {} }
+} {
+    global DialogFrame ActiveDialog RegisteredDialogs RegisteredPath \
+        RegisteredConstructor RegisteredUploader InternalWindowing DialogCanvas path
+
+    if {$InternalWindowing} {
+        if {[info exists RegisteredPath($title)] && \
+            [winfo exists $RegisteredPath($title)]
+        } {
+            return 1
+        }
+
+        set path $DialogFrame.$winName
+
+        if {![winfo exists $path]} {
+            frame $path
+        }
+    } else {
+        set path .$winName
+
+        if {![winfo exists $path]} {
+            toplevel $path
+            wm withdraw $path
+            wm title $path $title
+        } else {
+            return 1
+        }
+    }
+
+    global $pathName
+    set $pathName $path
+
+    set i [lsearch $RegisteredDialogs $title]
+
+    if {$i>=0} {
+        set RegisteredDialogs [lreplace $RegisteredDialogs $i $i]
+    }
+
+    set RegisteredDialogs [linsert $RegisteredDialogs 0 $title]
+    set RegisteredPath($title) $path
+    set RegisteredConstructor($title) $procNameActivate
+    set ActiveDialog($title) 1
+
+    if {$InternalWindowing} {
+        frame $path"Bar" -bg PaleGreen4 -relief groove -borderwidth 1
+
+        if {[llength $RegisteredDialogs]>1} {
+            set pred $RegisteredPath([lindex $RegisteredDialogs 1])
+            pack $path"Bar" -side top -before $pred"Bar" -fill x -expand 1
+        } else {
+            pack $path"Bar" -side top -fill x -expand 1
+        }
+
+        $DialogCanvas yview moveto 0
+
+        label $path"Bar".label -text " $title" -bg PaleGreen4 -fg white
+        pack $path"Bar".label -side left -expand 1 -anchor w
+        bind $path"Bar" <Button-1> {
+            $DialogCanvas config -cursor double_arrow
+        }
+        bind $path"Bar".label <Button-1> {
+            $DialogCanvas config -cursor double_arrow
+        }
+        bind $path"Bar" <ButtonRelease-1> [list DropForm $title]
+        bind $path"Bar".label <ButtonRelease-1> [list DropForm $title]
+
+        set listOfButtons ""
+
+        if {$nameApply!=""} {
+            set thisButton $path"Bar".apply
+            append listOfButtons " " $thisButton
+            button $thisButton -image apply_button -bg black \
+                -borderwidth 0 -relief flat -width 10 -height 10 \
+                -command [format {
+                DestroyBalloon
+                eval {%1$s}
+            } $bodyApply]
+            bind $thisButton <Enter> \
+                [list MakeBalloonRel $nameApply $thisButton -40 -30]
+            bind $thisButton <Leave> {DestroyBalloon}
+        }
+
+        if {$nameLink!=""} {
+            set thisButton $path"Bar".link
+            append listOfButtons " " $thisButton
+            button $thisButton -image link_button -bg black \
+                -borderwidth 0 -relief flat -width 10 -height 10 \
+                -command [format {
+                DestroyBalloon
+                eval {%1$s}
+            } $bodyLink]
+            bind $thisButton <Enter> \
+                [list MakeBalloonRel $nameLink $thisButton -40 -30]
+            bind $thisButton <Leave> {DestroyBalloon}
+        }
+
+        if {$nameNew!=""} {
+            set thisButton $path"Bar".new
+            append listOfButtons " " $thisButton
+            button $thisButton -image new_button -bg black \
+                -borderwidth 0 -relief flat -width 10 -height 10 \
+                -command [format {
+                DestroyBalloon
+                eval {%1$s}
+            } $bodyNew]
+            bind $thisButton <Enter> \
+                [list MakeBalloonRel $nameNew $thisButton -40 -30]
+            bind $thisButton <Leave> {DestroyBalloon}
+        }
+
+        if {$nameErase!=""} {
+            set thisButton $path"Bar".erase
+            append listOfButtons " " $thisButton
+            button $thisButton -image erase_button -bg black \
+                -borderwidth 0 -relief flat -width 10 -height 10 \
+                -command [format {
+                DestroyBalloon
+                eval {%1$s}
+            } $bodyErase]
+            bind $thisButton <Enter> \
+                [list MakeBalloonRel $nameErase $thisButton -40 -30]
+            bind $thisButton <Leave> {DestroyBalloon}
+        }
+
+        set thisButton $path"Bar".delete
+        append listOfButtons " " $thisButton
+        button $thisButton -image del_button -bg black \
+            -borderwidth 0 -relief flat -width 10 -height 10 \
+            -command [format {
+            eval {%2$s}
+            DestroyBalloon
+            DestroyForm {%1$s}
+        } $title $bodyDestroy]
+        bind $thisButton <Enter> \
+            [list MakeBalloonRel $nameDestroy $thisButton -40 -30]
+        bind $thisButton <Leave> {DestroyBalloon}
+
+        eval pack $listOfButtons -side left -padx 2 -pady 1 -anchor c
+    } else {
+        frame $path.buttons
+
+        set listOfButtons ""
+
+        if {$nameApply!=""} {
+            set thisButton $path.buttons.apply
+            append listOfButtons " " $thisButton
+            button $thisButton -text $nameApply \
+                -command $bodyApply
+        }
+
+        if {$nameLink!=""} {
+            set thisButton $path.buttons.link
+            append listOfButtons " " $thisButton
+            button $thisButton -text $nameLink \
+                -command $bodyLink
+        }
+
+        if {$nameNew!=""} {
+            set thisButton $path.buttons.new
+            append listOfButtons " " $thisButton
+            button $thisButton -text $nameNew \
+                -command $bodyNew
+        }
+
+        if {$nameErase!=""} {
+            set thisButton $path.buttons.erase
+            append listOfButtons " " $thisButton
+            button $thisButton -text $nameErase \
+                -command $bodyErase
+        }
+
+        if {$nameDestroy!=""} {
+            set thisButton $path.buttons.destroy
+            append listOfButtons " " $thisButton
+            button $thisButton -text $nameDestroy -command [format {
+                eval {%2$s}
+                DestroyFormOrWindow {%3$s} {%1$s}
+            } $path $bodyDestroy $title]
+        }
+
+        if {$listOfButtons!=""} {
+            eval pack $listOfButtons -side left -fill x -padx 3m
+            pack $path.buttons -padx 3m -pady 3m -side bottom
+        }
+
+        after 500 {wm resizable $path 0 0}
+    }
+
+    return 0
+}
+
+proc DisplayForm {title} {
+    global InternalWindowing RegisteredPath
+
+    if {!$InternalWindowing} {
+        AdjustWithRootWindow $RegisteredPath($title)
+        return
+    }
+
+    pack $RegisteredPath($title) -side top -after $RegisteredPath($title)"Bar" \
+        -anchor nw -fill x -expand 1
+    AlignActiveDialog
+}
+
+proc ToggleForm {title} {
+    global RegisteredConstructor RegisteredPath ActiveDialog
+
+    set ActiveDialog($title) [expr 1-$ActiveDialog($title)]
+
+    if {$ActiveDialog($title)} {
+        eval $RegisteredConstructor($title)
+        pack $RegisteredPath($title) -anchor nw -fill x -expand 1 \
+            -side top -after $RegisteredPath($title)"Bar"
+    } else {
+        pack forget $RegisteredPath($title)
+    }
+
+    AlignActiveDialog
+}
+
+proc DropForm {dropTitle} {
+    global RegisteredDialogs RegisteredPath ActiveDialog DialogCanvas
+
+    set thisWinPath $RegisteredPath($dropTitle)
+    set currentPath "[winfo containing [winfo pointerx .] [winfo pointery .]]"
+
+    $DialogCanvas config -cursor left_ptr
+
+    foreach title $RegisteredDialogs {
+        if {[string first $RegisteredPath($title)"Bar" $currentPath]==0} {
+            if {[string equal $title $dropTitle]} {
+                ToggleForm $dropTitle
+                return
+            }
+
+            pack $thisWinPath"Bar" -side top -before $RegisteredPath($title)"Bar" \
+                -fill x -expand 1
+
+            if {$ActiveDialog($dropTitle)} {
+                pack $thisWinPath -anchor nw -fill x -expand 1 \
+                    -side top -after $thisWinPath"Bar"
+            }
+
+            return
+        }
+    }
+}
+
+proc AlignActiveDialog {} {
+    global DialogCanvas DialogFrame InternalWindowing RegisteredPath \
+        ActiveDialog DialogBalance SepWidth RegisteredDialogs
+
+    if {!$InternalWindowing} {return}
+
+    set dummyTimer 0
+    after 20 set dummyTimer 1
+    vwait dummyTimer
+
+    set width [winfo reqwidth $DialogFrame]
+    set height [winfo reqheight $DialogFrame]
+    $DialogCanvas config -scrollregion "1 1 $width $height"
+
+    set maxWidth [expr [winfo width .]-80-$SepWidth]
+    if {$width>$maxWidth} {set width $maxWidth}
+    set DialogBalance \
+        [expr 1-($SepWidth.0+$width.0+12)/([winfo width .]-60)]
+
+    SplitWorkspace
+    InitDialogRegion
+}
+
+proc DestroyForm {title} {
+    global RegisteredPath ActiveDialog RegisteredDialogs Workspace
+
+    if {[llength $RegisteredDialogs]>0 && $RegisteredPath($title)!=""} {
+        destroy $RegisteredPath($title)"Bar"
+        destroy $RegisteredPath($title)
+        set ActiveDialog($title) 0
+
+        if {[llength $RegisteredDialogs]>1} {
+            set i [lsearch $RegisteredDialogs $title]
+            set RegisteredDialogs [lreplace $RegisteredDialogs $i $i]
+            AlignActiveDialog
+        } else {
+            set RegisteredDialogs [list]
+            InitDialogRegion
+            SplitWorkspace
+        }
+    } else {
+        InitDialogRegion
+    }
+}
+
+proc DestroyFormOrWindow {title winpath} {
+    global InternalWindowing RegisteredDialogs ActiveDialog
+
+    if {$InternalWindowing} {
+        DestroyForm $title
+    } else {
+        destroy $winpath
+
+        set ActiveDialog($title) 0
+
+        if {[llength $RegisteredDialogs]>1} {
+            set i [lsearch $RegisteredDialogs $title]
+            set RegisteredDialogs [lreplace $RegisteredDialogs $i $i]
+        } else {
+            set RegisteredDialogs [list]
+        }
+    }
+}
+
+proc UpdateActiveDialogs {} {
+    global RegisteredDialogs RegisteredConstructor ActiveDialog
+
+    foreach title $RegisteredDialogs {
+        if {$ActiveDialog($title)} {
+            eval $RegisteredConstructor($title)
+        }
+    }
+
+    UpdateProgressBar
+}
+
+proc AdjustWithRootWindow {thisWin} {
+
+    if {![winfo ismapped $thisWin]} {
+        wm deiconify $thisWin
+
+        if {[catch {tkwait visibility $thisWin}]!=0} {
+            # Do not complain if the window is destroyed before it can be mapped
+            return
+        }
+    }
+
+    global dummyTimer
+    set dummyTimer 0
+    after 20 set dummyTimer 1
+    vwait dummyTimer
+
+    scan [wm geometry .] "%ux%u+%u+%u" \
+        rootSizeX rootSizeY rootMinX rootMinY
+
+    scan [wm geometry $thisWin] "%ux%u+%u+%u" \
+        thisSizeX thisSizeY thisMinX thisMinY
+
+    set diffX [expr $rootSizeX - $thisSizeX]
+    set newMinX [expr $rootMinX + $diffX/2]
+
+    set diffY [expr $rootSizeY - $thisSizeY]
+    set newMinY [expr $rootMinY + $diffY/2]
+
+    wm geometry $thisWin \
+        [expr $thisSizeX]x[expr $thisSizeY]+$newMinX+$newMinY
+}
+
+proc MakePulldownMenuButton {buttonPathName {attributes ""}} {
+    label $buttonPathName -anchor w -padx 1m -pady 1m -bg white -relief ridge
+
+    eval $buttonPathName configure $attributes
+}
+
+proc AttachSelectionForm {buttonPathName numDisplay activeLabel listOfCommands execCommand} {
+    if {[llength $listOfCommands]<2} {
+        $buttonPathName configure -text ""
+        bind $buttonPathName <Button-1> {}
+        return
+    }
+
+    foreach {label reference} $listOfCommands {
+        if {$label==$activeLabel} {
+            set activeReference $reference
+        }
+    }
+
+    if {![info exists activeReference]} {
+        set activeLabel [lindex $listOfCommands 0]
+        set activeReference [lindex $listOfCommands 1]
+    }
+
+    $buttonPathName configure -text $activeLabel
+
+    set menuPathName .pulldownMenu
+    bind $buttonPathName <Button-1> [list \
+        DisplaySelectionForm $buttonPathName $menuPathName \
+            $numDisplay $activeLabel $listOfCommands $execCommand]
+
+    destroy $menuPathName
+
+    eval $execCommand $activeReference
+}
+
+proc DisplaySelectionForm {parentPathName menuPathName numDisplay activeLabel listOfCommands execCommand} {
+    if {[winfo exists $menuPathName]} {return}
+
+    toplevel $menuPathName
+    wm overrideredirect $menuPathName 1
+
+    if {[expr 2*$numDisplay]<[llength $listOfCommands]} {
+        listbox $menuPathName.list -yscrollcommand "$menuPathName.scroll set" \
+            -width 30 -height $numDisplay -bg white -relief raised
+        grid $menuPathName.list \
+            -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+        scrollbar $menuPathName.scroll -command "$menuPathName.list yview" -width 3.5m
+        grid $menuPathName.scroll \
+            -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+    } else {
+        listbox $menuPathName.list -yscrollcommand {} \
+            -width 30 -height [expr [llength $listOfCommands]/2] -bg white
+        grid $menuPathName.list \
+            -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    }
+
+    grid rowconfig    $menuPathName 0 -weight 1 -minsize 0
+    grid columnconfig $menuPathName 0 -weight 1 -minsize 0
+
+    foreach {label command} $listOfCommands {
+        $menuPathName.list insert end $label
+    }
+
+    $menuPathName.list activate 0
+    $menuPathName.list see active
+
+    bind $menuPathName.list <Button-1> [list \
+        eval AttachSelectionForm $parentPathName $numDisplay \
+            {[%W get [%W index @%x,%y]]} [list $listOfCommands] $execCommand]
+
+    global dummyTimer
+    set dummyTimer 0
+    after 20 set dummyTimer 1
+    vwait dummyTimer
+
+    wm geometry $menuPathName \
+        [winfo width $parentPathName]x[winfo height $menuPathName]+[winfo rootx $parentPathName]+[expr [winfo rooty $parentPathName]+[winfo height $parentPathName]]
+
+    set dummyTimer 0
+    after 20 set dummyTimer 1
+    vwait dummyTimer
+    focus $menuPathName.list
+    grid columnconfig $menuPathName 0 -weight 1 -minsize 0
+
+    bind . <Enter> [list destroy $menuPathName]
+}

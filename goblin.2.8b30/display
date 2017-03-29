@@ -1,0 +1,98 @@
+#!/usr/bin/wish
+
+
+if {$argc != 0} {
+    set FileName [lindex $argv 0]
+    if {![file exists $FileName.tk]} {
+        puts "The file \"$FileName.tk\" does note exist!"
+        exit 1
+    } else {
+        wm title . [file tail $FileName]
+        set w .fcanvas
+        frame $w
+        pack $w -side top -fill both -expand yes -padx 1m -pady 1m
+
+        set c $w.canvas
+        set xscroll $w.xscroll
+        set yscroll $w.yscroll
+        set canvasDelete $w.button
+        canvas $c -bg ivory -relief sunken -borderwidth 2 \
+            -xscrollcommand "$xscroll set" -yscrollcommand "$yscroll set"
+
+        scrollbar $yscroll -command "$c yview" -width 5.0m
+        scrollbar $xscroll -orient horiz -command "$c xview" -width 5.0m
+
+        set DelButton [file join tcl delbutton.gif]
+        set ImageCorrupted 1
+        if {[file exists $DelButton]} {
+            catch {
+                image create photo delbutton -file [file join tcl delbutton.gif]
+                button $canvasDelete -command {exit 0} -padx 0 -pady 0 \
+                    -image delbutton
+                set ImageCorrupted 0
+            }
+        }
+
+        if {$ImageCorrupted} {
+            button $canvasDelete -command {exit 0} -padx 0 -pady 0 \
+                -text x
+        }
+
+        grid $c -in $w \
+            -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+        grid $yscroll \
+            -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+        grid $xscroll \
+            -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+        grid $canvasDelete \
+            -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+        grid rowconfig    $w 0 -weight 1 -minsize 0
+        grid columnconfig $w 0 -weight 1 -minsize 0
+
+        bind . <Control-q> {exit 0}
+
+        set goblinCanvas $c
+        source $FileName.tk
+
+        for {set i 0} {$i<[llength $goblinCanvasObjects]} {incr i} {
+            set row [lindex $goblinCanvasObjects $i]
+            set objectType [lindex $row 1]
+
+            if {$objectType==6} {continue}
+
+            if {$objectType==4} {
+                # Memorize upper left corner
+
+                set minX [lindex [lindex $row 3] 0]
+                set minY [lindex [lindex $row 3] 1]
+
+                continue
+            }
+
+            if {$objectType==5} {
+                # Assign a bounding box
+
+                set maxX [lindex [lindex $row 3] 0]
+                set maxY [lindex [lindex $row 3] 1]
+                set width [expr $maxX-$minX]
+                set height [expr $maxY-$minY]
+                eval [list $c configure -width $width -height $height]
+                set scrollregion [list $minX $minY $maxX $maxY]
+                eval [list $c configure -scrollregion $scrollregion]
+
+                continue
+            }
+
+            if {$objectType!=4} {
+                # Display the canvas object
+
+                set cmd [concat [list $c create] \
+                    [lindex $row 2] [lindex $row 3] [lindex $row 4] ]
+                eval $cmd
+            }
+        }
+    }
+} else {
+    puts "No trace file specified!"
+    exit 1
+}

@@ -1,0 +1,374 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileSaveAs.tk
+# Activation: Dynamically loaded on user request
+# Scope:      File export dialog
+#-------------------------------------------------------------------------------
+
+
+source [file join $GoblinTclPath fileExport.tk]
+
+proc MakeExportForm {} {
+    global OrigFileName FileName ExportFilter ThisFile TargetFormat \
+        ThisType Mode goblinExtension WDExport ExportCategory \
+        ThisBackup TraceObject ThisSelector TraceFile FileCounter
+
+    if {[string equal $Mode "navigate"]} {
+        set TraceObject [ChooseObjectName]
+        set TraceFile $FileName.trace$FileCounter
+        goblinImport $TraceObject $TraceFile.$goblinExtension gob
+    } else {
+        set TraceObject [GetFocussedObject]
+        set TraceFile $FileName.backup$ThisBackup
+        $TraceObject write $FileName.backup$ThisBackup.gob
+    }
+
+    if {[string equal $Mode "navigate"]} {
+        set ThisSelector _$FileCounter
+    } else {
+        set ThisSelector ""
+    }
+
+    set ThisFile [file tail $OrigFileName]$ThisSelector.[GetFormatProperty $TargetFormat 2]
+
+    if {![file exists [file dirname $ExportFilter]]} {
+        set ExportFilter [file join [pwd] [GetFormatProperty $TargetFormat 2]]
+    }
+
+    set WDExport .export
+    destroy $WDExport
+    toplevel $WDExport
+    wm withdraw $WDExport
+    wm title $WDExport "Export Data Object"
+
+    frame $WDExport.f1
+    label $WDExport.f1.label -text "File:" -anchor w
+    pack $WDExport.f1.label -side top -fill x
+
+    entry $WDExport.f1.entry -textvariable ThisFile -bg white -width 40
+    pack $WDExport.f1.entry -side left -fill x
+
+    MakePulldownMenuButton $WDExport.f1.categorySelect "-width 21"
+    pack $WDExport.f1.categorySelect -side right
+
+    bind $WDExport.f1.entry <Return> ConfirmedExport
+
+    frame $WDExport.f2
+    label $WDExport.f2.label -text "Filter:" -anchor w
+    entry $WDExport.f2.entry -textvariable ExportFilter -bg white -width 66
+    pack $WDExport.f2.label $WDExport.f2.entry -side top -fill x
+
+    bind $WDExport.f2.entry <Return> ApplyExportFilter
+
+    frame $WDExport.f3
+    label $WDExport.f3.label -text "Selection:" -anchor w
+    scrollbar $WDExport.f3.scroll -command "$WDExport.f3.list yview"
+    pack $WDExport.f3.label -side top -fill x
+    pack $WDExport.f3.scroll -side left -fill y
+
+    listbox $WDExport.f3.list -yscrollcommand "$WDExport.f3.scroll set" -width 25
+    pack $WDExport.f3.list -side left -before $WDExport.f3.scroll
+
+    frame $WDExport.f4
+    label $WDExport.f4.label -text "File Format:" -anchor w
+    pack $WDExport.f4.label -side top -fill x
+
+    scrollbar $WDExport.f4.scroll -command "$WDExport.f4.list yview"
+    listbox $WDExport.f4.list -yscrollcommand "$WDExport.f4.scroll set" -width 30
+
+    pack $WDExport.f4.list $WDExport.f4.scroll -side left -fill y
+
+
+    if {[$TraceObject info -graphObject] && [$TraceObject layout info -exists]} {
+        set listOfCategories { \
+            "Data Object"   0 \
+            "Solution"      1 \
+            "Vectorial"     2 \
+            "Bitmap"        3 \
+        }
+    } else {
+        set listOfCategories { \
+            "Data Object"   0 \
+            "Solution"      1 \
+        }
+    }
+
+    set categoryIndex(object) 0
+    set categoryIndex(solution) 1
+    set categoryIndex(canvas) 2
+    set categoryIndex(bitmap) 3
+
+    AttachSelectionForm $WDExport.f1.categorySelect 5 \
+        [lindex $listOfCategories [expr 2*$categoryIndex($ExportCategory)]] \
+        $listOfCategories ApplyExportCategorySelection
+
+    bind $WDExport.f4.list <Double-Button-1> {
+        set TargetFormat [selection get]
+        set thisExt [GetFormatProperty $TargetFormat 2]
+        set ThisFile [file tail $FileName]$ThisSelector.$thisExt
+        set ExportFilter [file join [file dirname $ExportFilter] *.$thisExt]
+        ApplyExportFilter
+    }
+
+    frame $WDExport.buttons
+    button $WDExport.buttons.save -text "Export" -command ConfirmedExport
+    button $WDExport.buttons.cancel -text "Cancel" -command {
+        destroy .export
+
+        if {$TraceObject!=[GetFocussedObject]} {
+            $TraceObject delete
+        }
+
+        cd $WorkingDir
+    }
+
+    pack $WDExport.buttons.save $WDExport.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack $WDExport.buttons -padx 3m -pady 3m -side bottom
+    pack $WDExport.f1 $WDExport.f2 -padx 5m -pady 3m -side top -anchor w -expand 1 -fill x
+    pack $WDExport.f4 $WDExport.f3 -padx 5m -pady 3m -side left -anchor w
+
+    bind .export <FocusOut> {
+        if {[winfo exists .export]} {
+            raise .export .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .export]} {
+            raise .export .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow .export}
+    after 500 {wm resizable .export 0 0}
+}
+
+proc ApplyExportCategorySelection {categoryIndex} {
+    global ExportCategory SupportedFormats TraceObject TargetFormat WDExport \
+        ThisFile ExportFilter FileName ThisSelector OrigFileName
+
+    set categoryLabel(0) object
+    set categoryLabel(1) solution
+    set categoryLabel(2) canvas
+    set categoryLabel(3) bitmap
+    set targetFormat ""
+    set formatList [list]
+
+    foreach {format extension ftype restriction dummy exportFilter} $SupportedFormats {
+        if {$categoryLabel($categoryIndex)!=$ftype || !$exportFilter} {continue}
+
+        if {$restriction!="" && ![$TraceObject info -$restriction]} {continue}
+
+        lappend formatList $format
+
+        if {$targetFormat==""} {
+            set targetFormat $format
+        }
+    }
+
+    if {$targetFormat==""} {
+        # Category 0 == object should provide at least one export filter
+        ApplyExportCategorySelection 0
+        return
+    }
+
+    if {$ExportCategory!=$categoryLabel($categoryIndex)} {
+        set ExportCategory $categoryLabel($categoryIndex)
+
+        if {$targetFormat!=$TargetFormat} {
+            set TargetFormat $targetFormat
+        }
+
+        set thisExt [GetFormatProperty $TargetFormat 2]
+        set ThisFile [file tail $FileName]$ThisSelector.$thisExt
+        set ExportFilter [file join [file dirname $ExportFilter] *.$thisExt]
+    }
+
+    $WDExport.f4.list delete 0 end
+    eval {$WDExport.f4.list insert end} $formatList
+
+    ApplyExportFilter
+}
+
+proc ApplyExportFilter {} {
+    global ExportFilter ThisFile ZipExtension ZipEnabled WDExport
+
+    if {![file isdirectory [file dirname $ExportFilter]]} {return}
+
+    if {[file isdirectory $ExportFilter]} {
+        cd $ExportFilter
+        set ExportFilter [file join $ExportFilter *]
+    } else {
+        cd [file dirname $ExportFilter]
+    }
+
+    $WDExport.f3.list delete 0 end
+    $WDExport.f3.list insert end ".."
+    foreach i [lsort [glob -nocomplain *]] {
+        if {[file isdirectory $i]} {$WDExport.f3.list insert end $i}
+    }
+    if {$ZipExtension!=""} {
+        foreach i [lsort [glob -nocomplain \
+                [file tail $ExportFilter]$ZipExtension]] {
+            if {![file isdirectory $i]} {$WDExport.f3.list insert end $i}
+        }
+    }
+    foreach i [lsort [glob -nocomplain [file tail $ExportFilter]]] {
+        if {![file isdirectory $i] && [file extension $i]!=$ZipExtension} {
+            $WDExport.f3.list insert end $i
+        }
+    }
+
+    bind $WDExport.f3.list <Double-Button-1> {
+        if {[file isdirectory [selection get]]} {
+            cd [selection get]
+            set ExportFilter [file join [pwd] [file tail $ExportFilter]]
+            set ThisFile ""
+            ApplyExportFilter
+        } else {
+            set ThisFile [selection get]
+            if {[file extension $ThisFile]==$ZipExtension} {
+                UpdateCompressionMode 1
+            } else {
+                UpdateCompressionMode 0
+            }
+        }
+    }
+}
+
+proc ConfirmedExport {} {
+    global ExportFilter ThisFile TargetFormat goblinExtension \
+        BruteOverwrite
+
+    set exportDir [file dirname $ExportFilter]
+    if {![file exists $exportDir] || $ThisFile == ""} {return}
+
+    set exportName [file join $exportDir [file rootname $ThisFile]]
+    set target "$exportName.[GetFormatProperty $TargetFormat 2]"
+
+    if {![file exists $target] || $BruteOverwrite} {
+        ExportNow
+        return
+    }
+
+    destroy .saveChanges
+    toplevel .saveChanges
+    wm title .saveChanges "GOBLET Prompt"
+
+    frame .saveChanges.buttons
+    button .saveChanges.buttons.cancel -text "Cancel" -command { \
+        destroy .saveChanges
+    }
+
+    button .saveChanges.buttons.save -text "Yes" -command { \
+        ExportNow
+        destroy .saveChanges
+    }
+
+    pack .saveChanges.buttons.save .saveChanges.buttons.cancel \
+        -side left -fill x -padx 3m
+
+    pack .saveChanges.buttons -padx 3m -pady 3m -side bottom
+
+    label .saveChanges.warn -image msg_warn
+    message .saveChanges.msg -width 10c \
+        -text "Overwrite existing file ?"
+    pack .saveChanges.warn .saveChanges.msg -padx 2m -pady 3m -side left
+
+    focus .saveChanges.buttons.cancel
+
+    bind .saveChanges <FocusOut> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .saveChanges]} {
+            raise .saveChanges .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow .saveChanges}
+    after 500 {wm resizable .saveChanges 0 0}
+}
+
+proc ExportNow {} {
+    global WorkingDir ExportFilter ThisFile TargetFormat goblinExtension \
+        OrigFileName ZipEnabled TraceObject TraceFile
+
+    set exportDir [file dirname $ExportFilter]
+
+    if {[file exists $exportDir] && $ThisFile != ""} {
+        destroy .export
+
+        set exportName [file join $exportDir [file rootname $ThisFile]]
+
+        if {$ZipEnabled} {set exportName [file rootname $exportName]}
+
+        AsynchronousExport $TraceObject [file join $exportDir $ThisFile] \
+            [GetFormatProperty $TargetFormat 2] [GetFormatProperty $TargetFormat 3]
+
+        if {[string equal [GetFormatProperty $TargetFormat 2] $goblinExtension]} {
+            set OrigFileName $exportName
+            set WorkingDir $exportDir
+            OpenFile
+        }
+
+        if {$TraceObject!=[GetFocussedObject]} {$TraceObject delete}
+
+        cd $WorkingDir
+    }
+}
+
+proc AsynchronousExport {object exportName format type} {
+    global goblinCommLevel Toolbar UpdateCycle GoblinTclPath \
+        ZipEnabled ZipExtension ZipCommand SystemTmpDir
+
+    if {$goblinCommLevel} {
+        set jobFileName [file join $SystemTmpDir "jobExport.tcl"]
+
+        set file [open $jobFileName w]
+        puts $file "set ZipEnabled $ZipEnabled"
+        puts $file "set ZipExtension $ZipExtension"
+        puts $file "set ZipCommand \"$ZipCommand\""
+        puts $file "set SystemTmpDir \"$SystemTmpDir\""
+        puts $file "source \"[file join $GoblinTclPath fileExport.tk]\""
+        puts $file "goblin alias GOB [$object handle]"
+        puts $file "set state \[catch \{ExportAndZip GOB \"$exportName\" $format $type\} result\]"
+        puts $file "if \{\$state==0\} \{"
+        puts $file "    goblin solver return \$result"
+        puts $file "\} else \{"
+        puts $file "    goblin solver throw \$result"
+        puts $file "\}"
+        close $file
+
+        PostStatusInfo "file export in progress..."
+        $Toolbar.solve configure -image running_solver
+
+        goblin solver thread $jobFileName
+
+        while {![goblin solver idle]} {
+            set dummyTimer 0
+            after $UpdateCycle set dummyTimer 1
+            vwait dummyTimer
+        }
+
+        set state [catch {goblin solver result} result]
+
+        file delete $jobFileName
+        $Toolbar.solve configure -image start_solver
+    } else {
+        set state [catch {eval ExportAndZip $object $exportName $format $type} result]
+    }
+
+    if {$state != 0} {
+        AcknowledgementMessage $result
+        error "$result"
+    } else {
+        PostStatusInfo  "File \"$exportName\" has been written"
+        return "$result"
+    }
+}

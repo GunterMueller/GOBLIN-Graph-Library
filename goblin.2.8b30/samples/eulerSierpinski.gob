@@ -1,0 +1,101 @@
+(graph
+ (definition
+  (nodes 15 15 0)
+  (arcs 27)
+  (incidences
+   (0
+      5  0)
+   (1
+     25 26)
+   (2
+     51 52)
+   (3
+     33 44 43 34)
+   (4
+      7 18 22  8)
+   (5
+     41 16 15 37)
+   (6
+     14 12 11  9)
+   (7
+      1  6 10  3)
+   (8
+     17  4  2 13)
+   (9
+     27 32 30 29)
+   (10
+     19 24 28 20)
+   (11
+     35 23 21 31)
+   (12
+     45 50 48 47)
+   (13
+     46 38 36 42)
+   (14
+     53 40 39 49)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    25.000 81.000  8.000 55.000 18.000 90.000 96.000 69.000 84.000 27.000
+    40.000 20.000 30.000 95.000 30.000 62.000 70.000 72.000 35.000  4.000
+    43.000 86.000 78.000 10.000 83.000 96.000 72.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+       0.000  17.321 -17.321   0.000   8.660  -8.660   0.000   4.330  -4.330   8.660
+      12.990   4.330  -8.660  -4.330 -12.990)
+   (axis1
+     -20.000  10.000  10.000  10.000  -5.000  -5.000  -5.000 -12.500 -12.500  10.000
+       2.500   2.500  10.000   2.500   2.500)
+  )
+ )
+ (layout
+  (arrowSize 120.000)
+  (arcFontSize 150.000)
+  (nodeSpacing 5.000)
+  (arcColourMode 3)
+  (arcLabelFormat "#8")
+  (nodeLabelFormat "#0")
+  (gridDisplayMode 1)
+  (model 0)
+  (exteriorArc 4)
+  (arcWidthMin 2)
+ )
+ (solutions
+  (edgeColour
+     0 11 26  1 24 12 25 13 10  2
+    20 23  3  4 21 22  5 19 14 17
+     9 18  6 15 16  7  8)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             400
+   -yShift             400
+   -xZoom              1.88e+02
+   -yZoom              1.88e+02
+   -legenda            0
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logMem             1
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          1
+   -methLocal          0
+   -methPlanarity      0
+   -randLength         0
+   -randGeometry       0)
+)

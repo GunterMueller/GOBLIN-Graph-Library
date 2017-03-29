@@ -1,0 +1,109 @@
+
+#-------------------------------------------------------------------------------
+# Module:     infoAuthors.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Browser for algorithmic modules
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowAuthors {} {
+    global WDAuthors ThisAuthor DefPadX
+
+    set title "List of Authors"
+
+    if {[RegisterFormOrWindow $title authors WDAuthors ShowAuthors \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    if {![info exists ThisAuthor]} {
+        set ThisAuthor 0
+    }
+
+
+    frame $WDAuthors.frame0
+    pack $WDAuthors.frame0 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDAuthors.frame0.text -text "Author: " -anchor w
+    pack $WDAuthors.frame0.text -side left
+
+    MakePulldownMenuButton $WDAuthors.frame0.select
+    pack $WDAuthors.frame0.select -side left -fill x -expand 1
+
+
+    frame $WDAuthors.frame1
+    pack $WDAuthors.frame1 -side top -fill x -padx $DefPadX -pady 5m
+
+    label $WDAuthors.frame1.affText -text "Affiliation: " -anchor w
+    grid $WDAuthors.frame1.affText \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky nw -padx 1m
+    text $WDAuthors.frame1.affiliation -width 35 -height 3 \
+        -relief ridge -wrap word
+    grid $WDAuthors.frame1.affiliation \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    frame $WDAuthors.frame1.sep1 -height 3m
+    grid $WDAuthors.frame1.sep1 \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDAuthors.frame1.eMailText -text "E-Mail: " -anchor w
+    grid $WDAuthors.frame1.eMailText \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky nw -padx 1m
+    text $WDAuthors.frame1.eMail -width 35 -height 2 -relief ridge
+    grid $WDAuthors.frame1.eMail \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    grid rowconfig    $WDAuthors.frame1 0 -weight 1 -minsize 0
+    grid columnconfig $WDAuthors.frame1 0 -weight 1 -minsize 0
+
+    AttachAuthorSelectionForm $ThisAuthor
+
+    DisplayForm $title
+}
+
+
+proc AttachAuthorSelectionForm {authorIndex} {
+    global WDAuthors
+
+    set listOfAuthors [list]
+
+    for {set i 0} {$i<[goblin #authors]} {incr i} {
+        set listOfReferences [lappend listOfAuthors [goblin author $i name] $i]
+    }
+
+    AttachSelectionForm $WDAuthors.frame0.select 5 \
+        [goblin author $authorIndex name] $listOfAuthors UpdateAuthor
+}
+
+
+proc UpdateAuthor {authorIndex} {
+    global WDAuthors ThisAuthor
+
+    set ThisAuthor $authorIndex
+
+    $WDAuthors.frame0.select configure -text [goblin author $ThisAuthor name]
+
+    $WDAuthors.frame1.affiliation delete 1.0 end
+    $WDAuthors.frame1.affiliation insert end \
+        "[goblin author $ThisAuthor affiliation]"
+    $WDAuthors.frame1.eMail delete 1.0 end
+    $WDAuthors.frame1.eMail insert end \
+        "[goblin author $ThisAuthor e_mail]"
+
+    focus $WDAuthors.frame0.select
+}
+
+
+if {![info exists WDAuthors] || ![winfo exists $WDAuthors]} {
+    ShowAuthors
+} else {
+    UpdateAuthor $ThisAuthor
+}
+

@@ -1,0 +1,70 @@
+
+#-------------------------------------------------------------------------------
+# Module:     fileSupportedFormats.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Lists and classifies all supported file formats
+#-------------------------------------------------------------------------------
+
+# Parameters:
+#  1: Description
+#  2: Format identifier / Default file extension
+#  3: Format class
+#  4: Export is restricted to this object class
+#  5: Is an import filter available?
+#  6: Is an export filter available?
+
+global SupportedFormats
+set SupportedFormats { \
+    "GOBLIN Graph Object"           gob     object     graphObject  1 1 \
+    "Tcl Library Graph Object"      tcl     object     graphObject  0 1 \
+    "GraphViz Dot Object"           dot     object     graphObject  0 1 \
+    "DIMACS Undirected Graph"       edge    object     undirected   1 1 \
+    "DIMACS Max Flow Instance"      max     object     directed     1 1 \
+    "DIMACS Min Cost Flow Problem"  min     object     directed     1 1 \
+    "DIMACS Assignment Problem"     asn     object     bipartite    1 1 \
+    "DIMACS Geometric Matching"     geom    object     undirected   1 1 \
+    "TSPLIB Problem"                tsp     object     graphObject  0 1 \
+    "GOBLIN Mixed Integer Problem"  gob     object     mipObject    1 1 \
+    "Standard MPS Problem"          mps     object     mipObject    0 1 \
+    "CPLEX MPS Problem"             cplex   object     mipObject    0 1 \
+    "CPLEX LP Problem"              lp      object     mipObject    0 1 \
+    "TSPLIB Symmetric TSP"          tsp     object     undirected   1 0 \
+    "TSPLIB Asymmetric TSP"         atsp    object     directed     1 0 \
+    "TSPLIB Hamiltonian Cycle Problem" hcp  object     graphObject  1 0 \
+    "Square Capacity Matrix"        scm     object     directed     1 0 \
+    "Triangular Capacity Matrix"    tcm     object     undirected   1 0 \
+    "Square Length Matrix"          slm     object     directed     1 0 \
+    "Triangular Length Matrix"      tlm     object     undirected   1 0 \
+    "Steinlib Problem"              stp     object     undirected   1 0 \
+    "CPLEX MPS Linear Program"      mps     object     mipObject    1 0 \
+    "DIMACS Flow Labels"            flow    solution   directed     0 1 \
+    "DIMACS Matching Arcs"          match   solution   undirected   0 1 \
+    "TSPLIB Solution"               tour    solution   graphObject  0 1 \
+    "BAS Basis File"                bas     solution   mipObject    0 1 \
+    "xFig Canvas"                   fig     canvas     graphObject  0 1 \
+    "Postscript"                    ps      canvas     graphObject  0 1 \
+    "Encapsulated Postscript"       eps     canvas     graphObject  0 1 \
+    "Portable Document Format"      pdf     canvas     graphObject  0 1 \
+    "Scalable Vector Graphic"       svg     canvas     graphObject  0 1 \
+    "Autocad Slide"                 sld     canvas     graphObject  0 1 \
+    "Tk Canvas"                     tk      canvas     graphObject  0 1 \
+    "GIF"                           gif     bitmap     graphObject  0 1 \
+    "JPEG"                          jpeg    bitmap     graphObject  0 1 \
+    "Paintbrush"                    pcx     bitmap     graphObject  0 1 \
+    "Portable Network Graphics"     png     bitmap     graphObject  0 1 \
+    "Portable Pix Map"              ppm     bitmap     graphObject  0 1 \
+    "TIFF"                          tiff    bitmap     graphObject  0 1 \
+    "X11 Bitmap"                    xbm     bitmap     graphObject  0 1 \
+}
+
+proc GetFormatProperty {format argNr} {
+    global SupportedFormats
+
+    foreach {arg1 arg2 arg3 arg4 arg5 arg6} $SupportedFormats {
+        if {$arg1==$format} {
+            eval return \$arg$argNr
+        }
+    }
+
+    error "Unsupported format: \"$format\""
+}

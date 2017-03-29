@@ -1,0 +1,1090 @@
+
+#-------------------------------------------------------------------------------
+# Module:     menuOptimize.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Optimize menu item, bindings, solver dialogs and
+#             execution of solver threads
+#-------------------------------------------------------------------------------
+
+
+
+proc MakeOptimizeMenu {focussedObject} {
+    destroy .mbar.optimize.menu
+
+    menu .mbar.optimize.menu -tearoff false
+    if {[$focussedObject info -mipObject]} {
+        # LP solver and integer programming methods
+
+        .mbar.optimize.menu add command -label "Solve LP Relaxation"\
+            -underline 6 -command LPRelaxation
+        .mbar.optimize.menu add command -label "Solve Mixed Integer Problem"\
+            -underline 6 -command MixedInteger
+    } else {
+        menu .mbar.optimize.menu.vertexRouting -tearoff false
+        .mbar.optimize.menu add cascade -label "Vertex Routing" \
+            -underline 0 -menu .mbar.optimize.menu.vertexRouting
+        .mbar.optimize.menu.vertexRouting add command -label "Minimum Spanning Tree" \
+            -underline 0 -command SolveMinTree
+        .mbar.optimize.menu.vertexRouting add command -label "Maximum Spanning Tree" \
+            -underline 0 -command SolveMaxTree
+        .mbar.optimize.menu.vertexRouting add command -label "Travelling Salesman" \
+            -underline 0 -command SolveTSP
+        .mbar.optimize.menu.vertexRouting add command -label "Minimum 1-Cycle Tree" \
+            -underline 0 -command SolveMin1Tree
+        .mbar.optimize.menu.vertexRouting add command -label "Minimum Steiner Tree" \
+            -underline 0 -command SolveSteinerTree
+
+        if {[$focussedObject info -directed]} {
+            .mbar.optimize.menu.vertexRouting add command -label "Maximum Tree Packing" \
+                -underline 5 -command SolveTreePacking
+        }
+
+        menu .mbar.optimize.menu.edgeRouting -tearoff false
+        .mbar.optimize.menu add cascade -label "Edge Routing" \
+            -underline 0 -menu .mbar.optimize.menu.edgeRouting
+        .mbar.optimize.menu.edgeRouting add command -label "Shortest Path Tree" \
+            -underline 0 -command SolveShortestPath
+
+        if {[$focussedObject info -directed]} {
+            .mbar.optimize.menu.edgeRouting add command -label "Residual Shortest Path Tree" \
+                -underline 0 -command SolveReducedPath
+            .mbar.optimize.menu.edgeRouting add command -label "Critical Path" \
+                -underline 0 -command CriticalPath
+        }
+
+        .mbar.optimize.menu.edgeRouting add command -label "Maximum st-Flow" \
+            -underline 0 -command SolveMaxFlow
+        .mbar.optimize.menu.edgeRouting add command -label "Minimum Cost st-Flow" \
+            -underline 8 -command SolveMinCFlow
+        .mbar.optimize.menu.edgeRouting add command -label "Feasible b-Flow" \
+            -underline 0 -command {
+                CallSolver {Feasible b-Flow} {[GetFocussedObject] networkFlow -feasible} {
+                    [GetFocussedObject] layout configure -arcWidthMode 5
+                    PostSolverMessage "Problem is feasible"
+                }
+            }
+        .mbar.optimize.menu.edgeRouting add command -label "Minimum Cost b-Flow" \
+            -underline 9 -command {
+                CallSolver {Minimum Cost b-Flow} {[GetFocussedObject] networkFlow} {
+                    [GetFocussedObject] layout configure -arcWidthMode 5
+                    PostSolverMessage "Final objective value is $SolverData(result)"
+                }
+            }
+        .mbar.optimize.menu.edgeRouting add command -label "Eulerian Cycle" \
+            -underline 0 -command EulerianCycle
+
+        if {[$focussedObject info -directed] || [$focussedObject info -undirected]} {
+            .mbar.optimize.menu.edgeRouting add command -label "Maximum Eulerian Subgraph" \
+                -underline 17 -command SolvePostman
+        }
+
+        if {[$focussedObject info -balanced]} {
+            .mbar.optimize.menu.edgeRouting add command -label "Maximum Balanced st-Flow" \
+                -underline 9 -command SolveMaxBalFlow
+            .mbar.optimize.menu.edgeRouting add command -label "Min-Cost Balanced st-Flow" \
+                -underline 11 -command SolveMinCBalFlow
+        }
+    }
+
+    if {![$focussedObject info -mipObject]} {
+        menu .mbar.optimize.menu.bipartition -tearoff false
+        .mbar.optimize.menu add cascade -label "Bipartitions" \
+            -underline 0 -menu .mbar.optimize.menu.bipartition
+        .mbar.optimize.menu.bipartition add command -label "Maximum Edge Cut" \
+            -underline 0 -command SolveMaxCut
+
+        if {[$focussedObject info -sparse]} {
+            .mbar.optimize.menu.bipartition add command -label "Maximum Stable Set" \
+                -underline 0 -command SolveStableSet
+            .mbar.optimize.menu.bipartition add command -label "Minimum Vertex Cover" \
+                -underline 0 -command SolveVertexCover
+            .mbar.optimize.menu.bipartition add command -label "Maximum Clique" \
+                -underline 0 -command SolveClique
+
+            menu .mbar.optimize.menu.multipartition -tearoff false
+            .mbar.optimize.menu add cascade -label "Multipartitions" \
+                -underline 0 -menu .mbar.optimize.menu.multipartition
+            .mbar.optimize.menu.multipartition add command -label "Stable Sets (Node Colouring)" \
+                -underline 0 -command SolveNodeColouring
+            .mbar.optimize.menu.multipartition add command -label "Clique Cover" \
+                -underline 0 -command SolveCliqueCover
+            .mbar.optimize.menu.multipartition add command -label "1-Matchings (Edge Colouring)" \
+                -underline 0 -command SolveEdgeColouring
+
+            menu .mbar.optimize.menu.connectivity -tearoff false
+            .mbar.optimize.menu add cascade -label "Connectivity" \
+            -underline 0 -menu .mbar.optimize.menu.connectivity
+
+            .mbar.optimize.menu.connectivity add command -label "Edge Connectivity" \
+                -command SolveEdgeConnectivity
+            .mbar.optimize.menu.connectivity add command -label "Vertex Connectivity" \
+                -command SolveVertexConnectivity
+            .mbar.optimize.menu.connectivity add command -label "Generalized Connectivity" \
+                -command SolveGeneralizedConnectivity
+            .mbar.optimize.menu.connectivity add command -label "Edge Connected Components..." \
+                -command SolveComponents
+            if {![$focussedObject info -undirected]} {
+                .mbar.optimize.menu.connectivity add command -label "Strong Edge Connectivity" \
+                    -command SolveStrongEdgeConnectivity
+                .mbar.optimize.menu.connectivity add command -label "Strong Vertex Connectivity" \
+                    -command SolveStrongVertexConnectivity
+                .mbar.optimize.menu.connectivity add command -label "Generalized Strong Connectivity" \
+                    -command SolveGeneralizedStrongConnectivity
+                .mbar.optimize.menu.connectivity add command -label "Strong Components..." \
+                    -command {SolveComponents -strong}
+            }
+        }
+
+        menu .mbar.optimize.menu.ordering -tearoff false
+        .mbar.optimize.menu add cascade -label "Ordering & Orientation" \
+            -underline 0 -menu .mbar.optimize.menu.ordering
+        .mbar.optimize.menu.ordering add command -label "Bipolar Numbering" \
+            -underline 0 -command BipolarOrientation
+        .mbar.optimize.menu.ordering add command -label "Open Ear Decomposition" \
+            -underline 0 -command EarDecomposition
+        .mbar.optimize.menu.ordering add command -label "Perfect Elimination Order" \
+            -underline 0 -command PerfectEliminationOrder
+        .mbar.optimize.menu.ordering add command -label "Complementary Elimination Order" \
+            -underline 0 -command ComplementaryEliminationOrder
+        .mbar.optimize.menu.ordering add command -label "Minimum Feedback Arc Set" \
+            -underline 0 -command FeedbackArcSet
+
+        if {[$focussedObject info -directed]} {
+            .mbar.optimize.menu.ordering add command -label "Topological Order" \
+                -underline 0 -command TopSort
+        }
+    }
+
+    if {[$focussedObject info -undirected]} {
+        .mbar.optimize.menu add separator
+        menu .mbar.optimize.menu.matching -tearoff false
+        .mbar.optimize.menu add cascade -label "Matching Problems" \
+            -underline 0 -menu .mbar.optimize.menu.matching
+        .mbar.optimize.menu.matching add command -label "Cardinality Matching" \
+            -underline 0 -command SolveMaxMatch
+        .mbar.optimize.menu.matching add command -label "Weighted Matching" \
+            -underline 0 -command SolveMinCMatch
+        .mbar.optimize.menu.matching add command -label "Weighted Edge Cover" \
+            -underline 9 -command SolveMinCEdgeCover
+        .mbar.optimize.menu.matching add command -label "Minimum T-Join" \
+            -underline 8 -command SolveTJoin
+    }
+
+    .mbar.optimize.menu add separator
+    .mbar.optimize.menu add command -label "Restart/Stop Solver" \
+        -accelerator Ctrl+C -command StartOrStop
+    .mbar.optimize.menu add separator
+    .mbar.optimize.menu add command -label "Optimization Level..." \
+        -accelerator Shift+Ctrl+O -command SourceOptLevel
+    .mbar.optimize.menu add command -label "Method Options..." \
+        -accelerator Shift+Ctrl+M -command SourceMethOpt
+    .mbar.optimize.menu add command -label "Data Structures..." \
+        -accelerator Shift+Ctrl+S -command SourceDataOpt
+}
+
+proc CallSolver {{title ""} {command ""} {scriptRegular {}} {specialResult ""} {scriptSpecial {}}} {
+    if {![goblin solver idle]} {
+        PostSolverMessage "Problem solver is active"
+        return
+    }
+
+    global SolverData ThisDegree ThisNColours
+
+    if {$command==""} {
+        if {$SolverData(command)==""} {
+            PostStatusInfo "Choose an algorithm"
+            return
+        }
+    } else {
+        if {$command!=$SolverData(command)} {
+            set SolverData(title)         $title
+            set SolverData(command)       $command
+            set SolverData(specialResult) $specialResult
+            set SolverData(scriptRegular) $scriptRegular
+            set SolverData(scriptSpecial) $scriptSpecial
+        }
+    }
+
+    set targetObject [GetFocussedObject]
+    set substitutedCommand [eval concat $SolverData(command)]
+
+    global StartTime PrevTime TotalTime
+
+    PostSolverMessage "Computation is running..."
+    set PrevTime "running"
+    update idletasks
+
+    global goblinCommLevel
+    if {$goblinCommLevel} {
+        global FileName goblinExtension Toolbar c SingleStep \
+            goblinMasterEvent UpdateCycle TraceLock goblinBreakLevel \
+            goblinLogLevel ThisBackup
+
+        set file [open "$FileName.tcl" w]
+        puts $file "goblin alias $targetObject [$targetObject handle]"
+        puts $file "set state \[catch \{$substitutedCommand\} result\]"
+        puts $file "if \{\$state==0\} \{"
+        puts $file "    goblin solver return \$result"
+        puts $file "\} else \{"
+        puts $file "    goblin solver throw \$result"
+        puts $file "\}"
+        close $file
+
+        set TraceLock 0
+        set goblinBreakLevel 10000
+
+        if {[info exists c] && [winfo exists $c] && \
+                [file exists $FileName.backup$ThisBackup.gob]} {
+            TraceObject $FileName.backup$ThisBackup
+            set SingleStep 1
+        } else {
+            set SingleStep 0
+        }
+
+        if {[catch {goblin messenger filename} prevTraceFile]} {
+            set prevTraceFile $FileName.backup$ThisBackup
+        }
+
+        set StartTime [clock seconds]
+        set state [catch {goblin solver thread $FileName.tcl} result]
+        MessengerSetUploadMode "dynamic"
+        MakeToolBar $targetObject
+
+        while {![goblin solver idle]} {
+            if {$goblinCommLevel>=2} {
+                if {![goblin solver idle]} {
+                    UpdateActiveDialogs
+                    MessengerDynamicUpload
+
+                    set retState [catch {goblin messenger filename} traceFile]
+                    if {$retState==0 && $prevTraceFile==$traceFile} {set retState 1}
+
+                    if {$goblinCommLevel>=3 && ![goblin solver idle] && \
+                        $goblinLogLevel<=$goblinBreakLevel} {
+                        if {[info exists c] && [winfo exists $c]} {
+                            if {!$retState} {
+                                TraceObject [file rootname $traceFile]
+                                set prevTraceFile $traceFile
+                                if {!$SingleStep} {goblin messenger unblock}
+                            }
+                        } else {
+                            set SingleStep 0
+                            goblin messenger unblock
+                        }
+                    }
+
+                    if {$goblinLogLevel<=$goblinBreakLevel && \
+                        $SingleStep!=0 && $retState==0} {
+                        PostSolverMessage "Waiting at trace point"
+                        set TraceLock 1
+                        UpdateProgressBar
+
+                        while {$TraceLock!=0} {
+                            vwait TraceLock
+                        }
+                    } else {
+                        set dummyTimer 0
+                        after $UpdateCycle set dummyTimer 1
+                        vwait dummyTimer
+                    }
+                }
+            } else {
+                vwait goblinMasterEvent
+            }
+        }
+
+        set PrevTime [expr {[clock seconds]-$StartTime}]
+        set TotalTime [expr $TotalTime+$PrevTime]
+        set state [catch {goblin solver result} SolverData(result)]
+        file delete $FileName.tcl
+        MessengerSetUploadMode "partial"
+        MakeLogBar $targetObject
+        MakeToolBar $targetObject
+    } else { #Do not use threads
+        set StartTime [clock seconds]
+        set state [catch {eval $substitutedCommand} SolverData(result)]
+        set PrevTime [expr {[clock seconds]-$StartTime}]
+        set TotalTime [expr $TotalTime+$PrevTime]
+    }
+
+    if {$state != 0} {
+        AcknowledgementMessage $SolverData(result)
+        PostSolverMessage "$SolverData(result)"
+        ViewMessenger
+    } else {
+        if {$SolverData(scriptRegular)=={}} {
+            if {$SolverData(result)!="" && $SolverData(result)!="*"} {
+                PostSolverMessage "Objective value: $SolverData(result)"
+            } else {
+                PostSolverMessage "Computation is finished"
+            }
+        } else {
+            if {$SolverData(result)==$SolverData(specialResult) && $SolverData(scriptSpecial)!={}} {
+                eval $SolverData(scriptSpecial)
+            } else {
+                eval $SolverData(scriptRegular)
+            }
+        }
+
+        # UpdateMessenger
+    }
+
+    global Mode
+    set Mode "display object"
+    PropagateModifications $targetObject
+}
+
+proc StartOrStop {} {
+    if {[goblin solver idle]} {
+        CallSolver
+    } else {
+        global Toolbar
+        goblin solver stop
+        $Toolbar.solve configure -image stopped_solver
+    }
+}
+
+set SolverData(command) ""
+
+proc PostSolverMessage {message} {
+    global SolverData ThisDegree ThisNColours
+    PostStatusInfo [eval concat $SolverData(title) "-" $message]
+}
+
+proc LPRelaxation {} {
+    CallSolver {LP Relaxation} {[GetFocussedObject] solve lp}
+}
+
+proc MixedInteger {} {
+    CallSolver {Mixed Integer Problem} {[GetFocussedObject] solve mip}
+}
+
+proc CallWithRootNode {_execCommand {rootName "Root Node"}} {
+    global goblinRoot execCommand WDRootNode
+
+    set goblinRoot [[GetFocussedObject] info -rootNode]
+    set execCommand $_execCommand
+
+    set WDRootNode .rootNode
+
+    destroy $WDRootNode
+    toplevel $WDRootNode
+    wm withdraw $WDRootNode
+    wm title $WDRootNode "GOBLIN Prompt"
+
+    frame $WDRootNode.frame
+    pack $WDRootNode.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDRootNode.frame.text -text "$rootName:  "
+    entry $WDRootNode.frame.entry -textvariable goblinRoot \
+        -bg white -width 8
+    pack $WDRootNode.frame.text $WDRootNode.frame.entry \
+        -side left -fill x -expand 1
+    bind $WDRootNode.frame.entry <Return> {
+        set targetGraph [GetFocussedObject]
+        if {[QualifiedNode $targetGraph $goblinRoot]} {
+            $targetGraph configure -rootNode $goblinRoot
+            destroy .rootNode
+            eval $execCommand
+        }
+    }
+
+    focus $WDRootNode.frame.entry
+
+    bind $WDRootNode <FocusOut> {
+        if {[winfo exists .rootNode]} {
+            raise .rootNode .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .rootNode]} {
+            raise .rootNode .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDRootNode}
+    after 500 {wm resizable $WDRootNode 0 0}
+}
+
+proc CallWithSourceAndTarget {_execCommand {sourceName "Source Node"} {targetName "Target Node"}}  {
+    global goblinSource goblinTarget execCommand WDSourceAndTarget
+
+    set objectName [GetFocussedObject]
+    set goblinSource [$objectName info -sourceNode]
+    set goblinTarget [$objectName info -targetNode]
+    set execCommand $_execCommand
+
+    set WDSourceAndTarget .sourceAndTargetNode
+
+    destroy $WDSourceAndTarget
+    toplevel $WDSourceAndTarget
+    wm withdraw $WDSourceAndTarget
+    wm title $WDSourceAndTarget "GOBLIN Prompt"
+
+    frame $WDSourceAndTarget.frame
+    pack $WDSourceAndTarget.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDSourceAndTarget.frame.textSource -text "$sourceName:  "
+    grid $WDSourceAndTarget.frame.textSource \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    entry $WDSourceAndTarget.frame.entrySource -textvariable goblinSource \
+        -bg white -width 8
+    grid $WDSourceAndTarget.frame.entrySource \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDSourceAndTarget.frame.textTarget -text "$targetName:  "
+    grid $WDSourceAndTarget.frame.textTarget \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    entry $WDSourceAndTarget.frame.entryTarget -textvariable goblinTarget \
+        -bg white -width 8
+    grid $WDSourceAndTarget.frame.entryTarget \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+
+    bind $WDSourceAndTarget.frame.entrySource <Return> {
+        set targetGraph [GetFocussedObject]
+        if {[QualifiedNode $targetGraph $goblinSource]} {
+            focus $WDSourceAndTarget.frame.entryTarget
+        }
+    }
+    bind $WDSourceAndTarget.frame.entryTarget <Return> {
+        set targetGraph [GetFocussedObject]
+        if {   [QualifiedNode $targetGraph $goblinSource] \
+            && [QualifiedNode $targetGraph $goblinTarget] \
+        } {
+            $targetGraph configure -sourceNode $goblinSource -targetNode $goblinTarget
+            destroy .sourceAndTargetNode
+            eval $execCommand
+        } else {
+            if {![QualifiedNode $targetGraph $goblinSource]} {
+                focus $WDSourceAndTarget.frame.entrySource
+            }
+        }
+    }
+
+    focus $WDSourceAndTarget.frame.entrySource
+
+    bind $WDSourceAndTarget <FocusOut> {
+        if {[winfo exists .sourceAndTargetNode]} {
+            raise .sourceAndTargetNode .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .sourceAndTargetNode]} {
+            raise .sourceAndTargetNode .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDSourceAndTarget}
+    after 500 {wm resizable $WDSourceAndTarget 0 0}
+}
+
+proc CallWithSourceNode {_execCommand {sourceName "Source Node"}} {
+    global goblinSource execCommand WDSourceNode
+
+    set objectName [GetFocussedObject]
+    set goblinSource [$objectName info -sourceNode]
+    set execCommand $_execCommand
+
+    set WDSourceNode .sourceNode
+
+    destroy $WDSourceNode
+    toplevel $WDSourceNode
+    wm withdraw $WDSourceNode
+    wm title $WDSourceNode "GOBLIN Prompt"
+
+    frame $WDSourceNode.frame
+    pack $WDSourceNode.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDSourceNode.frame.text -text "$sourceName:  "
+    entry $WDSourceNode.frame.entry -textvariable goblinSource \
+        -bg white -width 8
+    pack $WDSourceNode.frame.text $WDSourceNode.frame.entry \
+        -side left -fill x -expand 1
+    bind $WDSourceNode.frame.entry <Return> {
+        set targetGraph [GetFocussedObject]
+        if {[QualifiedNode $targetGraph $goblinSource]} {
+            $targetGraph configure -rootNode $goblinSource
+            destroy .sourceNode
+            eval $execCommand
+        }
+    }
+
+    focus $WDSourceNode.frame.entry
+
+    bind $WDSourceNode <FocusOut> {
+        if {[winfo exists .sourceNode]} {
+            raise .sourceNode .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .sourceNode]} {
+            raise .sourceNode .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDSourceNode}
+    after 500 {wm resizable $WDSourceNode 0 0}
+}
+
+proc SolveMinTree {} {
+    CallWithRootNode {
+        CallSolver {Minimum Spanning [[GetFocussedObject] info -rootNode]-Tree} {
+            [GetFocussedObject] spanningTree
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Final length is $SolverData(result)"
+        }
+    } "Root Node (optional)"
+}
+
+proc SolveMaxTree {} {
+    CallWithRootNode {
+        CallSolver {Maximum Spanning [[GetFocussedObject] info -rootNode]-Tree} {
+            [GetFocussedObject] spanningTree -maximize
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Final length is $SolverData(result)"
+        }
+    } "Root Node (optional)"
+}
+
+proc SolveTSP {} {
+    CallWithRootNode {
+        CallSolver {Hamiltonian Cycle} {
+            [GetFocussedObject] hamiltonianCycle
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Final length is $SolverData(result)"
+        }
+    } "Root Node (optional)"
+}
+
+proc SolveMin1Tree {} {
+    CallWithRootNode {
+        CallSolver {Minimum Spanning [[GetFocussedObject] info -rootNode]-Tree} {
+            [GetFocussedObject] spanningTree -cycle
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Final length is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveSteinerTree {} {
+    CallWithRootNode {
+        CallSolver {[[GetFocussedObject] info -rootNode]-Steiner Tree} {
+            [GetFocussedObject] steinerTree
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Final length is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveTreePacking {} {
+    CallWithRootNode {
+        CallSolver {[[GetFocussedObject] info -rootNode]-Tree Packing} {
+            [GetFocussedObject] treePacking
+        } {
+            set objectName [GetFocussedObject]
+            DisplayNodeColours $objectName
+            HighlightPredecessors $objectName
+            PostSolverMessage "Total multiplicity is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveShortestPath {} {
+    CallWithSourceAndTarget {
+        CallSolver {Shortest Path [[GetFocussedObject] info -targetNode]-Tree} {
+            [GetFocussedObject] shortestPath
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Target distance is $SolverData(result)"
+        } "*" {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Target node is unreachable"
+        }
+    } "Source Node" "Target Node (optional)"
+}
+
+proc SolveReducedPath {} {
+    CallWithSourceAndTarget {
+        CallSolver {Shortest Path [[GetFocussedObject] info -sourceNode]-Tree} {
+            [GetFocussedObject] shortestPath -residual
+        } {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Target distance is $SolverData(result)"
+        } "*" {
+            HighlightPredecessors [GetFocussedObject]
+            PostSolverMessage "Target node is unreachable"
+        }
+    } "Source Node" "Target Node (optional)"
+}
+
+proc SolveMaxFlow {} {
+    CallWithSourceAndTarget {
+        CallSolver {
+            Maximum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Flow
+        } {
+            [GetFocussedObject] networkFlow -maximize
+        } {
+            HighlightSubgraph [GetFocussedObject]
+            PostSolverMessage "Final flow value is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveMinCFlow {} {
+    CallWithSourceAndTarget {
+        CallSolver {
+            Minimum Cost ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Flow
+        } {
+            [GetFocussedObject] networkFlow
+        } {
+            HighlightSubgraph [GetFocussedObject]
+            PostSolverMessage "Final objective value is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveStableSet {} {
+    CallSolver {Maximum Stable Set} {[GetFocussedObject] stableSet} {
+        DisplayNodeColours [GetFocussedObject]
+        PostSolverMessage "Final cardinality is $SolverData(result)"
+    }
+}
+
+proc SolveClique {} {
+    CallSolver {Maximum Clique} {[GetFocussedObject] maximumClique} {
+        DisplayNodeColours [GetFocussedObject]
+        PostSolverMessage "Final cardinality is $SolverData(result)"
+    }
+}
+
+proc SolveVertexCover {} {
+    CallSolver {Minimum Vertex Cover} {[GetFocussedObject] vertexCover} {
+        DisplayNodeColours [GetFocussedObject]
+        PostSolverMessage "Final cardinality is $SolverData(result)"
+    }
+}
+
+proc SolveMaxCut {} {
+    CallWithSourceAndTarget {
+        CallSolver {
+            Maximum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Edge Cut
+        } {
+            [GetFocussedObject] maximumEdgeCut
+        } {
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Final multiplicity is $SolverData(result)"
+        }
+    } "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc BipolarOrientation {} {
+    CallWithSourceAndTarget {
+        CallSolver {
+            ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Orientation
+        } {
+            [GetFocussedObject] bipolarOrientation
+        } {
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Bipolar orientation found"
+        }
+    } "Source Node (optional)" "Target Node (optional)"
+}
+
+proc EarDecomposition {} {
+    CallWithSourceAndTarget {
+        CallSolver {Ear Decomposition} {
+            [GetFocussedObject] bipolarOrientation -decompose
+        } {
+            [GetFocussedObject] layout configure -arcColourMode 3
+            PostSolverMessage "Graph has been decomposed"
+        }
+    } "Source Node (optional)" "Target Node (optional)"
+}
+
+proc PerfectEliminationOrder {} {
+    CallSolver {Perfect Elimination Order} {[GetFocussedObject] info -chordal} {
+        PostSolverMessage "Perfect elimination order found"
+    } "0" {
+        [GetFocussedObject] layout configure -nodeColourMode 0 -nodeLabelFormat "#4"
+        PostSolverMessage "Graph is non-chordal"
+    }
+}
+
+proc ComplementaryEliminationOrder {} {
+    CallSolver {Complementary Elimination Order} {[GetFocussedObject] info -co-chordal} {
+        PostSolverMessage "Complementary elimination order found"
+    } "0" {
+        [GetFocussedObject] layout configure -nodeColourMode 0 -nodeLabelFormat "#4"
+        PostSolverMessage "Graph is non-co-chordal"
+    }
+}
+
+proc TopSort {} {
+    CallSolver {Topological Sorting} {[GetFocussedObject] topSort} {
+        PostSolverMessage "Node $SolverData(result) is recurrent"
+    } "*" {
+        [GetFocussedObject] layout configure -nodeColourMode 0 -nodeLabelFormat "#4"
+        PostSolverMessage "Graph is acyclic"
+    }
+}
+proc CallWithBound {_execCommand parameterDescription} {
+    global SolverData execCommand WDInputParameter
+
+    if {![info exists SolverData(inputParameter)]} {set SolverData(inputParameter) "*"}
+
+    set execCommand $_execCommand
+    set WDInputParameter .inputParameter
+
+    destroy $WDInputParameter
+    toplevel $WDInputParameter
+    wm withdraw $WDInputParameter
+    wm title $WDInputParameter "GOBLIN Prompt"
+
+    frame $WDInputParameter.frame
+    pack $WDInputParameter.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDInputParameter.frame.text -text "$parameterDescription:  "
+    entry $WDInputParameter.frame.entry -textvariable SolverData(inputParameter) \
+        -bg white -width 8
+    pack $WDInputParameter.frame.text $WDInputParameter.frame.entry \
+        -side left -fill x -expand 1
+    bind $WDInputParameter.frame.entry <Return> {
+        set targetGraph [GetFocussedObject]
+        if {   $SolverData(inputParameter)=="*" \
+            || [QualifiedNode $targetGraph $SolverData(inputParameter)] \
+        } {
+            destroy .inputParameter
+            eval $execCommand
+        }
+    }
+
+    focus $WDInputParameter.frame.entry
+
+    bind $WDInputParameter <FocusOut> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .inputParameter]} {
+            raise .inputParameter .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDInputParameter}
+    after 500 {wm resizable $WDInputParameter 0 0}
+}
+
+proc SolveNodeColouring {} {
+    CallWithBound {
+        global SolverData
+
+        CallSolver [list $SolverData(inputParameter)-Node Colouring] {
+            [GetFocussedObject] nodeColouring -threshold $SolverData(inputParameter)
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Graph has been decomposed into $SolverData(result) stable sets"
+        }
+    } "Accepted Number of Stable Sets (optional)"
+}
+
+proc SolveCliqueCover {} {
+    CallWithBound {
+        global SolverData
+
+        CallSolver [list $SolverData(inputParameter)-Clique Cover] {
+            [GetFocussedObject] cliqueCover -threshold $SolverData(inputParameter)
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Graph is covered by $SolverData(result) cliques"
+        }
+    } "Accepted Number of Stable Sets (optional)"
+}
+
+proc SolveEdgeColouring {} {
+    CallWithBound {
+        global SolverData
+
+        CallSolver [list $SolverData(inputParameter)-Edge Colouring] {
+            [GetFocussedObject] edgeColouring -threshold $SolverData(inputParameter)
+        } {
+            global SolverData
+            [GetFocussedObject] layout configure -arcColourMode 1
+            PostSolverMessage "Graph has been decomposed into $SolverData(result) 1-matchings"
+        }
+    } "Accepted Number of Stable Sets (optional)"
+}
+
+proc SolveVertexConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {
+            Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Node Cut
+        } {
+            [GetFocussedObject] connectivity -vertex
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Vertex cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveGeneralizedConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {
+            Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Cut
+        } {
+             [GetFocussedObject] connectivity
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveEdgeConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Edge Cut} {
+            [GetFocussedObject] connectivity -edge
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Edge cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveStrongVertexConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {
+            Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Node Cut
+        } {
+            [GetFocussedObject] connectivity -strong -vertex
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Strong vertex cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveGeneralizedStrongConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {
+            Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Cut
+        } {
+            [GetFocussedObject] connectivity -strong
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Strong cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveStrongEdgeConnectivity {} {
+    CallWithSourceAndTarget [list \
+        CallSolver {
+            Minimum ([[GetFocussedObject] info -sourceNode],[[GetFocussedObject] info -targetNode])-Edge Cut
+        } {
+            [GetFocussedObject] connectivity -strong -edge
+        } {
+            global SolverData
+            DisplayNodeColours [GetFocussedObject]
+            PostSolverMessage "Strong edge cut capacity is $SolverData(result)"
+        } \
+    ] "Left Hand Node (optional)" "Right Hand Node (optional)"
+}
+
+proc SolveComponents {{arg1 ""}} {
+    global goblinDegree WDConnOrder
+
+    if {![info exists goblinDegree]} {
+        set goblinDegree 1
+    }
+
+    set WDConnOrder .connOrder
+
+    destroy $WDConnOrder
+    toplevel $WDConnOrder
+    wm withdraw $WDConnOrder
+    wm title $WDConnOrder "GOBLIN Prompt"
+
+    frame $WDConnOrder.frame
+    pack $WDConnOrder.frame -padx 2m -pady 3m -side top -anchor w
+
+
+    label $WDConnOrder.frame.text -text "Degree of Connectivity:  "
+    entry $WDConnOrder.frame.entry -textvariable goblinDegree \
+        -bg white -width 8
+    pack $WDConnOrder.frame.text $WDConnOrder.frame.entry \
+        -side left -fill x -expand 1
+
+    if {$arg1!=""} {
+        bind $WDConnOrder.frame.entry <Return> {
+            destroy .connOrder
+            global goblinDegree
+            CallSolver "Strong Components" \
+                [concat [GetFocussedObject] components -kappa $goblinDegree -strong] {
+                if {$SolverData(result)==0} {
+                    DisplayNodeColours [GetFocussedObject]
+                    PostSolverMessage "Graph is strongly disconnected"
+                } else {
+                    PostSolverMessage "Graph is strongly edge-connected"
+                }
+            }
+        }
+    } else {
+        bind $WDConnOrder.frame.entry <Return> {
+            destroy .connOrder
+            global goblinDegree
+            CallSolver "Edge-Connected Components" \
+                [concat [GetFocussedObject] components -kappa $goblinDegree] {
+                if {$SolverData(result)==0} {
+                    DisplayNodeColours [GetFocussedObject]
+                    PostSolverMessage "Graph is disconnected"
+                } else {
+                    PostSolverMessage "Graph is edge-connected"
+                }
+            }
+        }
+    }
+
+    focus $WDConnOrder.frame.entry
+
+    bind $WDConnOrder <FocusOut> {
+        if {[winfo exists .connOrder]} {
+            raise .connOrder .
+        }
+    }
+
+    bind . <FocusIn> {
+        if {[winfo exists .connOrder]} {
+            raise .connOrder .
+        }
+    }
+
+    after 500 {AdjustWithRootWindow $WDConnOrder}
+    after 500 {wm resizable $WDConnOrder 0 0}
+}
+
+proc SolveMaxMatch {} {
+    CallSolver {Cardinality Matching} {[GetFocussedObject] maximumMatching} {
+        HighlightSubgraph [GetFocussedObject]
+        PostSolverMessage "Perfect matching found"
+    } "0" {
+        PostSolverMessage "No perfect matching exists"
+    }
+}
+
+proc SolveMinCMatch {} {
+    CallSolver {Weighted Matching} {[GetFocussedObject] minimumCostMatching} {
+        HighlightSubgraph [GetFocussedObject]
+        PostSolverMessage "Final objective value is $SolverData(result)"
+    }
+}
+
+proc SolveMinCEdgeCover {} {
+    CallSolver {Weighted Edge Cover} {[GetFocussedObject] edgeCover} {
+        [GetFocussedObject] layout configure -arcColourMode 1
+        PostSolverMessage "Total edge weight is $SolverData(result)"
+    }
+}
+
+proc SolveTJoin {} {
+    CallSolver {Minimum T-Join} {[GetFocussedObject] tJoin} {
+        HighlightSubgraph [GetFocussedObject]
+        PostSolverMessage "Total edge weight is $SolverData(result)"
+    }
+}
+
+proc SolvePostman {} {
+    CallSolver {Maximum Eulerian Subgraph} {[GetFocussedObject] chinesePostman} {
+        HighlightSubgraph [GetFocussedObject]
+        PostSolverMessage "Total edge weight is $SolverData(result)"
+    }
+}
+
+proc EulerianCycle {} {
+    CallSolver {Euler Cycle} {[GetFocussedObject] eulerianCycle} {
+        [GetFocussedObject] layout configure -arcColourMode 3
+        PostSolverMessage "Euler cycle found"
+    } "0" {
+        PostSolverMessage "No Euler cycle exists"
+    }
+}
+
+proc FeedbackArcSet {} {
+    CallSolver {Feedback Arc Set} {[GetFocussedObject] feedbackArcSet} {
+        [GetFocussedObject] layout configure -arcColourMode 1
+        PostSolverMessage "$SolverData(result) arcs must be reversed"
+    }
+}
+
+proc CriticalPath {} {
+    CallSolver {Critical Path} {[GetFocussedObject] criticalPath} {
+        HighlightPredecessors [GetFocussedObject]
+        PostSolverMessage "Critical path ends at node $SolverData(result)"
+    }
+}
+
+proc SolveMaxBalFlow {} {
+    CallWithSourceNode {
+        CallSolver {Maximum Balanced [[GetFocussedObject] info -sourceNode]-Flow} {
+            [GetFocussedObject] balancedFlow -maximize
+        } {
+            HighlightSubgraph [GetFocussedObject]
+            PostSolverMessage "Maximum flow value is $SolverData(result)"
+        }
+    }
+}
+
+proc SolveMinCBalFlow {} {
+    CallWithSourceNode {
+        CallSolver {Min-Cost Balanced [[GetFocussedObject] info -sourceNode]-Flow} {
+            [GetFocussedObject] balancedFlow
+        } {
+            HighlightSubgraph [GetFocussedObject]
+            PostSolverMessage "Minimum cost is $SolverData(result)"
+        }
+    }
+}
+
+proc SourceOptLevel {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath optimizeLevel.tk]
+}
+
+proc SourceMethOpt {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath optimizeMethods.tk]
+}
+
+proc SourceDataOpt {} {
+    global GoblinTclPath
+    source [file join $GoblinTclPath optimizeDataStruct.tk]
+}
+
+bind . <Control-c> {StartOrStop}
+bind . <Control-M> {SourceMethOpt}
+bind . <Control-O> {SourceOptLevel}
+bind . <Control-S> {SourceDataOpt}

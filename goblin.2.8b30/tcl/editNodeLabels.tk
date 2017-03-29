@@ -1,0 +1,181 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editArcLabels.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Dialog for editing node labels
+#-------------------------------------------------------------------------------
+
+
+proc SetNodeAttributes {} {
+    global WDNodeAttribs DefPadX currentNode ThisNode LNodeFrame \
+        RegisteredPath Mode
+
+    set title "Node Attributes"
+
+    if {[RegisterFormOrWindow $title nodeLabels WDNodeAttribs SetNodeAttributes \
+            "Done"          {
+                set focussedGraph [GetFocussedObject]
+
+                if {[QualifiedNodeAttributes $focussedGraph]} {
+                    UploadNodeLabels $focussedGraph
+                    DownloadNodeLabels $focussedGraph ""
+                } else {
+                    return
+                }
+            } \
+            "Apply"         {
+                set focussedGraph [GetFocussedObject]
+
+                if {[QualifiedNodeAttributes $focussedGraph]} {
+                    UploadNodeLabels $focussedGraph
+                }
+            } \
+            "Arcs"          {
+                if {[QualifiedNodeAttributes $focussedGraph]} {
+                    source [file join $GoblinTclPath editArcLabels.tk]
+                }
+            } \
+            ""              {} \
+        ]
+    } {
+        focus $LNodeFrame.index
+        return
+    }
+
+
+    set LNodeFrame $WDNodeAttribs.lframe
+    frame $LNodeFrame
+
+    label $LNodeFrame.indexText -text "Node Index:" -anchor w
+    grid $LNodeFrame.indexText -in $LNodeFrame \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.index -textvariable ThisNode -width 5 -bg white
+    grid $LNodeFrame.index -in $LNodeFrame \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.indexCoordX -anchor w -text "Abscissa:"
+    grid $LNodeFrame.indexCoordX -in $LNodeFrame \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    label $LNodeFrame.valueCoordX -anchor w -textvariable ThisXCoordinate
+    grid $LNodeFrame.valueCoordX -in $LNodeFrame \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.indexCoordY -anchor w -text "Ordinate:"
+    grid $LNodeFrame.indexCoordY -in $LNodeFrame \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    label $LNodeFrame.valueCoordY -anchor w -textvariable ThisYCoordinate
+    grid $LNodeFrame.valueCoordY -in $LNodeFrame \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    frame $LNodeFrame.dummy
+    grid $LNodeFrame.dummy -in $LNodeFrame \
+        -row 3 -column 0 -rowspan 1 -columnspan 2 -sticky news -pady 1m
+
+    label $LNodeFrame.demandText -text "Demand:" -anchor w
+    grid $LNodeFrame.demandText -in $LNodeFrame \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.demand -textvariable ThisDemand -bg white -width 10
+    grid $LNodeFrame.demand -in $LNodeFrame \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.distanceText -text "Distance Label:" -anchor w
+    grid $LNodeFrame.distanceText -in $LNodeFrame \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.distance -textvariable ThisDistance -bg white -width 10
+    grid $LNodeFrame.distance -in $LNodeFrame \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.colourText -text "Colour:" -anchor w
+    grid $LNodeFrame.colourText -in $LNodeFrame \
+        -row 6 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.colour -textvariable ThisColour -bg white -width 10
+    grid $LNodeFrame.colour -in $LNodeFrame \
+        -row 6 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.potentialText -text "Potential:" -anchor w
+    grid $LNodeFrame.potentialText -in $LNodeFrame \
+        -row 7 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.potential -textvariable ThisPotential -bg white -width 10
+    grid $LNodeFrame.potential -in $LNodeFrame \
+        -row 7 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $LNodeFrame.predecessorText -text "Predecessor:" -anchor w
+    grid $LNodeFrame.predecessorText -in $LNodeFrame \
+        -row 8 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $LNodeFrame.predecessor -textvariable ThisPredecessor -bg white -width 10
+    grid $LNodeFrame.predecessor -in $LNodeFrame \
+        -row 8 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    grid columnconfig $LNodeFrame 0 -weight 1 -minsize 0
+    grid columnconfig $LNodeFrame 1 -weight 1 -minsize 0
+
+    pack $LNodeFrame -side top -padx $DefPadX -pady 3m -fill x -expand 1
+
+    bind $LNodeFrame.index       <Return> {focus $LNodeFrame.demand}
+    bind $LNodeFrame.demand      <Return> {focus $LNodeFrame.distance}
+    bind $LNodeFrame.distance    <Return> {focus $LNodeFrame.colour}
+    bind $LNodeFrame.colour      <Return> {focus $LNodeFrame.potential}
+    bind $LNodeFrame.potential   <Return> {focus $LNodeFrame.predecessor}
+    bind $LNodeFrame.predecessor <Return> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedNodeAttributes $focussedGraph]} {
+            UploadNodeLabels $focussedGraph
+            incr ThisNode
+            if {$ThisNode==[$focussedGraph #nodes]} {
+                set ThisNode 0
+            }
+            DownloadNodeLabels $focussedGraph $ThisNode
+        }
+        focus $LNodeFrame.index
+    }
+
+    bind $LNodeFrame.index <FocusOut> {
+        set focussedGraph [GetFocussedObject]
+
+        if {$ThisNode!="" && \
+            ( [string equal $Mode "change labels"]  || \
+              [string equal $Mode "display object"] || \
+              [string equal $Mode "navigate"] ) } \
+        {
+            if {![QualifiedNode $focussedGraph $ThisNode]} {
+                focus $LNodeFrame.index
+            } else {
+                DownloadNodeLabels $focussedGraph $ThisNode
+            }
+        }
+    }
+
+    bind $LNodeFrame.index <Up> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedNodeAttributes $focussedGraph]} {
+            UploadNodeLabels $focussedGraph
+            incr ThisNode -1
+            if {$ThisNode==-1} {
+                set ThisNode [expr {[$focussedGraph #nodes]-1}]
+            }
+            DownloadNodeLabels $focussedGraph $ThisNode
+        }
+    }
+
+    bind $LNodeFrame.index <Down> {
+        set focussedGraph [GetFocussedObject]
+
+        if {[QualifiedNodeAttributes $focussedGraph]} {
+            UploadNodeLabels $focussedGraph
+            incr ThisNode
+            if {$ThisNode==[$focussedGraph #nodes]} {
+                set ThisNode 0
+            }
+            DownloadNodeLabels $focussedGraph $ThisNode
+        }
+    }
+
+    focus $LNodeFrame.index
+
+
+    DisplayForm $title
+}
+
+SetNodeAttributes

@@ -1,0 +1,395 @@
+
+#-------------------------------------------------------------------------------
+# Module:     infoModules.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Browser for algorithmic modules
+#-------------------------------------------------------------------------------
+
+
+
+proc MakeBalloonModules {label wdName} {
+    global BalloonHelp
+    if {!$BalloonHelp} {return}
+    destroy .balloon
+    toplevel .balloon
+    wm geometry .balloon \
+        100x20+[expr [winfo rootx $wdName]+10]+[expr [winfo rooty $wdName]-30]
+    message .balloon.text -text $label -bg yellow -relief solid -justify left \
+        -aspect 800
+    pack .balloon.text -fill both
+
+    append wdSize [winfo reqwidth .balloon.text] x [winfo reqheight .balloon.text]
+    wm geometry .balloon \
+        $wdSize-[expr [winfo screenwidth .]-[winfo rootx $wdName]+10]+[expr [winfo rooty $wdName]+20]
+    wm overrideredirect .balloon 1
+}
+
+proc ShowModules {} {
+    global WDModules ThisTimer ThisModule DefPadX
+
+    set title "Module Browser"
+
+    if {[RegisterFormOrWindow $title modules WDModules ShowModules \
+            "Done"          {} \
+            ""              {} \
+            "Show Timer"    {
+                source [file join $GoblinTclPath infoTimers.tk]
+            } \
+            ""              {} \
+        ]
+    } {
+        UpdateModule
+        return
+    }
+
+
+    if {![info exists ThisModule]} {
+        set ThisModule 0
+    }
+
+    destroy $WDModules.frame0
+
+    frame $WDModules.frame0
+    pack $WDModules.frame0 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDModules.frame0.timerText -text "Timer Unit: " -anchor w
+    grid $WDModules.frame0.timerText \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    MakePulldownMenuButton $WDModules.frame0.timerSelect
+    grid $WDModules.frame0.timerSelect \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+
+    label $WDModules.frame0.codeText -text "Code Unit: " -anchor w
+    grid $WDModules.frame0.codeText \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+
+    MakePulldownMenuButton $WDModules.frame0.codeSelect
+    grid $WDModules.frame0.codeSelect \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDModules.frame0 0 -weight 0 -minsize 1
+    grid columnconfig $WDModules.frame0 1 -weight 1 -minsize 0
+
+
+    destroy $WDModules.frame1
+
+    frame $WDModules.frame1
+    pack $WDModules.frame1 -side top -fill x -padx $DefPadX -pady 3m
+
+
+    label $WDModules.frame1.encodingText -text "Implementation Date: " -anchor w
+    grid $WDModules.frame1.encodingText \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.encodingValue -anchor w -relief ridge
+    grid $WDModules.frame1.encodingValue \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDModules.frame1.revisionText -text "Latest Revision: " -anchor w
+    grid $WDModules.frame1.revisionText \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.revisionValue -anchor w -relief ridge
+    grid $WDModules.frame1.revisionValue \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    frame $WDModules.frame1.separator -height 3m
+    grid $WDModules.frame1.separator \
+        -row 4 -column 0 -rowspan 1 -columnspan 2
+
+    label $WDModules.frame1.originalText -text "Original Reference: " -anchor w
+    grid $WDModules.frame1.originalText \
+        -row 5 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.originalValue -anchor w -relief ridge
+    grid $WDModules.frame1.originalValue \
+        -row 5 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDModules.frame1.authRefText -text "Authors Reference: " -anchor w
+    grid $WDModules.frame1.authRefText \
+        -row 6 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.authRefValue -anchor w -relief ridge
+    grid $WDModules.frame1.authRefValue \
+        -row 6 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDModules.frame1.bookText -text "Text Book: " -anchor w
+    grid $WDModules.frame1.bookText \
+        -row 7 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.bookValue -anchor w -relief ridge
+    grid $WDModules.frame1.bookValue \
+        -row 7 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDModules.frame1 0 -weight 0 -minsize 1
+    grid columnconfig $WDModules.frame1 1 -weight 1 -minsize 0
+
+    bind $WDModules.frame1.originalValue <Button-1> {
+        if {$ThisModule!=-1 && [goblin module $ThisModule original_reference]!=[goblin #references]} {
+            DestroyBalloon
+            set ThisReference [goblin module $ThisModule original_reference]
+            source [file join $GoblinTclPath infoBibliography.tk]
+        }
+    }
+
+    bind $WDModules.frame1.authRefValue <Button-1> {
+        if {$ThisModule!=-1 && [goblin module $ThisModule authors_reference]!=[goblin #references]} {
+            DestroyBalloon
+            set ThisReference [goblin module $ThisModule authors_reference]
+            source [file join $GoblinTclPath infoBibliography.tk]
+        }
+    }
+
+    bind $WDModules.frame1.bookValue <Button-1> {
+        if {$ThisModule!=-1 && [goblin module $ThisModule text_book]!=[goblin #references]} {
+            DestroyBalloon
+            set ThisReference [goblin module $ThisModule text_book]
+            source [file join $GoblinTclPath infoBibliography.tk]
+        }
+    }
+
+    bind $WDModules.frame1.originalValue <Enter> {
+        if {$ThisModule==-1} {break}
+
+        set tmpRef [goblin module $ThisModule original_reference]
+
+        if {$tmpRef==[goblin #references]} {break}
+
+        MakeBalloonModules \
+            "show bibliography >> [goblin reference $tmpRef authors]: [goblin reference $tmpRef title]" %W
+    }
+
+    bind $WDModules.frame1.authRefValue <Enter> {
+        if {$ThisModule==-1} {break}
+
+        set tmpRef [goblin module $ThisModule authors_reference]
+
+        if {$tmpRef==[goblin #references]} {break}
+
+        MakeBalloonModules \
+            "show bibliography >> [goblin reference $tmpRef authors]: [goblin reference $tmpRef title]" %W
+    }
+
+    bind $WDModules.frame1.bookValue <Enter> {
+        if {$ThisModule==-1} {break}
+
+        set tmpRef [goblin module $ThisModule text_book]
+
+        if {$tmpRef==[goblin #references]} {break}
+
+        MakeBalloonModules \
+            "show bibliography >> [goblin reference $tmpRef authors]: [goblin reference $tmpRef title]" %W
+    }
+
+    bind $WDModules.frame1.originalValue <Leave> {DestroyBalloon}
+    bind $WDModules.frame1.authRefValue <Leave> {DestroyBalloon}
+    bind $WDModules.frame1.bookValue <Leave> {DestroyBalloon}
+
+    # This also sets ThisTimer as required
+    AttachModuleSelectionForm $ThisModule
+
+    UpdateModule
+
+    DisplayForm $title
+}
+
+
+proc ApplyModuleSelection {moduleIndex} {
+    global ThisModule ThisTimer WDTimers
+
+    if {$ThisModule==$moduleIndex} {return}
+
+    set ThisModule $moduleIndex
+    set ThisTimer [goblin module $ThisModule timer]
+
+    if {[info exists WDTimers] && [winfo exists $WDTimers]} {
+        # Refresh the timer display
+        UpdateTimer $ThisTimer
+    }
+
+    UpdateModule
+}
+
+
+proc AttachModuleSelectionForm {moduleIndex} {
+    global ThisModule ThisTimer WDModules
+
+    set listOfModules [list]
+
+    if {![info exists ThisTimer] || $ThisTimer==-1} {
+        # Only one of moduleIndex and ThisTimer may be undefined
+        set ThisTimer [goblin module $moduleIndex timer]
+    }
+
+    for {set i 0} {$i<[goblin #modules]} {incr i} {
+        if {[goblin module $i timer]!=$ThisTimer} {continue}
+
+        if {$moduleIndex==-1} {set moduleIndex $i}
+
+        set listOfModules [lappend listOfModules [goblin module $i name] $i]
+    }
+
+    if {$moduleIndex!=-1} {
+        AttachSelectionForm $WDModules.frame0.codeSelect 5 \
+            [goblin module $moduleIndex name] $listOfModules ApplyModuleSelection
+    } else {
+        $WDModules.frame0.codeSelect configure -text ""
+        bind $WDModules.frame0.codeSelect <Button-1> {}
+    }
+
+    set ThisModule $moduleIndex
+
+    set listOfTimers [list]
+
+    for {set i 0} {$i<[goblin #timers]} {incr i} {
+        set listOfTimers [lappend listOfTimers [goblin timer $i label] $i]
+    }
+
+    AttachSelectionForm $WDModules.frame0.timerSelect 5 \
+        [goblin timer $ThisTimer label] $listOfTimers ApplyTimerSelection
+}
+
+
+proc UpdateModule {} {
+    global WDModules ThisTimer ThisModule
+
+    if {$ThisModule==-1} {
+        # Timer unit has changed
+
+        $WDModules.frame0.timerSelect configure \
+            -text [goblin timer $ThisTimer label]
+
+        AttachModuleSelectionForm $ThisModule
+    } else {
+        if {$ThisTimer==-1} {
+            AttachModuleSelectionForm $ThisModule
+        } else {
+            # Code unit has set from pulldown menu
+            $WDModules.frame0.codeSelect configure -text [goblin module $ThisModule name]
+        }
+    }
+
+    if {$ThisModule!=-1} {
+        $WDModules.frame0.timerSelect configure \
+            -text [goblin timer [goblin module $ThisModule timer] label]
+    }
+
+    grid columnconfig $WDModules.frame0 0 -weight 0 -minsize 1
+    grid columnconfig $WDModules.frame0 1 -weight 1 -minsize 0
+
+
+    destroy  $WDModules.frame1.impl1Text
+    destroy  $WDModules.frame1.impl1Name
+    destroy  $WDModules.frame1.impl2Text
+    destroy  $WDModules.frame1.impl2Name
+
+    label $WDModules.frame1.impl1Text -text "Implementor: " -anchor w
+    grid $WDModules.frame1.impl1Text \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDModules.frame1.impl1Name -anchor w -relief ridge
+    grid $WDModules.frame1.impl1Name \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    if {$ThisModule!=-1 && [goblin module $ThisModule implementor1]!=[goblin #authors]} {
+        $WDModules.frame1.impl1Name configure -text \
+            [goblin author [goblin module $ThisModule implementor1] name]
+    } else {
+        $WDModules.frame1.impl1Name configure -text "Unknown"
+    }
+
+    bind $WDModules.frame1.impl1Name <Button-1> {
+        if {$ThisModule==-1} {break}
+
+        DestroyBalloon
+        set ThisAuthor [goblin module $ThisModule implementor1]
+        source [file join $GoblinTclPath infoAuthors.tk]
+    }
+
+    bind $WDModules.frame1.impl1Name <Enter> {
+        if {$ThisModule==-1} {break}
+
+        set tmpRef [goblin module $ThisModule implementor1]
+
+        if {$tmpRef==[goblin #authors]} {break}
+
+        MakeBalloonModules "show author >> [goblin author $tmpRef name]" %W
+    }
+
+    bind $WDModules.frame1.impl1Name <Leave> {DestroyBalloon}
+
+    if {$ThisModule!=-1 && [goblin module $ThisModule implementor2]!=[goblin #authors]} {
+        set tmpRef [goblin module $ThisModule implementor2]
+        $WDModules.frame1.impl1Text configure -text "1st Implementor: "
+        label $WDModules.frame1.impl2Text -text "2nd Implementor: " -anchor w
+        grid $WDModules.frame1.impl2Text \
+            -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+        label $WDModules.frame1.impl2Name -anchor w -relief ridge -text \
+            [goblin author $tmpRef name]
+        grid $WDModules.frame1.impl2Name \
+            -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+        bind $WDModules.frame1.impl2Name <Button-1> {
+            if {$ThisModule==-1} {break}
+
+            DestroyBalloon
+            set ThisAuthor [goblin module $ThisModule implementor2]
+            source [file join $GoblinTclPath infoAuthors.tk]
+        }
+
+        bind $WDModules.frame1.impl2Name <Enter> {
+            if {$ThisModule==-1} {break}
+
+            set tmpRef [goblin module $ThisModule implementor2]
+
+            if {$tmpRef==[goblin #authors]} {break}
+
+            MakeBalloonModules "show author >> [goblin author $tmpRef name]" %W
+        }
+
+        bind $WDModules.frame1.impl2Name <Leave> {DestroyBalloon}
+    }
+
+    if {$ThisModule==-1 || [goblin module $ThisModule encoding_date]==""} {
+        $WDModules.frame1.encodingValue configure -text "Unknown"
+    } else {
+        $WDModules.frame1.encodingValue configure -text [goblin module $ThisModule encoding_date]
+    }
+
+    if {$ThisModule==-1 || [goblin module $ThisModule revision_date]==""} {
+        $WDModules.frame1.revisionValue configure -text "Unknown"
+    } else {
+        $WDModules.frame1.revisionValue configure -text [goblin module $ThisModule revision_date]
+    }
+
+    if {$ThisModule==-1 || [goblin module $ThisModule original_reference]==[goblin #references]} {
+        $WDModules.frame1.originalValue configure -text "Unknown"
+    } else {
+        $WDModules.frame1.originalValue configure -text \
+            [goblin reference [goblin module $ThisModule original_reference] key]
+    }
+
+    if {$ThisModule==-1 || [goblin module $ThisModule authors_reference]==[goblin #references]} {
+        $WDModules.frame1.authRefValue configure -text "Unknown"
+    } else {
+        $WDModules.frame1.authRefValue configure -text \
+            [goblin reference [goblin module $ThisModule authors_reference] key]
+    }
+
+    if {$ThisModule==-1 || [goblin module $ThisModule text_book]==[goblin #references]} {
+        $WDModules.frame1.bookValue configure -text "Unknown"
+    } else {
+        $WDModules.frame1.bookValue configure -text \
+            [goblin reference [goblin module $ThisModule text_book] key]
+    }
+
+    grid columnconfig $WDModules.frame1 0 -weight 1 -minsize 1
+    grid columnconfig $WDModules.frame1 1 -weight 1 -minsize 0
+
+    focus $WDModules.frame0.codeSelect
+
+    AlignActiveDialog
+}
+
+if {![info exists WDModules] || ![winfo exists $WDModules]} {
+    ShowModules
+} else {
+    UpdateModule
+}
+

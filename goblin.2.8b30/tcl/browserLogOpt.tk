@@ -1,0 +1,97 @@
+
+#-------------------------------------------------------------------------------
+# Module:     browserLogOpt.tk
+# Activation: Dynamically loadad on user request
+# Scope:      Selection of logging information
+#-------------------------------------------------------------------------------
+
+
+
+proc SelectLoggingOptions {} {
+    global WDLogOpt DefPadX
+
+    set title "Logging Options"
+
+    if {[RegisterFormOrWindow $title logopt WDLogOpt SelectLoggingOptions \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDLogOpt.f1
+    frame $WDLogOpt.f1.methods
+    frame $WDLogOpt.f1.results
+    frame $WDLogOpt.f1.memory
+    frame $WDLogOpt.f1.check
+    pack $WDLogOpt.f1.methods $WDLogOpt.f1.results $WDLogOpt.f1.memory \
+        $WDLogOpt.f1.check -side top -fill x -pady 2m
+     
+    pack $WDLogOpt.f1 -side top -fill x -padx $DefPadX -pady 1m
+
+
+    label $WDLogOpt.f1.methods.label -text "Algorithms:" -anchor w
+    radiobutton $WDLogOpt.f1.methods.noInfo -text "No Information" \
+        -variable goblinLogMethods -value 0 -anchor w
+    radiobutton $WDLogOpt.f1.methods.top -text "Big Iterations" \
+        -variable goblinLogMethods -value 1 -anchor w
+    radiobutton $WDLogOpt.f1.methods.details -text "Detailed Information" \
+        -variable goblinLogMethods -value 2 -anchor w
+    pack $WDLogOpt.f1.methods.label \
+        $WDLogOpt.f1.methods.noInfo \
+        $WDLogOpt.f1.methods.top \
+        $WDLogOpt.f1.methods.details \
+        -fill x
+        
+    label $WDLogOpt.f1.results.label -text "Computational Results:" -anchor w
+    radiobutton $WDLogOpt.f1.results.noInfo -text "No Information" \
+        -variable goblinLogResults -value 0 -anchor w
+    radiobutton $WDLogOpt.f1.results.top -text "Big Iterations" \
+        -variable goblinLogResults -value 1 -anchor w
+    radiobutton $WDLogOpt.f1.results.details -text "Detailed Information" \
+        -variable goblinLogResults -value 2 -anchor w
+    pack $WDLogOpt.f1.results.label \
+        $WDLogOpt.f1.results.noInfo \
+        $WDLogOpt.f1.results.top \
+        $WDLogOpt.f1.results.details \
+        -fill x
+        
+    label $WDLogOpt.f1.memory.label -text "Memory Management:" -anchor w
+    radiobutton $WDLogOpt.f1.memory.noInfo -text "No Information" \
+        -variable goblinLogMemory -value 0 -anchor w
+    radiobutton $WDLogOpt.f1.memory.allocs -text "Allocation Operations" \
+        -variable goblinLogMemory -value 1 -anchor w
+    radiobutton $WDLogOpt.f1.memory.size -text "Size Information" \
+        -variable goblinLogMemory -value 2 -anchor w
+    pack $WDLogOpt.f1.memory.label \
+        $WDLogOpt.f1.memory.noInfo \
+        $WDLogOpt.f1.memory.allocs \
+        $WDLogOpt.f1.memory.size \
+        -fill x
+        
+    checkbutton $WDLogOpt.f1.check.manipulate -text "Graph Manipulations" \
+        -variable goblinLogManipulate -anchor w
+    checkbutton $WDLogOpt.f1.check.io -text "I/O operations" \
+        -variable goblinLogIO -anchor w
+    checkbutton $WDLogOpt.f1.check.timers -text "Timer reports" \
+        -variable goblinLogTimers -anchor w
+    checkbutton $WDLogOpt.f1.check.gaps -text "Duality Gaps" \
+        -variable goblinLogGaps -anchor w
+    checkbutton $WDLogOpt.f1.check.warnings -text "Warnings and Rejections" \
+        -variable goblinLogWarnings -anchor w
+    pack $WDLogOpt.f1.check.manipulate \
+        $WDLogOpt.f1.check.io \
+        $WDLogOpt.f1.check.timers \
+        $WDLogOpt.f1.check.gaps \
+        $WDLogOpt.f1.check.warnings \
+        -fill x
+
+
+    DisplayForm $title
+}
+
+SelectLoggingOptions

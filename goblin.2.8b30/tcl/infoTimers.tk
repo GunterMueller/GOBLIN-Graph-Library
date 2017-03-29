@@ -1,0 +1,231 @@
+
+#-------------------------------------------------------------------------------
+# Module:     infoTimers.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Access to timers
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowTimers {} {
+    global WDTimers ThisTimer DefPadX
+
+    set title "Timer Info"
+
+    if {[RegisterFormOrWindow $title timers WDTimers ShowTimers \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+            "Reset"         {
+                global ThisTimer
+                goblin timer $ThisTimer reset
+                UpdateTimer $ThisTimer
+            } \
+        ]
+    } {
+        UpdateTimer $ThisTimer
+        return
+    }
+
+
+    if {![info exists ThisTimer]} {set ThisTimer 0}
+
+    destroy $WDTimers.frame0
+
+    frame $WDTimers.frame0
+    pack $WDTimers.frame0 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDTimers.frame0.text -text "Timer: " -anchor w
+    pack $WDTimers.frame0.text -side left
+
+    MakePulldownMenuButton $WDTimers.frame0.select
+    pack $WDTimers.frame0.select -side left -fill x -expand 1
+
+
+    destroy $WDTimers.frame1
+
+    frame $WDTimers.frame1
+    pack $WDTimers.frame1 -side top -fill x -padx $DefPadX -pady 5m
+
+    label $WDTimers.frame1.accText -text "Cumulated Times: " -anchor w
+    grid $WDTimers.frame1.accText \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.accValue -text "[goblin timer $ThisTimer acc]" \
+        -anchor e -relief ridge
+    grid $WDTimers.frame1.accValue \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.accUnit -text "ms" -anchor w
+    grid $WDTimers.frame1.accUnit \
+        -row 0 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDTimers.frame1.prevText -text "Previous Round: " -anchor w
+    grid $WDTimers.frame1.prevText \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.prevValue -text "[goblin timer $ThisTimer prev]" \
+        -anchor e -relief ridge
+    grid $WDTimers.frame1.prevValue \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.prevUnit -text "ms" -anchor w
+    grid $WDTimers.frame1.prevUnit \
+        -row 1 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDTimers.frame1.minText -text "Minimum Time: " -anchor w
+    grid $WDTimers.frame1.minText \
+        -row 2 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.minValue -text "[goblin timer $ThisTimer min]" \
+        -anchor e -relief ridge
+    grid $WDTimers.frame1.minValue \
+        -row 2 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.minUnit -text "ms" -anchor w
+    grid $WDTimers.frame1.minUnit \
+        -row 2 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDTimers.frame1.avgText -text "Average Time: " -anchor w
+    grid $WDTimers.frame1.avgText \
+        -row 3 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.avgValue -text "[goblin timer $ThisTimer av]" \
+        -anchor e -relief ridge
+    grid $WDTimers.frame1.avgValue \
+        -row 3 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.avgUnit -text "ms" -anchor w
+    grid $WDTimers.frame1.avgUnit \
+        -row 3 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    label $WDTimers.frame1.maxText -text "Maximum Time: " -anchor w
+    grid $WDTimers.frame1.maxText \
+        -row 4 -column 0 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.maxValue -text "[goblin timer $ThisTimer max]" \
+        -anchor e -relief ridge
+    grid $WDTimers.frame1.maxValue \
+        -row 4 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+    label $WDTimers.frame1.maxUnit -text "ms" -anchor w
+    grid $WDTimers.frame1.maxUnit \
+        -row 4 -column 2 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    grid columnconfig $WDTimers.frame1 0 -weight 1 -minsize 0
+    grid columnconfig $WDTimers.frame1 1 -weight 1 -minsize 80
+    grid columnconfig $WDTimers.frame1 2 -weight 0 -minsize 0
+
+
+    destroy $WDTimers.frame2
+
+    frame $WDTimers.frame2
+    pack $WDTimers.frame2 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDTimers.frame2.label1 -text "Dependent Timer" -anchor w
+    grid $WDTimers.frame2.label1 -in $WDTimers.frame2 \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+    label $WDTimers.frame2.label2 -text "ms" -anchor w
+    grid $WDTimers.frame2.label2 -in $WDTimers.frame2 \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    label $WDTimers.frame2.label3 -text "%" -anchor w
+    grid $WDTimers.frame2.label3 -in $WDTimers.frame2 \
+        -row 0 -column 2 -rowspan 1 -columnspan 1 -sticky news
+
+    listbox $WDTimers.frame2.list1 -yscrollcommand "$WDTimers.frame2.scroll set" \
+        -width 15 -height 3 -bg white
+    grid $WDTimers.frame2.list1 -in $WDTimers.frame2 \
+        -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+
+    listbox $WDTimers.frame2.list2 -yscrollcommand "$WDTimers.frame2.scroll set" \
+        -width 6 -height 3 -bg white
+    grid $WDTimers.frame2.list2 -in $WDTimers.frame2 \
+        -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    listbox $WDTimers.frame2.list3 -yscrollcommand "$WDTimers.frame2.scroll set" \
+        -width 4 -height 3 -bg white
+    grid $WDTimers.frame2.list3 -in $WDTimers.frame2 \
+        -row 1 -column 2 -rowspan 1 -columnspan 1 -sticky news
+
+    scrollbar $WDTimers.frame2.scroll -width 3.5m -command BindTimerView
+    grid $WDTimers.frame2.scroll -in $WDTimers.frame2 \
+        -row 1 -column 3 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    grid columnconfig $WDTimers.frame2 0 -weight 3 -minsize 0
+    grid columnconfig $WDTimers.frame2 1 -weight 1 -minsize 0
+    grid columnconfig $WDTimers.frame2 2 -weight 1 -minsize 0
+
+    bind $WDTimers.frame2.list1 <Double-Button-1> {
+        set thisLabel [selection get]
+
+        for {set i 0} {$i<[goblin #timers] && \
+            $thisLabel!=[goblin timer $i label]} {incr i} {}
+        if {$i<[goblin #timers]} {
+            AttachTimerSelectionForm $i
+        }
+    }
+
+    AttachTimerSelectionForm $ThisTimer
+    UpdateTimer $ThisTimer
+
+    DisplayForm $title
+}
+
+
+proc AttachTimerSelectionForm {timerIndex} {
+    global WDTimers
+
+    set listOfTimers [list]
+
+    for {set i 0} {$i<[goblin #timers]} {incr i} {
+        set listOfTimers [lappend listOfTimers [goblin timer $i label] $i]
+    }
+
+    AttachSelectionForm $WDTimers.frame0.select 5 \
+        [goblin timer $timerIndex label] $listOfTimers ApplyTimerSelection
+}
+
+
+proc UpdateTimer {timerIndex} {
+    global WDTimers ThisTimer
+
+    set ThisTimer $timerIndex
+
+    $WDTimers.frame0.select configure -text [goblin timer $ThisTimer label]
+
+    $WDTimers.frame1.accValue configure -text "[goblin timer $ThisTimer acc]"
+    $WDTimers.frame1.prevValue configure -text "[goblin timer $ThisTimer prev]"
+    $WDTimers.frame1.minValue configure -text "[goblin timer $ThisTimer min]"
+    $WDTimers.frame1.avgValue configure -text "[goblin timer $ThisTimer av]"
+    $WDTimers.frame1.maxValue configure -text "[goblin timer $ThisTimer max]"
+
+    $WDTimers.frame2.list1 delete 0 end
+    $WDTimers.frame2.list2 delete 0 end
+    $WDTimers.frame2.list3 delete 0 end
+    set totalTime [goblin timer $ThisTimer prev]
+
+    for {set i 0} {$i<[goblin #timers]} {incr i} {
+        set thisTime [goblin timer $ThisTimer child $i]
+
+        if {$thisTime>0 && $i!=$ThisTimer} {
+            set relativeTime [expr round($thisTime/($totalTime+0.0001)*1000)*0.1]
+            $WDTimers.frame2.list1 insert end "[goblin timer $i label]"
+            $WDTimers.frame2.list2 insert end "$thisTime"
+            $WDTimers.frame2.list3 insert end "$relativeTime"
+        }
+    }
+
+    focus $WDTimers.frame0.select
+
+    AlignActiveDialog
+}
+
+
+proc BindTimerView {args} {
+    global WDTimers
+
+    eval {$WDTimers.frame2.list1 yview} $args
+    eval {$WDTimers.frame2.list2 yview} $args
+    eval {$WDTimers.frame2.list3 yview} $args
+}
+
+
+if {![info exists WDTimers] || ![winfo exists $WDTimers]} {
+    ShowTimers
+} else {
+    UpdateTimer $ThisTimer
+}
+

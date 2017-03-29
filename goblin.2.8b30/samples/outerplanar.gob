@@ -1,0 +1,89 @@
+(graph
+ (definition
+  (nodes 10 10 0)
+  (arcs 17)
+  (incidences
+   (0
+     30 33 20  9 11)
+   (1
+     16 19  7 21 28)
+   (2
+      4 15)
+   (3
+     14 25 10  1)
+   (4
+      2  5  0  8  6)
+   (5
+     24 31)
+   (6
+     18  3)
+   (7
+     12 17 26)
+   (8
+     22 13)
+   (9
+     32 23 27 29)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    18.000 74.000 28.000 73.000 70.000 81.000 73.000 27.000  5.000 29.000
+     5.000 95.000 45.000 67.000 64.000 98.000 56.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim )
+  (coordinates
+   (axis0
+     15.915  1.520  5.499 10.417  1.520 14.396  0.000  5.499 10.417 14.396)
+   (axis1
+      7.958 12.635  0.389  0.389  3.280  3.280  7.958 15.526 15.526 12.635)
+  )
+ )
+ (layout
+  (bendSpacing 2.000)
+  (arcLabelFormat "#0")
+  (nodeLabelFormat "#0")
+  (exteriorArc 23)
+  (align
+    * * * * * * * * * *
+    * * * * * * *)
+  (thread
+    * * * * * * * * * *)
+ )
+ (solutions
+  (nodeColour
+    0 0 0 0 0 0 0 0 0 0)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             203
+   -yShift             203
+   -xZoom              2.10e+02
+   -yZoom              2.10e+02
+   -legenda            0
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methPQ             2
+   -methModLength      1
+   -methMinCBalFlow    0
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          1
+   -methLocal          0
+   -maxBBIterations    10000
+   -maxBBNodes         50000
+   -methPlanarity      0
+   -randLength         0
+   -randGeometry       0)
+)

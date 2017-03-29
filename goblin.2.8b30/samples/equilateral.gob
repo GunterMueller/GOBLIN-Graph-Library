@@ -1,0 +1,83 @@
+(graph
+ (definition
+  (nodes 10 10 0)
+  (arcs 17)
+  (incidences
+   (0
+     30 33 20  9 11)
+   (1
+     16 19  7 21 28)
+   (2
+      4 15)
+   (3
+     14 25 10  1)
+   (4
+      2  5  0  8  6)
+   (5
+     24 31)
+   (6
+     18  3)
+   (7
+     12 17 26)
+   (8
+     22 13)
+   (9
+     32 23 27 29)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    18.000 74.000 28.000 73.000 70.000 81.000 73.000 27.000  5.000 29.000
+     5.000 95.000 45.000 67.000 64.000 98.000 56.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim )
+  (coordinates
+   (axis0
+      60.000  45.000 105.000  90.000  75.000  75.000  60.000  15.000   0.000  30.000)
+   (axis1
+     51.962 25.981 25.981 51.962 25.981 77.943  0.000 25.981 51.962 51.962)
+  )
+ )
+ (layout
+  (gridDisplayMode 1)
+  (arcWidthMin 2)
+  (exteriorArc 23)
+  (align
+    * * * * * * * * * *
+    * * * * * * *)
+  (thread
+    * * * * * * * * * *)
+  (nodeLabelFormat "#0")
+ )
+ (solutions
+  (nodeColour
+    0 0 0 0 0 0 0 0 0 0)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             203
+   -yShift             203
+   -xZoom              5.50e+01
+   -yZoom              5.50e+01
+   -legenda            0
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          1
+   -methLocal          0
+   -methPlanarity      0
+   -randGeometry       0)
+)

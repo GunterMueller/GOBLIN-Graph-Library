@@ -1,0 +1,357 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainGoblet.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Main procedure
+#             GOBLET initialization
+#-------------------------------------------------------------------------------
+
+
+
+# Configuration data: Change to your convenience
+
+set Fr1Options ""
+# set Fr1Options "-bg wheat"
+    # Appearance of the outermost frame in various dialogs
+set Fr2Options ""
+# set Fr2Options "-bg wheat -relief groove -borderwidth 1m"
+    # Appearance of the subframes in various dialogs
+
+
+
+# Data initialization: Do not change
+
+set StartCompleted 0
+set BrowserDisabled 0
+set TraceLock 0
+
+set goblinDisplayMode 3
+set goblinLPDisplay 15
+
+set SourceFormat "GOBLIN Graph Object"
+set TargetFormat "GOBLIN Graph Object"
+set ExportCategory object
+
+set ThisNode ""
+set ThisArc ""
+set ThisNColours ""
+set ThisDegree 1
+set RegistersToDelete [list -subgraph -predecessorArc]
+set RegistersToPreserve [list -potential -partition -nodeColour -distance -edgeColour]
+set goblinSource "*"
+set goblinTarget "*"
+set goblinRoot "*"
+
+set TotalTime 0
+set PrevTime "idle"
+set SystemInfo "idle"
+set SystemInfoType 1
+set ActiveDialog("dummy") 0
+
+set RegisteredDialogs [list]
+
+set Mode "insert nodes"
+
+
+# Configuration parameters which may be modified
+
+source [file join $GoblinTclPath browserDefaults.tk]
+
+
+
+### ---------------------------- GOBLET Menus -------------------------- ###
+
+frame .mbar -relief raised -borderwidth 1
+pack .mbar -side top -fill x
+
+menubutton .mbar.file -text File -underline 0 -menu .mbar.file.menu
+menubutton .mbar.edit -text Edit -underline 0 -menu .mbar.edit.menu
+menubutton .mbar.compose -text Compose -underline 0 -menu .mbar.compose.menu
+menubutton .mbar.layout -text Layout -underline 0 -menu .mbar.layout.menu
+menubutton .mbar.optimize -text Optimize -underline 0 -menu .mbar.optimize.menu
+menubutton .mbar.browser -text Browser -underline 0 -menu .mbar.browser.menu
+menubutton .mbar.info -text Info -underline 0 -menu .mbar.info.menu
+pack .mbar.file .mbar.edit .mbar.compose .mbar.layout .mbar.optimize \
+    .mbar.browser -side left
+pack .mbar.info -side right
+
+
+proc MakeMenus {focussedObject} {
+    MakeFileMenu
+    MakeEditMenu $focussedObject
+    MakeComposeMenu $focussedObject
+    MakeLayoutMenu $focussedObject
+    MakeOptimizeMenu $focussedObject
+    MakeToolBar $focussedObject
+}
+
+image create photo msg_warn     -file [file join $GoblinTclPath msgWarn.gif]
+image create photo msg_stop     -file [file join $GoblinTclPath msgStop.gif]
+image create photo fold_open    -file [file join $GoblinTclPath foldOpen.gif]
+image create photo fold_close   -file [file join $GoblinTclPath foldClose.gif]
+image create photo move_plus    -file [file join $GoblinTclPath foldOpen.gif]
+image create photo move_minus   -file [file join $GoblinTclPath foldClose.gif]
+image create photo del_button   -file [file join $GoblinTclPath delButton.gif]
+image create photo apply_button -file [file join $GoblinTclPath okButton.gif]
+image create photo link_button  -file [file join $GoblinTclPath linkButton.gif]
+image create photo new_button   -file [file join $GoblinTclPath newButton.gif]
+image create photo erase_button -file [file join $GoblinTclPath eraseButton.gif]
+
+
+# File Menu
+
+source [file join $GoblinTclPath menuFile.tk]
+
+
+# Edit Menu
+
+source [file join $GoblinTclPath menuEdit.tk]
+
+
+# Compose Menu
+
+source [file join $GoblinTclPath menuCompose.tk]
+
+
+# Layout Menu
+
+source [file join $GoblinTclPath menuLayout.tk]
+
+
+# Optimize Menu
+
+source [file join $GoblinTclPath menuOptimize.tk]
+
+
+# Browser Menu
+
+source [file join $GoblinTclPath menuBrowser.tk]
+
+
+# Info Menu
+
+source [file join $GoblinTclPath menuInfo.tk]
+
+
+
+
+### ----------------------------- Workspace ---------------------------- ###
+
+
+# Iconbars and Popup Infos
+
+source [file join $GoblinTclPath mainIconbars.tk]
+
+
+# Status line
+
+source [file join $GoblinTclPath mainStatus.tk]
+
+
+# Workspace, Canvas and Dialog Region
+
+source [file join $GoblinTclPath mainWorkspace.tk]
+
+
+# Messenger Region
+
+source [file join $GoblinTclPath mainMessenger.tk]
+
+
+# Graph Editor
+
+source [file join $GoblinTclPath mainEditor.tk]
+
+
+
+
+### ------------------- Access to other file formats ------------------- ###
+
+
+source [file join $GoblinTclPath fileSupportedFormats.tk]
+source [file join $GoblinTclPath fileImport.tk]
+
+
+
+### ---------------------- Browser Initialization ---------------------- ###
+
+# Directories
+
+set SystemTmpDir "/tmp"
+
+set WorkingDir [pwd]
+
+if {[file exists env(GOB_TRACE)]} {
+    set TraceDir $env(GOB_TRACE)
+} else {
+    set TraceDir [file join $env(HOME) .goblet]
+}
+
+file mkdir $TraceDir
+
+set FileName [file join $TraceDir "unnamed"]
+set OrigFileName "unnamed"
+
+set LogFile [file join $env(HOME) "gosh.log"]
+
+# Load Configuration File
+
+set BrowserSettings [file join $TraceDir settings.tcl]
+if {[file exists $BrowserSettings]} {
+    catch {source $BrowserSettings}
+}
+
+if {![info exists PreviousVersion] || $PreviousVersion!=$GoblinVersion} {
+    # This code is executed after every GOBLIN update
+
+    if {![info exists tcl_platform(threaded)]} {
+        destroy .noThreads
+        toplevel .noThreads
+        wm withdraw .noThreads
+        wm title .noThreads "GOBLET First Boot Assistant"
+
+        frame .noThreads.buttons
+        button .noThreads.buttons.enable -text "Enable" -command { \
+            destroy .noThreads
+            global goblinCommLevel
+            set goblinCommLevel 3
+        }
+
+        button .noThreads.buttons.disable -text "Disable" -command { \
+            destroy .noThreads
+            global goblinCommLevel
+            set goblinCommLevel 0
+        }
+
+        pack .noThreads.buttons.enable .noThreads.buttons.disable \
+            -side left -fill x -padx 3m
+
+        pack .noThreads.buttons -padx 3m -pady 3m -side bottom
+
+        label .noThreads.warn -image msg_warn
+        message .noThreads.msg -width 10c \
+            -text "The Tcl/Tk installation on your system has not been compiled to support multiple threads. \
+You may enable GOBLIN thread support even then, but probably the browser is instable!"
+        pack .noThreads.warn .noThreads.msg -padx 2m -pady 3m -side left
+
+        focus .noThreads.buttons.disable
+
+        bind .noThreads <FocusOut> {
+            if {[winfo exists .noThreads]} {
+                raise .noThreads .
+            }
+        }
+
+        bind . <FocusIn> {
+            if {[winfo exists .noThreads]} {
+                raise .noThreads .
+            }
+        }
+
+        after 500 {AdjustWithRootWindow .noThreads}
+        after 500 {wm resizable .noThreads 0 0}
+    }
+}
+
+# Configure Toplevel Window
+
+wm geometry . [expr $InitialWidth]x[expr $InitialHeight]+[ \
+    expr ([winfo screenwidth .]-$InitialWidth)/2]+[ \
+    expr ([winfo screenheight .]-$InitialHeight)/2]
+wm minsize  . 630 380
+wm deiconify .
+
+# Setup Default Graph Object
+
+set FocussedObject [ChooseObjectName]
+goblin mixedGraph $FocussedObject
+InitFile
+
+# Load Graph Object Specified On Boot Line
+
+if {$argc != 0} {
+    set OrigFileName [lindex $argv 0]
+    set loadFile 1
+    set ThisFormat [string range [file extension $OrigFileName] 1 end]
+
+    if {[file exists $OrigFileName] && $ThisFormat!=""} {
+        set OrigFileName [file rootname $OrigFileName]
+
+        if {$ThisFormat!=$goblinExtension} {
+            cd [file dirname $OrigFileName]
+            set WorkingDir [pwd]
+            set FileName [file join $TraceDir [file tail $OrigFileName]]
+            set ImportFilter [file join [pwd] *.$goblinExtension]
+            source [file join $GoblinTclPath fileOpen.tk]
+            set loadFile 0
+        }
+    } else {
+        set ThisFormat $goblinExtension
+    }
+
+    if {   $loadFile && ![file exists $OrigFileName.$ThisFormat] \
+        && ![file exists $OrigFileName.$ThisFormat$ZipExtension]} {
+        toplevel .input
+        wm title .input "GOBLET Prompt"
+
+        frame .input.buttons
+        pack .input.buttons -padx 3m -pady 3m -side bottom
+
+        button .input.buttons.start -text "Create" -command { \
+            wm title . "GOBLET: [file tail $OrigFileName]"
+            destroy .input
+        }
+
+        button .input.buttons.exit -text "Exit" -command { \
+            destroy .input
+            exit 0
+        }
+
+        pack .input.buttons.start .input.buttons.exit \
+            -side left -fill x -padx 3m
+
+        label .input.warn -image msg_warn
+        message .input.msg -width 10c -anchor w \
+            -text "The file \"$OrigFileName.$ThisFormat\" does not exist!"
+        pack .input.warn .input.msg -padx 2m -pady 3m -side left
+
+        focus .input.buttons.exit
+
+        bind .input <FocusOut> {
+            if {[winfo exists .input]} {
+                raise .input .
+            }
+        }
+
+        bind . <FocusIn> {
+            if {[winfo exists .input]} {
+                raise .input .
+            }
+        }
+
+        set loadFile 0
+
+        after 500 {AdjustWithRootWindow .input}
+        after 500 {wm resizable .input 0 0}
+    }
+
+    if {$loadFile} {
+        cd [file dirname $OrigFileName]
+        set WorkingDir [pwd]
+        set OrigFileName [file join $WorkingDir [file tail $OrigFileName]]
+        OpenFile
+    }
+}
+
+set ImportFilter [file join [pwd] *.$goblinExtension]
+set ExportFilter [file join [pwd] *.$goblinExtension]
+
+set StartCompleted 1
+
+# Assemble Browser Window
+
+AdjustDialogPadding
+InitDialogRegion
+InitDisplay
+
+ViewMessenger

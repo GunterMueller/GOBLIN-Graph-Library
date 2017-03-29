@@ -1,0 +1,182 @@
+
+#-------------------------------------------------------------------------------
+# Module:     infoBibligraphy.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Browser for algorithmic modules
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowBibliography {} {
+    global WDBibliography ThisReference DefPadX
+
+    set title "Bibliography"
+
+    if {[RegisterFormOrWindow $title bibliography WDBibliography ShowBibliography \
+            "Done"          {} \
+            ""              {} \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        UpdateBibliography $ThisReference
+        return
+    }
+
+
+    if {![info exists ThisReference]} {
+        set ThisReference 0
+    }
+
+
+    frame $WDBibliography.frame0
+    pack $WDBibliography.frame0 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDBibliography.frame0.text -text "Reference Key: " -anchor w
+    pack $WDBibliography.frame0.text -side left
+
+    MakePulldownMenuButton $WDBibliography.frame0.select
+    pack $WDBibliography.frame0.select -side left -fill x -expand 1
+
+
+    frame $WDBibliography.frame1
+    pack $WDBibliography.frame1 -side top -fill x -padx $DefPadX -pady 3m
+
+    label $WDBibliography.frame1.authorsText -text "Author(s): " -anchor w
+    grid $WDBibliography.frame1.authorsText \
+        -row 0 -column 0 -rowspan 1 -columnspan 2 -sticky nw -padx 1m
+    text $WDBibliography.frame1.authors -width 35 -height 2 -relief ridge -wrap word
+    grid $WDBibliography.frame1.authors \
+        -row 1 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+    frame $WDBibliography.frame1.sep1 -height 3m
+    grid $WDBibliography.frame1.sep1 \
+        -row 2 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+    label $WDBibliography.frame1.titleText -text "Title: " -anchor w
+    grid $WDBibliography.frame1.titleText \
+        -row 3 -column 0 -rowspan 1 -columnspan 2 -sticky nw -padx 1m
+    text $WDBibliography.frame1.title -width 35 -height 3 -relief ridge -wrap word
+    grid $WDBibliography.frame1.title \
+        -row 4 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+    frame $WDBibliography.frame1.sep4 -height 3m
+    grid $WDBibliography.frame1.sep1 \
+        -row 12 -column 0 -rowspan 1 -columnspan 2 -sticky news -padx 1m
+
+    label $WDBibliography.frame1.publisherText -text "Publisher: " -anchor w
+    grid $WDBibliography.frame1.publisherText \
+        -row 13 -column 0 -rowspan 1 -columnspan 1 -sticky w -padx 1m
+    label $WDBibliography.frame1.publisher -anchor w -relief ridge
+    grid $WDBibliography.frame1.publisher \
+        -row 13 -column 1 -rowspan 1 -columnspan 1 -sticky we -padx 1m
+
+    AttachBibliographySelectionForm $ThisReference
+
+    DisplayForm $title
+}
+
+
+proc AttachBibliographySelectionForm {referenceIndex} {
+    global WDBibliography
+
+    set listOfReferences [list]
+
+    for {set i 0} {$i<[goblin #references]} {incr i} {
+        set listOfReferences [lappend listOfReferences [goblin reference $i key] $i]
+    }
+
+    AttachSelectionForm $WDBibliography.frame0.select 5 \
+        [goblin reference $referenceIndex key] $listOfReferences UpdateBibliography
+}
+
+
+proc UpdateBibliography {referenceIndex} {
+    global WDBibliography ThisReference
+
+    set ThisReference $referenceIndex
+
+    $WDBibliography.frame0.select configure -text [goblin reference $ThisReference key]
+
+    $WDBibliography.frame1.authors delete 1.0 end
+    $WDBibliography.frame1.authors insert end \
+        "[goblin reference $ThisReference authors]"
+
+    $WDBibliography.frame1.title delete 1.0 end
+    $WDBibliography.frame1.title insert end \
+        "[goblin reference $ThisReference title]"
+
+    destroy $WDBibliography.frame1.sep2
+    destroy $WDBibliography.frame1.collectionText
+    destroy $WDBibliography.frame1.collection
+    destroy $WDBibliography.frame1.volumeText
+    destroy $WDBibliography.frame1.volume
+
+    set tmpText [goblin reference $ThisReference collection]
+    if {$tmpText!=""} {
+        destroy $WDBibliography.frame1.sep2
+        frame $WDBibliography.frame1.sep2 -height 3m
+        grid $WDBibliography.frame1.sep2 \
+            -row 5 -column 0 -rowspan 1 -columnspan 2 -sticky we -padx 1m
+
+        label $WDBibliography.frame1.collectionText \
+            -text "Journal / Collection: " -anchor w
+        grid $WDBibliography.frame1.collectionText \
+            -row 6 -column 0 -rowspan 1 -columnspan 2 -sticky nw -padx 1m
+        text $WDBibliography.frame1.collection -width 35 -height 3 \
+            -relief ridge -wrap word
+        $WDBibliography.frame1.collection insert end $tmpText 
+        grid $WDBibliography.frame1.collection \
+            -row 7 -column 0 -rowspan 1 -columnspan 2 -sticky we -padx 1m
+
+        set tmpText [goblin reference $ThisReference volume]
+        if {$tmpText!=0} {
+            $WDBibliography.frame1.collection insert end " (vol. $tmpText)"
+        }
+    }
+
+    destroy $WDBibliography.frame1.sep3
+    destroy $WDBibliography.frame1.editorsText
+    destroy $WDBibliography.frame1.editors
+
+    set tmpText [goblin reference $ThisReference editors]
+    if {$tmpText!=""} {
+        frame $WDBibliography.frame1.sep3 -height 3m
+        grid $WDBibliography.frame1.sep3 \
+            -row 8 -column 0 -rowspan 1 -columnspan 2 -sticky we -padx 1m
+
+        label $WDBibliography.frame1.editorsText \
+            -text "Editors: " -anchor w
+        grid $WDBibliography.frame1.editorsText \
+            -row 9 -column 0 -rowspan 1 -columnspan 2 -sticky nw -padx 1m
+        text $WDBibliography.frame1.editors -width 35 -height 2 \
+            -relief ridge -wrap word
+        $WDBibliography.frame1.editors insert end $tmpText 
+        grid $WDBibliography.frame1.editors \
+            -row 10 -column 0 -rowspan 1 -columnspan 2 -sticky we -padx 1m
+    }
+
+    set publisher [goblin reference $ThisReference publisher]
+    set year [goblin reference $ThisReference year]
+    if {$publisher!=""} {
+        $WDBibliography.frame1.publisherText configure -text "Publisher:"
+        $WDBibliography.frame1.publisher configure -text "$publisher ($year)"
+    } else {
+        $WDBibliography.frame1.publisherText configure -text "Year:"
+        $WDBibliography.frame1.publisher configure -text "$year"
+    }
+
+    grid columnconfig $WDBibliography.frame1 0 -weight 0 -minsize 1
+    grid columnconfig $WDBibliography.frame1 1 -weight 1 -minsize 0
+
+    focus $WDBibliography.frame0.select
+
+    DisplayForm "Bibliography"
+}
+
+
+if {![info exists WDBibliography] || ![winfo exists $WDBibliography]} {
+    ShowBibliography
+} else {
+    UpdateBibliography $ThisReference
+}

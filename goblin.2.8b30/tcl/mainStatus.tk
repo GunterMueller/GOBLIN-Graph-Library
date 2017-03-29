@@ -1,0 +1,137 @@
+
+#-------------------------------------------------------------------------------
+# Module:     mainStatus.tk
+# Activation: Loaded during GOBLET startup
+# Scope:      Display operating mode, browser and library status information
+#-------------------------------------------------------------------------------
+
+
+
+frame .infobar
+pack .infobar -side bottom -fill x -padx 1 -pady 1
+
+
+set ProgressBar .progressBar
+
+frame $ProgressBar -height 8 -relief sunken -borderwidth 1
+pack $ProgressBar -side bottom -fill x -padx 1 -pady 1
+
+frame $ProgressBar.left
+frame $ProgressBar.right
+
+bind $ProgressBar <Enter> {
+    MakeBalloonRel "progress bar" .progressBar 10 -30}
+bind $ProgressBar <Leave> {DestroyBalloon}
+
+
+label .infobar.opMode -textvariable Mode -relief sunken -width 16 -padx 1m \
+    -font -*-courier-medium-r-normal--*-120-*-*-p-*-*-* -anchor w
+bind .infobar.opMode <Enter> {
+    MakeBalloonRel "operating mode" .infobar.opMode 10 -30}
+bind .infobar.opMode <Leave> {DestroyBalloon}
+
+label .infobar.times -textvariable SystemInfo -relief sunken -width 16 -padx 1m \
+    -font -*-courier-medium-r-normal--*-120-*-*-p-*-*-* -anchor w
+bind .infobar.times <Enter> {MakeSystemBalloon}
+bind .infobar.times <Leave> {DestroyBalloon}
+
+bind .infobar.times <Button-1> {
+    incr SystemInfoType
+
+    if {$SystemInfoType==5} {set SystemInfoType 1}
+
+    # Check if heap monitoring is available
+    if {$SystemInfoType>2 && [catch {goblin size} dummy]} {
+        set SystemInfoType 1
+    }
+
+    UpdateSystemInfo
+    MakeSystemBalloon
+}
+.infobar.times config -cursor exchange
+
+label .infobar.current -textvariable StatusInfo -relief sunken -width 150 -padx 1m \
+    -font -*-courier-medium-r-normal--*-120-*-*-p-*-*-* -anchor w
+bind .infobar.current <Enter> {
+    MakeBalloonRel "status info" .infobar.current 10 -30}
+bind .infobar.current <Leave> {DestroyBalloon}
+
+pack .infobar.opMode -side left
+pack .infobar.times -side right
+pack .infobar.current -padx 1m -side left
+
+proc UpdateSystemInfo {} {
+    global StartTime PrevTime TotalTime SystemInfoType SystemInfo ProgressBar
+
+    if {$SystemInfoType==1} {
+        if {$PrevTime=="idle"} {
+            set SystemInfo "idle"
+        } else {
+            if {$PrevTime!="running"} {
+                set SystemInfo "$PrevTime seconds"
+            } else {
+                set SystemInfo "[expr [clock seconds]-$StartTime] seconds"
+            }
+        }
+    }
+
+    if {$SystemInfoType==2} {
+        if {$PrevTime=="idle"} {
+            set SystemInfo "idle"
+        } else {
+            if {$PrevTime!="running"} {
+                set SystemInfo "$TotalTime seconds"
+            } else {
+                set SystemInfo "[expr [clock seconds]-$StartTime+$TotalTime] seconds"
+            }
+        }
+    }
+
+    if {$SystemInfoType==3} {set SystemInfo "[goblin size] bytes"}
+    if {$SystemInfoType==4} {set SystemInfo "[goblin maxsize] bytes"}
+}
+
+proc UpdateProgressBar {} {
+    global ProgressBar TraceLock
+
+    if {[goblin solver idle]} {
+        place $ProgressBar.left -in $ProgressBar -relx 0 -rely 0 \
+            -relwidth 0 -relheight 1 -anchor nw
+        place $ProgressBar.right -in $ProgressBar -relx 0 -rely 0 \
+            -relwidth 0 -relheight 1 -anchor nw
+    } else {
+        set progressRatio [goblin solver progress]
+
+        if {$TraceLock>0} {
+            $ProgressBar.left configure -bg Orange1
+            $ProgressBar.right configure -bg Gold1
+        } else {
+            $ProgressBar.left configure -bg OliveDrab4
+            $ProgressBar.right configure -bg DarkOliveGreen3
+
+            place $ProgressBar.left -in $ProgressBar -relx 0 -rely 0 \
+                -relwidth $progressRatio -relheight 1 -anchor nw
+            place $ProgressBar.right -in $ProgressBar -relx $progressRatio -rely 0 \
+                -relwidth [expr 1-$progressRatio] -relheight 1 -anchor nw
+        }
+    }
+}
+
+proc PostStatusInfo {message {class "notify"}} {
+    global StatusInfo
+
+    set StatusInfo $message
+}
+
+proc MakeSystemBalloon {} {
+    global SystemInfoType
+
+    if {$SystemInfoType==1} {
+        MakeBalloonRel "previous computation time" .infobar.times 10 -30}
+    if {$SystemInfoType==2} {
+        MakeBalloonRel "total computation time" .infobar.times 10 -30}
+    if {$SystemInfoType==3} {
+        MakeBalloonRel "current heap size" .infobar.times 10 -30}
+    if {$SystemInfoType==4} {
+        MakeBalloonRel "maximum heap size" .infobar.times 10 -30}
+}

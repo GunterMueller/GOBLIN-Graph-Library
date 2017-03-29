@@ -1,0 +1,87 @@
+
+#-------------------------------------------------------------------------------
+# Module:     editArcLabels.tk
+# Activation: Dynamically loaded on user request
+# Scope:      Configuration and explicit application of the random generator
+#-------------------------------------------------------------------------------
+
+
+
+proc ShowRandomGenerator {} {
+    global WDRandom DefPadX
+
+    set title "Random Generator"
+
+    if {[RegisterFormOrWindow $title random WDRandom ShowRandomGenerator \
+            "Done"          {
+                if {![QualifiedInt $goblinRandMin -30000 30000] ||
+                    ![QualifiedInt $goblinRandMax -30000 30000]
+                } {
+                    return
+                }
+            } \
+            "Assign Now"         {
+                if {[QualifiedInt $goblinRandMin -30000 30000] &&
+                    [QualifiedInt $goblinRandMax -30000 30000]
+                } {
+                    set focussedObject [GetFocussedObject]
+
+                    if {$goblinRandLength==1}   {$focussedObject random -edgeLength}
+                    if {$goblinRandUCap==1}     {$focussedObject random -upperBound}
+                    if {$goblinRandLCap==1}     {$focussedObject random -lowerBound}
+                    if {$goblinRandGeometry==1} {$focussedObject random -geometry}
+
+                    PropagateModifications $focussedObject
+                }
+            } \
+            ""              {} \
+            ""              {} \
+        ]
+    } {
+        return
+    }
+
+
+    frame $WDRandom.f1
+    label $WDRandom.f1.label -text "Assign Random Values To:" -anchor w
+    checkbutton $WDRandom.f1.length -text "Length Labels" \
+        -variable goblinRandLength -anchor w
+    checkbutton $WDRandom.f1.ucap -text "Upper Bounds" \
+        -variable goblinRandUCap -anchor w
+    checkbutton $WDRandom.f1.lcap -text "Lower Bounds" \
+        -variable goblinRandLCap -anchor w
+    checkbutton $WDRandom.f1.geometry -text "Geometric Embedding" \
+        -variable goblinRandGeometry -anchor w
+    pack $WDRandom.f1.label $WDRandom.f1.length $WDRandom.f1.ucap \
+        $WDRandom.f1.lcap $WDRandom.f1.geometry -side top -fill x
+
+    frame $WDRandom.f3
+    label $WDRandom.f3.minText -text "Value Range:" -anchor w
+    grid $WDRandom.f3.minText \
+        -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDRandom.f3.minimum -textvariable goblinRandMin -bg white -width 5
+    grid $WDRandom.f3.minimum \
+        -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    label $WDRandom.f3.maxText -text "to" -anchor w
+    grid $WDRandom.f3.maxText \
+        -row 0 -column 2 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+    entry $WDRandom.f3.maximum -textvariable goblinRandMax -bg white -width 5
+    grid $WDRandom.f3.maximum \
+        -row 0 -column 3 -rowspan 1 -columnspan 1 -sticky news -padx 1m
+
+    grid columnconfig $WDRandom.f3 0 -weight 1 -minsize 0
+    grid columnconfig $WDRandom.f3 1 -weight 1 -minsize 0
+    grid columnconfig $WDRandom.f3 2 -weight 0 -minsize 0
+    grid columnconfig $WDRandom.f3 3 -weight 1 -minsize 0
+
+    set goblinRandEuler 0
+
+    pack $WDRandom.f1 $WDRandom.f3 -padx $DefPadX -pady 3m \
+        -side top -anchor w -fill x -expand 1
+
+
+    DisplayForm $title
+}
+
+ShowRandomGenerator

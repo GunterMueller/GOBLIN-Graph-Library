@@ -1,0 +1,93 @@
+(digraph
+ (definition
+  (nodes 8 8 0)
+  (arcs 15)
+  (incidences
+   (0
+      0  2  4)
+   (1
+      1  6 10  8)
+   (2
+      7 12 19)
+   (3
+      3  9 16 14)
+   (4
+     11 18 20 27 23 17)
+   (5
+      5 15 22 24)
+   (6
+     25 26 28)
+   (7
+     13 29 21)
+  )
+  (ucap
+    2.000 2.000 2.000 1.000 1.000 1.000 2.000 1.000 1.000 1.000
+    2.000 1.000 1.000 1.000 2.000)
+  (lcap 0.000)
+  (length 1.000)
+  (demand
+    -5.000 0.000 0.000 0.000 0.000 0.000 0.000 5.000)
+  (directed 1)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+      0.000 10.000 20.000 10.000 20.000 10.000 20.000 30.000)
+   (axis1
+     10.000  0.000  0.000 10.000 10.000 20.000 20.000 10.000)
+  )
+ )
+ (layout
+  (nodeLabelFormat "#1")
+  (arcStippleMode 1)
+  (arcWidthMode 5)
+  (model 1)
+  (arcWidthMax 6)
+  (arcWidthMin 2)
+  (nodeSpacing 5.000)
+  (nodeFontSize 80.000)
+  (arcLabelFormat "#3|#2")
+  (arcFontSize 130.000)
+  (arrowSize 150.000)
+  (nodeColourMode 1)
+ )
+ (solutions
+  (nodeColour
+    0 1 6 2 5 3 4 7)
+  (label
+    0.000     *     * 1.000     * 2.000     *     *)
+  (potential
+    -4.000 -3.000 -1.000 -3.000 -2.000 -3.000 -1.000  0.000)
+  (subgraph
+    2.000 1.000 2.000 1.000 0.000 1.000 2.000 0.000 1.000 1.000
+    2.000 1.000 1.000 0.000 1.000)
+ )
+ (configure
+   -sourceNode         0
+   -targetNode         7
+   -rootNode           200000
+   -xShift             400
+   -yShift             400
+   -xZoom              2.00e+02
+   -yZoom              2.00e+02
+   -legenda            0
+   -displayMode        3
+   -traceLevel         3
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logMem             1
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          1
+   -methLocal          0
+   -methPlanarity      0
+   -randLength         0
+   -randGeometry       0)
+)

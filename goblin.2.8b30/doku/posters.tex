@@ -1,0 +1,295 @@
+\documentclass{report}
+\usepackage{latexsym,a4wide}
+\usepackage{epsf,graphicx,lscape}
+\renewcommand{\baselinestretch}{1.2}
+
+
+\begin{document}
+\topmargin0cm
+\footskip0cm
+\textwidth21cm
+\textheight24cm
+
+\pagestyle{empty}
+\begin{landscape}
+\begin{center}
+\vspace*{1cm}
+{$\dots$ now available:}
+
+\vspace*{3cm}
+\newfont{\HUGE}{cmr10 scaled 15000}
+{\HUGE GOBLIN}
+
+\vspace*{2cm}
+{\huge A C++ Library for Network Programming Problems}
+\end{center}
+
+\clearpage
+{\Huge\bf GOBLIN Features:}
+{\huge
+\vspace*{1cm}
+\begin{quote}
+\begin{itemize}
+\item Extendable class hierarchy which separates solvers and graph definitions
+\item Documented open source code
+\item GNU public license (LGPL)
+\item Compile time configuration for code optimization
+\item Powerful, configurable logging and graphical tracing functionality
+\item Graphical browser and editor tool (GOBLET)
+\item Tcl/Tk based script interpreter (GOSH)
+\item Support for TSPLIB and DIMACS graph objects
+\item Export of canvasses to xFig and Tcl/Tk
+\end{itemize}
+\end{quote}}
+
+
+\clearpage
+\begin{minipage}{6.5cm}
+\vspace*{3.6cm}
+{\Huge\bf GOBLET
+
+\medskip Editor}
+\vspace*{11cm}
+\end{minipage}
+\begin{minipage}{18cm}
+\begin{center}
+\vspace*{0.8cm}
+\hspace*{3cm}
+\includegraphics*[scale=0.65]{edit.ps}
+\vspace*{2.8cm}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+\begin{minipage}{6.5cm}
+{\Huge\bf Tracing Graph \\ Algorithms}
+\vspace*{11cm}
+\end{minipage}
+\begin{minipage}{18cm}
+\begin{center}
+\hspace*{3cm}
+\includegraphics*[scale=0.65]{browse.ps}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Covered Problems:}
+{\huge
+\vspace*{1cm}
+\begin{quote}
+\begin{itemize}
+\item Shortest Paths, Negative Cycles, Minimum Mean Cycles
+\item Spanning Trees, Arborescences and 1-Trees
+\item Network Flows ($st$-Flows, Circulations, $b$-Flows)
+\item Matchings and (Capacitated) $b$-Matchings
+\item Directed and Undirected Chinese Postman Tours, $T$-Joins
+\item TSP, ATSP, Metric TSP and Hamiltonian Cycles
+\item Stable Sets, Cliques, Vertex Covers
+\item Node and Edge Colourings, Node Disjoint Clique Covers
+\item Graph Connectivity, Minimum and Maximum Edge Cuts
+\end{itemize}
+\end{quote}}
+
+
+\clearpage
+{\Huge\bf Spanning Trees}
+
+\vspace*{3cm}
+\begin{minipage}{11cm}
+\begin{center}
+{\huge Spanning Arborescence}
+\vspace*{1.5cm}
+
+\hspace*{0cm}
+\epsfxsize=11cm
+\epsfbox{branch2.eps}
+\end{center}
+\end{minipage}
+\begin{minipage}{14cm}
+\begin{center}
+\hspace*{0cm}
+\epsfxsize=11.5cm
+\epsfbox{surface.eps}
+
+\vspace*{2cm}
+{\huge Surface Graph of the Arborescence Method}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Network Flows}
+
+\vspace*{2cm}
+\begin{minipage}{11cm}
+\begin{center}
+{\huge Maximum Flow and Minimum Cut}
+\vspace*{2cm}
+
+\hspace*{0cm}
+\epsfxsize=9cm
+\epsfbox{maxflow4.eps}
+\end{center}
+\end{minipage}
+\hspace*{2cm}
+\begin{minipage}{11cm}
+\begin{center}
+\epsfxsize=11cm
+\epsfbox{maxmean.eps}
+
+\vspace*{2cm}
+{\huge Maximum Mean Cycle}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Matchings}
+
+\vspace*{2cm}
+\begin{minipage}{8cm}
+\begin{center}
+{\huge $T$-Join (Shortest Path Problem)}
+\vspace*{2cm}
+
+\epsfxsize=8cm
+\epsfbox{tjoin.eps}
+\end{center}
+\end{minipage}
+\hspace*{3cm}
+\begin{minipage}{12cm}
+\begin{center}
+\epsfxsize=12cm
+\epsfbox{pr76.eps}
+
+\vspace*{2cm}
+{\huge Geometric 2-Factor and Tour}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Branch and Bound}
+
+\vspace*{2cm}
+\begin{minipage}{8cm}
+\begin{center}
+{\huge Branch Tree}
+\vspace*{2cm}
+
+\epsfxsize=8cm
+\epsfbox{branchtree.eps}
+\end{center}
+\end{minipage}
+\hspace*{2cm}
+\begin{minipage}{15cm}
+\begin{center}
+\includegraphics*[scale=0.6]{logging.ps}
+
+\vspace*{2cm}
+{\huge Logfile}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Traveling Salesman}
+
+\vspace*{2cm}
+\begin{minipage}{10cm}
+\begin{center}
+{\huge Candidate Graph}
+\vspace*{1.5cm}
+
+\epsfxsize=10cm
+\epsfbox{candidates.eps}
+\end{center}
+\end{minipage}
+\hspace*{3cm}
+\begin{minipage}{10cm}
+\begin{center}
+\epsfxsize=10cm
+\epsfbox{hamilton.eps}
+
+\vspace*{2cm}
+{\huge Hamiltonian Cycle}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Packings and Partitions}
+
+\vspace*{2cm}
+\begin{minipage}{10cm}
+\begin{center}
+{\huge Maximum Stable Set}
+\vspace*{1.5cm}
+
+\epsfxsize=10cm
+\epsfbox{queens.eps}
+\end{center}
+\end{minipage}
+\hspace*{3cm}
+\begin{minipage}{10cm}
+\begin{center}
+\epsfxsize=10cm
+\epsfbox{colours.eps}
+
+\vspace*{1.5cm}
+{\huge Node Colouring}
+\end{center}
+\end{minipage}
+
+
+\clearpage
+{\Huge\bf Advantages of Free Open Source Software}
+{\huge
+\vspace*{1cm}
+\begin{quote}
+\begin{itemize}
+\item More functionality (compile time configuration, no disabled options)
+\item More transparency (code reviews by externals -> peer reviews)
+\item Better integration into other projects (additional interfaces)
+\item Open standards (interfaces can be controlled by users)
+\item Soon availability (before reaching stability)
+\item Longer availability (user can maintain the code instead of migration to
+        another product)
+\item Easier portability
+\item Higher security (security gaps are public)
+\end{itemize}
+\end{quote}}
+
+
+\clearpage
+{\Huge\bf Contact}
+
+\vspace*{1cm}
+{\huge
+\begin{quote} 
+Christian Fremuth-Paeger, University of Augsburg
+    
+\medskip
+e-mail: \verb/goblin@math.uni-augsburg.de/
+
+\end{quote} 
+}
+
+
+\vspace*{3cm}
+{\Huge\bf Download}
+
+\vspace*{1cm}
+{\huge
+\begin{quote} 
+\verb!www.math.uni-augsburg.de/opt/goblin/goblin.html!
+\end{quote} 
+
+}
+
+
+
+\end{landscape}
+\end{document}

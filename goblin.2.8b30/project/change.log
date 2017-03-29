@@ -1,0 +1,2236 @@
+--------------------------------------------------------------------------------
+                GOBLIN change log (started with release 2.6)
+--------------------------------------------------------------------------------
+
+
+Changes in Release 2.6.1Build1
+------------------------------
+
+Bug Fix   : Wrong window path name when interrupting the solver thread
+Scope     : GUI / Tracing
+
+Bug Fix   : Wrong window path name in node label editor
+Scope     : GUI / Editor
+
+Bug Fix   : Segmentation fault for node insertions after ReSize()
+Scope     : Library / Graph handling
+
+Milestone : Mehlhorn Steiner Tree approximation (initial version)
+Scope     : Algorithms
+Comments  : 2-approximation for discrete undirected Steiner trees
+
+Milestone : Extend graph composition tools
+Scope     : Handling, GUI
+Comments  : (1) Export subgraph induced by a node colour
+          : (2) Export bigraph induced by a pair of colours
+          : (3) Contract node colour classes
+
+
+Changes in Release 2.6.1Build2
+------------------------------
+
+Bug Fix   : Wrong file path name for unnamed file during startup
+Scope     : GUI
+
+Milestone : Editing node colours
+Scope     : GUI / Editor
+
+Milestone : Steinlib graph import filter
+Scope     : GUI / IO
+
+Milestone : Dictionary data structure
+Scope     : Data structures
+Comments  : Hash table for strings, needed for fast reading of LPs
+
+
+Changes in Release 2.6.1Build3
+------------------------------
+
+Milestone : Extend graph composition tools
+Scope     : Handling, GUI
+Comments  : (1) Orientate bigraph without antiparallel arcs
+          : (2) Merge graphs
+
+Bug Fix   : Display graph after layout methods
+Scope     : GUI
+
+
+Changes in Release 2.6.1Build4
+------------------------------
+
+Milestone : Timers
+Scope     : Redesign, GUI
+Comments  : Timers to file handling and data structures
+          : Global timer for solver thread.
+
+Milestone : Tracing of lower and upper bounds
+Scope     : Redesign, GUI
+Comments  : Export known bounds from algorithms to a context variable
+
+Bug Fix   : Contraction of node colour classes maintains colour labels
+Scope     : Handling
+
+Bug Fix   : Large graphs are not displayed, neither layouts nor text forms
+Scope     : GUI
+
+Bug Fix   : Text display of graphs shows wrong node indices
+Scope     : Library
+
+
+Changes in Release 2.6.1Build5
+------------------------------
+
+Milestone : Improved performance of the edge-connected components method
+Scope     : Library
+
+Milestone : Display of arc colours
+Scope     : Library
+
+Bugfix    : Wrong bounding box of exported canvasses
+Scope     : Library / Layout
+Comments  : If upper corner is not the origin 
+
+
+Changes in Release 2.6.1Build6
+------------------------------
+
+Milestone : Editor support of arc colours
+Scope     : GUI / Editor
+
+Milestone : Free style arc labels
+Scope     : GUI / Redesign
+
+
+Changes in Release 2.6.1Build8
+------------------------------
+
+Bugfix    : Inconsistent files after deletion of nodes
+Scope     : Library / File IO
+Comments  : If source, target respectively root nodes are defined
+
+Bugfix    : Inconsistent bend node lists after node deletions
+Scope     : Library / Editor
+
+Milestone : Moving and deleting of bend and alignment nodes
+Scope     : Library / Editor
+
+Milestone : Deletion of trace files
+Scope     : GUI
+
+Bugfix    : Computation of node adjacencies
+Scope     : Library
+Comments  : Came in with Build6
+
+
+Changes in Release 2.6.1
+------------------------
+
+Bugfix    : Weighted matching with implicit reduced length labels
+Scope     : Library
+
+Bugfix    : Single step LP pivoting
+Scope     : Library
+Comments  : Missing assignment to global pivot variables
+
+Bugfix    : Editing LP bounds
+Scope     : GUI / Editor
+Comments  : When new lower and old upper bounds were conflicting
+
+Milestone : Revision of the node / arc label editor
+Scope     : GUI / Editor
+Comments  : Same look and feel as LP editor
+
+Bugfix    : Multiple open of detached dialog windows
+Scope     : GUI
+
+Milestone : Browsing facility for timers
+Scope     : GUI
+
+Milestone : Revision of the node and arc display forms
+Scope     : GUI / Layout
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.6.2Build3
+------------------------------
+
+Milestone : Revision of the Makefile
+Scope     : Build
+
+
+Changes in Release 2.6.2Build4
+------------------------------
+
+Milestone : Preliminary version of an GLPK plugin
+Scope     : Shell / GUI
+
+
+Changes in Release 2.6.2Build8
+------------------------------
+
+Milestone : Planarity testing (Initial version)
+Scope     : Library
+
+
+Changes in Release 2.6.2Build9
+------------------------------
+
+Bugfix    : Generation of induced bigraphs (wrong assignment of n1,n2)
+Scope     : Library
+
+Bugfix    : Colouring of empty and complete graphs
+Scope     : Library
+
+Bugfix    : Mismatch of duality bounds in branch&bound solver
+Scope     : Library
+
+
+Changes in Release 2.6.2Build11
+-------------------------------
+
+Bugfix    : First incidence information is not persistent
+Scope     : Library
+
+Bugfix    : Dense graphs admit less operations than sparse graphs
+Scope     : GUI / Editor
+
+Milestone : Edit mode for sorting incidence lists
+Scope     : GUI / Editor
+
+
+Changes in Release 2.6.2Build12
+-------------------------------
+
+Bugfix    : Setting variable types INT/FLOAT
+Scope     : GLPK plugin
+
+Milestone : Editor support for bipartite graphs
+Scope     : GUI / Editor
+
+
+Changes in Release 2.6.2Build14
+-------------------------------
+
+Bugfix    : Bad initialization of problem bounds
+Scope     : Library
+
+Milestone : GLPK Integration (Step 2)
+Scope     : Library
+Comments  : (1) Display of GLPK tableaus
+          : (2) Redirection of standard output
+
+Bugfix    : MIPs do not admit to rescale the layout
+Scope     : GUI
+
+
+Changes in Release 2.6.2b17
+---------------------------
+
+Milestone : GLPK integration (Step 3)
+Scope     : Library
+Comments  : Single pivoting steps
+
+Bugfix    : Unitialized basis when pivoting from scratch
+Scope     : Library
+
+
+Changes in Release 2.6.2b18
+---------------------------
+
+Milestone : Browsing facilities for modules, authors and bibliography
+Scope     : GUI / Messenger
+
+
+Changes in Release 2.6.2b19
+---------------------------
+
+Milestone : Improved exception handling
+Scope     : Library / Shell
+Comments  : (1) Add terminate handler to shell
+            (2) Internal errors, macros which set __LINE__ and __FILE__
+
+Bugfix    : Wrong export of special graph nodes
+Scope     : Library
+
+
+Changes in Release 2.6.2b21
+---------------------------
+
+Bugfix    : Problems with dependencies on platforms other than linux/gcc
+Scope     : Makefile
+
+
+Changes in Release 2.6.2b22
+---------------------------
+
+Milestone : Integration of the DMP planarity code
+Scope     : Library
+Comments  : (1) Explicit combinatorial embedding
+            (2) Relaxation of the 2-connectivity requirement
+
+
+Changes in Release 2.6.2b23
+---------------------------
+
+Milestone : Integration of the DMP planarity code
+Scope     : Library
+Comments  : Handling of parallel arcs and loops
+
+
+Changes in Release 2.6.2b24
+---------------------------
+
+Bugfix    : Wrong update of the segments in the DMP planarity algorithm
+Scope     : Library
+
+
+Changes in Release 2.6.2
+------------------------
+
+Milestone : DMP planarity code cleanup
+Scope     : Library
+Comments  : Deleted the class cycle and fixed a memory leak
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.6.3b1
+--------------------------
+
+Milestone : Revision of the DMP planarity code
+Scope     : Library
+Comments  : (1) Embedding of parallel arcs of the initial cycle can fail
+          : (2) Replace BFS on Segment_go by explicit search code
+
+Bugfix    : Graph dualization preserves the combinatorial embedding
+Scope     : Library
+
+Milestone : Compound objects for xFig canvas export
+Scope     : Library / Filters
+
+Bugfix    : Dependencies generation by makedepend
+Scope     : Build
+
+Cleanup   : More deterministic computation of node adjacencies
+Scope     : Library
+
+
+Changes in Release 2.6.3b2
+--------------------------
+
+Milestone : Revision of the graph editor
+Scope     : GUI / Editor
+Comments  : (1) Edit mode for adding bend nodes to existing arcs
+          : (2) Different grids for graph nodes, bend nodes and arc labels
+          : (3) Wrong order of bend nodes when reverting an arc
+          : (4) Wrong placement of bend nodes when the canvas is
+                not aligned with origin
+          : (5) Problems when inserting a graph node while artificial
+          :     nodes exist
+          : (6) Drop inserted nodes only when button is released
+
+Bugfix    : Segmentation fault when deleting an edge label position
+          : and no bend nodes exist
+Scope     : Library
+
+Bugfix    : Misplaced export of lower bound from subgradient optimization
+          : during TSP branch and bound
+Scope     : Library
+
+
+Changes in Release 2.6.3b3
+--------------------------
+
+Bugfix    : Display errors also if logging is suppressed
+Scope     : Library
+
+Milestone : Export of Euler cycles
+Scope     : Library
+Comments  : (1) Hierholzer algorithm
+          : (2) Export to edge colours
+          : (3) New arc display mode "Smooth Colours"
+          : (4) Generate parallel arcs from arc capacities
+
+
+Changes in Release 2.6.3b4
+--------------------------
+
+Bugfix    : Insertions of arcs with non-trivial lower bounds fail
+Scope     : Library
+
+Milestone : Extended DAG search
+Scope     : Library
+Comments  : (1) Computing shortest path trees in DAGs
+          : (2) Computing critical paths (maximum length paths from a root)
+
+Bugfix    : Returned flow value of MaxFlow() is wrong when starting with
+          : non-trivial flow
+Scope     : Library
+
+Milestone : Brought the module database into line with the code
+Scope     : Library / GUI
+
+
+Changes in Release 2.6.3b5
+--------------------------
+
+Bugfix    : Lower bound can overrun the upper bound when branch and bound
+          : achieves optimality
+Scope     : Library
+
+Milestone : Max-Cut branch and bound
+Scope     : Library
+
+Bugfix    : No arc aligments when placing the nodes of dense graphs
+Scope     : Library
+
+Bugfix    : Deletion of loops affects only the bend nodes
+Scope     : GUI / Editor
+
+
+Changes in Release 2.6.3
+------------------------
+
+Milestone : Max-Cut code cleanup
+Scope     : Library / GUI
+Comments  : (1) Handling of source ans target nodes
+          : (2) Method configuration parameter
+          : (3) Preserve intial cuts
+          : (4) Negative arc weights
+          : (5) GRASP heuristic
+
+Bugfix    : Cleaned up some problems with mismatch bounds and folds
+Scope     : Library
+
+Bugfix    : Unpleasant nesting output into compound log entries
+Scope     : Library
+
+Bugfix    : Setting constant capacity bounds conflicts with subgraph
+Scope     : Library
+
+Bugfix    : Setting random capacity bounds conflicts with subgraph
+Scope     : Library
+
+Milestone : Negative random arc labels
+Scope     : Library / GUI
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.6.4b1
+--------------------------
+
+Milestone : st-numbering and open ear decomposition
+Scope     : Library
+
+Bugfix    : Do not allow file changes while solver is running
+Scope     : GUI
+
+Milestone : Combinatorial embedding of outerplanar graphs
+Scope     : Library
+
+
+Changes in Release 2.6.4b2
+--------------------------
+
+Milestone : Revision of the network simplex code
+Scope     : Library
+Comments  : (1) Multiple partial pricing and other pricing rules
+          : (2) Cleanup of non-reentrant code
+          : (3) Performance improvement (10%)
+          : (4) Class networkSimplex
+          
+Milestone : Replaced meth1Tree by a calling parameter to MinTree methods
+Scope     : Library
+
+Bugfix    : Cleaned up a new problem with arc insertions and subgraphs
+Scope     : Library
+Comments  : Came in with Release 2.6.3
+
+Bugfix    : Missing context assignment for GLPK problems
+Scope     : Library
+
+Bugfix    : Misleading automatic restriction labels for GLPK problems
+Scope     : Library
+
+
+Changes in Release 2.6.4b3
+--------------------------
+
+Milestone : Reworked the right-hand forms
+Scope     : GUI
+Comments  : (1) Internal windowing supports multiple right-hand forms
+          : (2) Title bar with specific buttons
+          : (3) Content can be hidden by click on the title bar
+          : (4) Order can be changed by drag & drop
+
+
+Changes in Release 2.6.4b4
+--------------------------
+
+Bugfix    : Do not try to resume a session more than once
+Scope     : GUI / Session management
+
+Bugfix    : GUI crashes on node formatting string "#0"
+Scope     : Library /GUI
+
+Bugfix    : Lost basis indices when inserting rows or variables
+Scope     : GLPK plugin
+
+
+Changes in Release 2.6.4b6
+--------------------------
+
+Milestone : Composition of linear programs
+Scope     : Handling
+Comments  : (1) Compose standard form LPs
+          : (2) Compose canonical LPs
+          : (3) Compose LP dual form
+
+Bugfix    : Wrong sign of the return value of the native LP solver for
+            maximization problems
+Scope     : Library / LP solver
+
+
+Changes in Release 2.6.4b8
+--------------------------
+
+Milestone : Tcl 8.4 and CYGWIN compatibility
+Scope     : Setup / GUI
+Comments  : (1) Missing const qualifiers
+          : (2) More careful computation of window sizes
+
+Bugfix    : Execution of wrong tasks in default input form
+Scope     : GUI
+
+
+Changes in Release 2.6.4b9
+--------------------------
+
+Milestone : Composition of linear programs
+Scope     : Handling
+Comments  : (1) Reverting the object sense
+          : (2) Polyhedra without objective
+
+
+Changes in Release 2.6.4b11
+---------------------------
+
+Milestone : Canonical Ordered Partition
+Scope     : Library / Graph Drawing
+Comments  : As proposed by Kant, no LMC ordering yet
+
+Bugfix    : Page faults when reloading graphs with cancelled arcs
+Scope     : Library / Display
+
+
+Changes in Release 2.6.4b12
+---------------------------
+
+Milestone : Straight Line Drawing of 3-connected Graphs
+Scope     : Library / Graph Drawing
+Comments  : O(n^2), not convex yet
+
+Bugfix    : No logging after "goblin echo" option
+Scope     : Shell / Messenger
+
+Bugfix    : Various problems with tracing
+Scope     : GUI / Tracing
+Comments  : (1) Trace files are lost after resume of session
+            (2) ctrl+W does not work in trace mode
+            (3) ctrl+W does not work with hidden nodes
+            (4) A backup file is written for every trace point
+            (5) Switching back from navigation mode shows backup file
+                instead of trace file
+
+
+Changes in Release 2.6.4
+------------------------
+
+Bugfix    : Various problems with node grids
+Scope     : GUI / Layout
+Comments  : (1) Synchronize grids with goblinNodeSep parameter
+            (2) Unhandled exception in Measures & alignments
+            (3) Do not force grid on return key
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.7b1
+------------------------
+
+Milestone : Convex Drawing of outerplanar Graphs
+Scope     : Library / Graph Drawing
+Comments  : Place nodes on a circle
+
+Bugfix    : Cloning of graphs with isolated vertices
+Scope     : Library
+
+Bugfix    : 2-Connectivity augmentation with isolated vertices
+Scope     : Library
+
+Bugfix    : Memory fault with shared staticStack objects
+Scope     : Library
+
+Milestone : Refine canonical ordering to LMC ordering
+Scope     : Library / Graph Drawing
+
+Milestone : Hyperlinks for the reference manual
+Comment   : For dvi file, edit document header to obtain pdf hyperlinks
+
+Milestone : Refine planar straight line drawing to convex faces
+Scope     : Library / Graph Drawing
+
+
+Changes in Release 2.7b2
+------------------------
+
+Milestone : Refine planar straight line drawing to linear complexity
+Scope     : Library / Graph Drawing
+
+
+Changes in Release 2.7b3
+------------------------
+
+Milestone : Initial implementation of the GEM force directed drawing method
+Scope     : Library / Graph Drawing
+
+Bugfix    : Circular layout only works for outerplanar graphs
+Scope     : Library / Graph Drawing
+
+Bugfix    : Missing const qualifier in solver main routines
+Scope     : Executable Solvers
+
+
+Changes in Release 2.7b4
+------------------------
+
+Milestone : Outerplanar embedding of disconnected graphs
+Scope     : Library
+
+
+Changes in Release 2.7b5
+------------------------
+
+Milestone : Dual form of disconnected graphs
+Scope     : Library
+
+
+Changes in Release 2.7b6
+------------------------
+
+Milestone : Adaption of the GEM method to planar graphs
+Scope     : Library / Graph Drawing
+
+Bugfix    : Concurrency problems with the display of right hand forms
+Scope     : GUI
+
+Milestone : Triangulation of biconnected planar graphs
+Scope     : Library / Planarity
+
+
+Changes in Release 2.7b7
+------------------------
+
+Milestone : Binconnectivity augmentation of connected planar graphs
+Scope     : Library / Planarity
+
+Milestone : Triangulation of biconnected planar graphs
+Scope     : Library / Planarity
+
+Bugfix    : staticStack admits double insertions of the first element
+Scope     : Library
+
+
+Changes in Release 2.7b8
+------------------------
+
+Milestone : Reworked outerplanar embedding code, construction of forbidden minors
+Scope     : Library / Planarity
+
+Milestone : Support for edge covers
+Scope     : Library / Matching
+Comments  : (1) Extract edge cover from matching
+            (2) Map minimum edge cover problem to a perfect matching problem
+
+
+Changes in Release 2.7b10
+-------------------------
+
+Milestone : More explicit source and header file names
+Scope     : Library
+
+Milestone : Globally unique object handles
+Scope     : Library
+
+Bugfix    : Missing display data of hash tables
+Scope     : Library
+
+
+Changes in Release 2.7b11
+-------------------------
+
+Bugfix    : Incomplete cleanup of the .goblet folder
+Scope     : GUI
+
+Milestone : Handles and linked list for controller objects.
+            Context independent resolution of handles to pointers
+Scope     : Library
+
+Milestone : Linear time planar triangulation
+Scope     : Library
+
+Milestone : More sophisticated invalidation rules for graph manipulation
+Scope     : Library
+
+Bugfix    : Zipped files are listed twice in file import form 
+Scope     : GUI
+
+Bugfix    : Insufficient colour assignment in the xFig export filter 
+Scope     : Library
+
+
+Changes in Release 2.7b12
+-------------------------
+
+Milestone : Cleanup of the system installation and binary package generation
+Scope     : Makefile
+
+Bugfix    : In MaxCut branch and bound, Local optima are overwritten
+Scope     : Library
+
+Bugfix    : Lost window path names when working with multiple input forms
+Scope     : GUI
+
+
+Changes in Release 2.7b13
+-------------------------
+
+Bugfix    : Revert to a consistent state when file import fails
+Scope     : GUI
+
+
+Changes in Release 2.7
+----------------------
+
+Bugfix    : Dialog windows must stay in front of the main window
+Scope     : GUI
+
+Milestone : Reworked the new object dialog
+Scope     : GUI
+
+Milestone : New edit mode for arc contraction
+Scope     : GUI
+
+Bugfix    : Balanced network transformations cannot deal with empty nodes
+Scope     : Library
+
+Bugfix    : Weighted matching solver crashes if no fractional solution exists
+Scope     : Library
+
+Milestone : Revised layout of right hand forms
+Scope     : GUI
+
+Bugfix    : Adjacency() throws exception for non-adjacent nodes
+Scope     : Library
+
+Bugfix    : Matching candidate search does not work
+Scope     : Library
+
+Bugfix    : Unhandled exception for extraction of data structures
+Scope     : Shell / GUI
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+Changes in Release 2.7.1b1
+--------------------------
+
+Milestone : Basic mixed integer branch & bound
+Scope     : Library / LP Module
+
+Milestone : Data structure and file handling of integer solutions
+Scope     : Library / LP Module
+
+Milestone : Basic integer branch & bound for stable sets
+Scope     : Library / LP Module
+
+Bugfix    : Wrong alignment of raw log files
+Scope     : Message handler / GUI
+
+Milestone : Objects can be loaded into separate contexts
+Scope     : Shell
+
+Bugfix    : Object deletion blocks if tracing is enabled
+Scope     : Shell / GUI
+
+Bugfix    : Trace object types may differ from original problem type
+Scope     : GUI
+
+Milestone : Improved tree layout method
+Scope     : Library / Drawing
+
+Milestone : Improved display of linear programs
+Scope     : Library / LP Module
+
+
+Changes in Release 2.7.1b2
+--------------------------
+
+Bugfix    : Wrong counting of equality restrictions
+Scope     : GUI / MIP statistics
+
+Bugfix    : Insufficient basis initialization
+Scope     : Library / LP Module
+
+Bugfix    : Wrong scaling of configuration parameter maxBBNodes
+Scope     : Library / Branch & Bound Module
+
+Milestone : Cleanup of the independent set / clique code
+Scope     : Library / Independent Sets
+Comments  : (1) Improved upper bound by more exhaustive colouring
+            (2) Improved lower bound by using existing solutions
+
+
+Changes in Release 2.7.1b3
+--------------------------
+
+Milestone : Asynchronous file I/O
+Scope     : Shell / GUI
+
+Bugfix    : Missing exception handling for FixIntoWindow
+Scope     : GUI / Layout
+
+Milestone : Cleanup of the node colouring code
+Scope     : Library / Colouring
+Comments  : (1) Improved branching rules
+            (2) Improved performance by using existing cliques consequently
+
+Bugfix    : Memory leak when working with threads
+Scope     : Library / Shell
+
+
+Changes in Release 2.7.1b4
+--------------------------
+
+Bugfix    : Dense graphs are converted to sparse objects
+Scope     : Library
+
+Milestone : Progress bar and estimation of execution times
+Scope     : Libarary / GUI
+
+Bugfix    : With traceStep = 0, break at every trace point
+Scope     : Library / GUI
+
+Bugfix    : Trace events block if no separate thread is used
+Scope     : Library / GUI
+
+Bugfix    : Wrong problem bounds in connected component methods
+Scope     : Library / Connectivity
+
+Bugfix    : Bug with parallel arcs in strong edge connectivity method
+Scope     : Library / Connectivity
+
+Bugfix    : Force directed layout does not converge when tracing is enabled
+Scope     : Library / Layout
+
+
+Changes in Release 2.7.1b5
+--------------------------
+
+Bugfix    : Mixed graphs cannot be generated from scratch
+Scope     : GUI
+
+Milestone : Context menus for the graph display and messenger
+Scope     : Libarary / GUI
+
+
+Changes in Release 2.7.1b6
+--------------------------
+
+Milestone : Compatibility with gcc 3.4.1
+Scope     : Libarary / Template classes
+
+
+Changes in Release 2.7.1b7
+--------------------------
+
+Bugfix    : Poor performance when applying max-flow push&relabel methods
+          : to matching instances
+Scope     : Library / Matching algorithms
+
+Milestone : Excess scaling code for the push&relabel method
+Scope     : Library / Maximum flows
+
+Bugfix    : In blocking flow code for capacitated matching problems,
+          : bridges must be considered again after augmentation
+Scope     : Library / Matching algorithms
+
+Bugfix    : Network simplex method crashes if node potentials are allocated
+          : in advance
+Scope     : Library / Min-Cost flow algorithms
+
+Bugfix    : SAP algorithm assigns wrong initial lower bound when arc lengths
+          : are negative
+Scope     : Library / Min-Cost flow algorithms
+
+Milestone : Lower bounds for min-cost flow 
+Scope     : Libarary / Min-Cost flow algorithms
+
+Bugfix    : Hide the heap monitor when library does not support this
+          : functionality
+Scope     : GUI / Heap monitoring
+
+
+Changes in Release 2.7.1b8
+--------------------------
+
+Bugfix    : Exceptions when assigning duality gaps for infeasible instances
+Scope     : Library / Duality gaps
+Comment   : Came in with build 2.7.1b7
+
+Bugfix    : Various problems with wrong arc orientation in bigraphs
+Scope     : Library / Editor
+
+Bugfix    : GUI crashes when trace files are exported
+Scope     : GUI / Tracing
+
+Bugfix    : Wrongly attested constant (zero) node demands
+Scope     : Library / Matching
+
+Bugfix    : Enforce non-negativity of the edge lengths
+Scope     : Library / Matching
+
+Bugfix    : Wrong file output for infinite float values
+Scope     : Library / File export
+
+Bugfix    : Destroy edge lengths when activating a metric
+Scope     : GUI / Editor
+
+Bugfix    : Turn off edge length metric when generating new objects
+Scope     : GUI / Editor
+
+Bugfix    : Wrong attest of non-perfect assignments when partitions have
+          : different cardinality
+Scope     : Library / Matching
+
+Bugfix    : FNW2FNW has negative flow values if constructed with unbalanced
+          : flow networks
+Scope     : Library / Min-Cost flow algorithms
+
+Bugfix    : 1-Matching solver uses loops for min-cost flow preprocessing
+Scope     : Library / T-Joins
+
+Bugfix    : Detection of repeated iterator close operations and fixing a
+          : respective bug in the weighted matching code
+Scope     : Library / Iterators / Matching
+
+Bugfix    : Incomplete incidence lists of class bal2bal if no odd cycles exist
+Scope     : Library / Matching
+
+Milestone : Reworked the upload /download mechanism for the graph label forms
+Scope     : GUI / Editor
+Comments  : (1) Synchronize label editor forms with all editor commands
+            (2) Display start and end nodes of the edited arcs
+
+
+Changes in Release 2.7.1b9
+--------------------------
+
+Milestone : Synchronize label editor forms with all editor commands (continued)
+Scope     : GUI / Editor
+
+Milestone : Adjustment of all toplevel windows with application main window
+Scope     : GUI
+
+Bugfix    : When stepping back to the saved object version, mark unchanged
+Scope     : GUI / Editor / Backup
+
+Milestone : Configurability of maximum graph display size
+Scope     : GUI
+
+Bugfix    : When using detached slave windows, windows are not destroyed
+          : permanently
+Scope     : GUI
+
+Bugfix    : No upload of infinite arc capacity bounds allowed
+Scope     : GUI / Editor
+
+Bugfix    : Wrong rank of initial spanning tree for network simplex code
+Scope     : Library / Min-Cost flow algorithms
+
+Bugfix    : AddArc(), Push() and ResCap() do not handle infinite capacities
+          : correctly
+Scope     : Library / Network flow algorithms
+
+Bugfix    : Cost scaling method returns wrong optimimum objective value
+Scope     : Library / Min-Cost flow algorithms
+
+
+Changes in Release 2.7.1b10
+---------------------------
+
+Bugfix    : ResCap() still does not handle infinite capacities correctly
+Scope     : Library / Network flow algorithms
+
+Milestone : Implicitly determine a feasible solution in MinCostBFlow()
+Scope     : Library / Min-Cost flow algorithms
+
+Milestone : Multi-terminal version of the Dijkstra method
+Scope     : Library / Shortest path algorithms
+
+Milestone : Multi-terminal version of the shortest augmenting path method
+Scope     : Library / Min-Cost flow algorithms
+
+
+Changes in Release 2.7.1b11
+---------------------------
+
+Milestone : Capacity scaling method for min-cost flow
+Scope     : Library / Min-Cost flow algorithms
+
+Bugfix    : When main window is reconfigured and solver is running, lights
+          : turn red
+Scope     : GUI
+
+Bugfix    : Mismatching folds in the ATSP solver
+Scope     : Library / TSP
+
+Bugfix    : ExtractTree() do not obey the arc orientations
+Scope     : Library
+
+Bugfix    : Bad copy of node potentials in TSP branch and bound
+Scope     : Library / TSP
+
+Bugfix    : In TSP branch and bound, feasible solutions can break the
+          : relaxation bound
+Scope     : Library / TSP
+
+Milestone : Revision of the TSP branch & bound code
+Scope     : Library / TSP
+
+Milestone : Display Hamiltonian cycles, colour classes and node orderings
+          : by a circular layout method
+Scope     : Library / Layout
+
+Bugfix    : General exception handler is not thread safe
+Scope     : Shell / GUI
+
+
+Changes in Release 2.7.1b12
+---------------------------
+
+Bugfix    : In TSP branch and bound, tours constructed with the candidate
+          : graph, are not considered as potential solutions
+Scope     : Library / TSP
+
+Bugfix    : Wrong relaxed objective in max cut branch and bound
+          : when negative arc lengths exist
+Scope     : Library / Max cut
+
+Milestone : Completion of the progress counting functionality
+Scope     : Library / Tracing
+
+Milestone : Revision of the Makefile
+Comments  : (1) Support for private installations
+            (2) Improved rule for the reference manual
+            (3) Improved handling of version label changes
+
+
+Changes in Release 2.7.1
+------------------------
+
+Bugfix    : Memory leak in MCF_EdmondsKarp()
+Scope     : Library / Min cost flow
+
+Milestone : Generation of subgraphs applies for general index sets
+Scope     : Library / Graph composition
+
+Bugfix    : Planar Embedding can be missed when the graph is not 2-connected
+          : and the cut nodes of one block are on different faces
+Scope     : Library / Planarity
+
+Milestone : Maintain node and arc mappings for derived graph objects
+Scope     : Library / Graph composition
+
+Bugfix    : Missing logging information for the DMP planarity code
+Scope     : Library / Planarity
+
+Bugfix    : gcc 3.4.1 compatibility issues
+Scope     : Library / Build
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.7.2b1
+--------------------------
+
+Milestone : Initial code for orthogonal drawing
+Scope     : Library / Layout
+Comments  : Kandinski model, general graphs, no compaction code yet
+
+Milestone : Initial code for 4-orthogonal drawing
+Scope     : Library / Layout
+Comments  : Restricted to 2-connected simple graphs
+
+Milestone : Improved management of edge colours
+Scope     : Library / Shell
+Comments  : Explicit data structure and file import/export
+
+
+Changes in Release 2.7.2b2
+--------------------------
+
+Milestone : Directed dual graph
+Scope     : Library / Planarity
+Comments  : Uses an st-numbering of the input graph
+
+Milestone : Initial code for visibility representations
+Scope     : Library / Layout
+Comments  : Restricted to 2-connected simple planar graphs
+
+Bugfix    : Unhandled exception when an embedding is of a non-planar graph
+          : is constructed
+Scope     : Library / Planarity
+Comments  : Came in with build 2.7.2b1
+
+Milestone : Shape nodes for more flexible display of graph nodes
+Scope     : Library / Layout
+
+Milestone : Improved management of layout models
+Scope     : Library / Layout
+Comments  : (1) Transition between different layout models
+          : (2) Persistency issues
+          : (3) Assign a layout model with every drawing algorithm
+
+
+Changes in Release 2.7.2b3
+--------------------------
+
+Milestone : Debugging of the planar FDP method
+Scope     : Library / Planarity
+
+Bugfix    : If all node coordinates are negative, no display is possible
+Scope     : GUI
+
+Bugfix    : Let the (convex) straight line drawing maintain the exterior face
+Scope     : Library / Layout / Planarity
+
+Milestone : Visibility representation for not 2-connected graphs
+Scope     : Library / Layout
+
+Milestone : GIOTTO drawings obtained from visibility representations
+Scope     : Library / Layout
+Comments  : Produces small nodes for 3-planar graphs
+
+
+Changes in Release 2.7.2b4
+--------------------------
+
+Milestone : Revision of the build and installation process
+Comments  : (1) Improved support for shared objects 
+          : (2) Support for dynamic load into wish interpreter (not stable)
+          : (3) Moved configuration part to an own file Makefile.conf
+          : (4) Invalidate all targets after configuration changes
+          : (5) Install from /tmp rather than /
+          : (6) Allow to compile in verbode mode by using "make all"
+
+Bugfix    : Error when graph object without layout data is imported
+Scope     : GUI
+
+Bugfix    : Do not allocate a name for every data object
+Scope     : Library / Memory management
+
+Bugfix    : Shadowed arrays
+Scope     : Library / Memory management
+
+Bugfix    : Set name of objects imported from other file formats
+Scope     : GUI / File handling
+
+Milestone : Start GUI with files in arbitrary formats
+Scope     : GUI / File handling
+
+
+Changes in Release 2.7.2b5
+--------------------------
+
+Milestone : Transitive closure and intransitive reduction
+Scope     : Library / DAGs
+
+
+Changes in Release 2.7.2b6
+--------------------------
+
+Milestone : Classes for handling graph attributes (Step 1)
+Scope     : Library
+Comments  : (1) Indexed pools to handle fixed sets of attributes
+          : (2) File import and export of attribute pools
+
+Milestone : Improved encapsulation of internal data structures
+Scope     : Library
+Comment   : Algorithm do not access registers (potential solutions)
+          : directly
+
+Bugfix    : Memory fault when releasing the bend nodes of an arc,
+          : but only an alignment point for the label exists
+Scope     : Library / Graph manipulation
+
+Bugfix    : Local search crashes when graph contains loops
+Scope     : Library / Node colourings
+
+
+Changes in Release 2.7.2b7
+--------------------------
+
+Bugfix    : Incomplete colour assignment for 2-edge connected components
+Scope     : Library / Connectivity methods
+
+Bugfix    : TSP branch & bound can crash for small graphs
+Scope     : Library / Branch & bound
+
+Bugfix    : Tiny toplevel windows when size is fixed too early
+Scope     : GUI
+
+Bugfix    : GUI should display descriptions of unhandled rejections
+Scope     : Library / GUI
+
+Bugfix    : More cleanup of the local search code for node colouring
+Scope     : Library / Node colouring
+
+
+Changes in Release 2.7.2b8
+--------------------------
+
+Milestone : Equilateral drawings of 2-connected outerplanar graphs
+Scope     : Library / Layout / Planarity
+
+Bugfix    : Arcs with undefined edge colour are invisible
+          : when showing smooth edge colours
+Scope     : Library / Graph display
+
+Bugfix    : Cleanup of problems with non-trivial capacity bounds
+Scope     : Library / TSP
+
+Milestone : Cleanup of the shortest path solver interface
+Scope     : Library / Shortest paths
+
+Bugfix    : In underlying graphs, directed edges are mapped with a wrong length
+Scope     : Library / Graph composition
+
+Milestone : Revision of the spanning tree solver
+Scope     : Library / Spanning trees
+Comments  : (1) Spanning tree methods return infinite values in the infeasibility case
+          : (2) Maximum spanning trees are supported explicitly
+          : (3) All methods are available for mixed graphs
+
+Milestone : Spread out regular polyhedra
+Scope     : Library / Layout / Planarity
+
+Milestone : Planar line graph
+Scope     : Library / Graph composition
+
+Bugfix    : Truncated popup windows
+Scope     : GUI
+
+Milestone : Update of the executable solver code
+Scope     : Solver
+
+Milestone : Cleanup of the shortest path solver interface
+Scope     : Library / Shortest paths
+Comments  : (1) T-join method has been integrated into general interface function
+          : (2) Select between original graph, subgraph and residual graph search
+
+
+Changes in Release 2.7.2
+------------------------
+
+Bugfix    : If solver is started with an optimal solution, a clique cover is exported
+Scope     : Library / Stable Sets
+
+Milestone : Vertex truncations
+Scope     : Library / Planar graph composition
+
+Milestone : Face separation and rotation
+Scope     : Library / Planar graph composition
+
+Bugfix    : Sometimes changes are undone by delayed upload of attribute window data
+Scope     : GUI / Editor
+
+Milestone : Rerun solvers with modified node parameters
+Scope     : GUI / Solver utilization
+
+Bugfix    : Directed CPP solver was completely useless due to various bugs
+Scope     : Library / Chinese postman
+
+Bugfix    : Extracting trees does not obey the arc directions
+Scope     : Library
+Comment   : Came in with Release 2.7.2b8
+
+Bugfix    : Subgradient optimization reports infeasibility for geometric TSP instances
+Scope     : Library / TSP
+
+Milestone : Improved performance of the Edmonds arborescence method
+Scope     : GUI / Spanning trees
+
+
+--------------------------------------------------------------------------------
+
+Changes in Release 2.8b1
+------------------------
+
+Milestone : Initial code for horizontal node placement
+Scope     : Library / Layered drawing
+Comments  : (1) Force directed placement
+          : (2) Special mode for preserving the topology
+          : (3) With application to tree drawing algorithm
+
+Milestone : Explicit subdivision of edges in replace of bend nodes
+Scope     : Library / Layered drawing
+
+Bugfix    : Division by zero when "Force to grid" is applied
+Scope     : GUI / Layout
+
+Bugfix    : Impossible to display antiparallel predecessor arcs
+Scope     : GUI / Editor
+
+Bugfix    : xFig canvas does not match Tk canvas appearance
+Scope     : Library / File export
+Comments  : (1) Wrong stacking order for arc labels
+          : (2) Tiny arrows
+
+Bugfix    : Subgraph induced by an edge colour cannot only be exported when
+          : node colours are present
+Scope     : GUI / Graph composition
+
+Milestone : 1/2 approximating heuristic for minimum feedback arc set
+Scope     : Library / Layered drawing
+
+Bugfix    : Solver execution first stops with a tracefile of the previous run
+Scope     : GUI / Tracing
+
+Milestone : Minimum edge span layering
+Scope     : Library / Layered drawing
+
+Bugfix    : DIMACS max flow export filter does not work
+Scope     : GUI / File handling
+
+Bugfix    : staticQueue elements cannot be enumerated
+Scope     : Library / Data structures
+
+Milestone : Back mappings are now registers
+Scope     : Library / Data structures
+
+Milestone : A further revision of the attribute template structures
+Scope     : Library / Data structures
+
+Bugfix    : Export of trace objects does not work
+Scope     : GUI / File handling
+
+Bugfix    : Arc deletions can corrupt the exterior face
+Scope     : Library / Incidence structures
+
+Bugfix    : Planar triangulation sometimes produces parallel arcs
+Scope     : Library / Planarity
+
+Milestone : Integer horizontal coordinate assignment
+Scope     : Library / Layered drawing
+
+
+Changes in Release 2.8b2
+------------------------
+
+Milestone : Generation of random incidence orders
+Scope     : Library / Planarity
+
+Bugfix    : Lost artificial node indices after node deletions
+Scope     : Library / Layout
+
+Milestone : Handling of edge series-parallel graphs
+Scope     : Library / Planarity
+Comments  : (1) Recognition
+          : (2) Decomposition tree
+          : (3) Topologic Embedding
+          : (4) Visibility representation
+          : (5) Orientation
+          : (6) Optionally with specified source and target node
+          : (7) For directed, undirected and mixed graphs
+
+Bugfix    : Enable graph context menus only in edit mode
+Scope     : GUI / Editor
+
+Milestone : Copy constructor for mixed graphs
+Scope     : Library / Composition
+
+Bugfix    : Crash of FlipArc() operations when big node layouts,
+          : but no arc routings are available
+Scope     : Library / Layout
+
+Bugfix    : Wrong handling of TCL_... return codes
+Scope     : Shell
+
+Milestone : Extract incidence order from current drawing
+Scope     : Library / Planarity
+
+Bugfix    : Cleaned up two bugs of the "sort incidences" edit mode
+Scope     : GUI / Editor
+
+
+Changes in Release 2.8b3
+------------------------
+
+Bugfix    : In layered drawings, arc can be overlapping
+Scope     : Library / Layout
+
+Milestone : For layered drawings, use the orientation suggested by the previous drawing
+Scope     : Library / Layout
+
+Milestone : For layered drawings, preserve edge routings if possible
+Scope     : Library / Layout
+
+Milestone : For layered drawings of undirected graphs, use bipolar orientations
+Scope     : Library / Layout
+
+Milestone : Bipolar orientations for arbitrary node pairs and almost biconnected graphs
+Scope     : Library / Connectivity
+
+Bugfix    : Ordinal arc display style does not work for infinte edge colours
+Scope     : Library / Layout
+
+Bugfix    : ExplicitParallels() crashes for void subgraphs
+Scope     : Library / Composition
+
+
+Changes in Release 2.8b4
+------------------------
+
+Bugfix    : valgrind debugging session
+Scope     : Library
+Comment   : Re-enabled the heap memory monitoring
+
+
+Changes in Release 2.8b5
+------------------------
+
+Milestone : Attribute pool for layout data
+Scope     : Library / Internal data structures
+Comments  : (1) More strictive separation of graph and layout data
+          : (2) Register attributes support reserved capacities and, by that, are less often invalidated
+
+
+Changes in Release 2.8b6
+------------------------
+
+Milestone : More flexible parser for file import
+Scope     : Library / Internal data structures
+
+Milestone : Lazy computation of value ranges for attributes 
+Scope     : Library / Internal data structures
+
+Milestone : Warn if Tcl interpreter runs without thread support
+Scope     : GUI / Shell
+
+Bugfix    : const correctness of the Tcl interpreter functions
+Scope     : Shell
+
+Bugfix    : Zero size graph attributes crash all the time
+Scope     : Library / Internal data structures
+
+Bugfix    : Editing node labels is not possible when the number of arcs is zero
+Scope     : GUI / Editor
+
+Milestone : Attribute pools for graph representational data
+Scope     : Library / Internal data structures
+
+Bugfix    : gobshow command line tool does not work
+Comment   : Missing maintainance for this tool
+
+Bugfix    : Wrong bounding box when some coordinates are negative
+Scope     : Library / Tk canvas export filter
+
+
+Changes in Release 2.8b7
+------------------------
+
+Bugfix    : RawArray() must return an array in any circumstances
+Scope     : Library / Internal data structures
+Comment   : Came in with Release 2.8b6
+
+Bugfix    : Initialization problems in the matching solver
+Scope     : Library / Classes gra2bal and big2FNW
+
+Bugfix    : Update the active dialogs after (re)loading a file
+Scope     : GUI
+Comment   : Especially for the nodde /arc layout options
+
+Milestone : Big step towards const correctness
+Scope     : Library / Interfaces
+
+Milestone : Planar 1-bent Kandinski drawing (Staircase algorithm)
+Scope     : Library / Layout
+
+Bugfix    : Configuration parameters are overwritten on every file load
+Scope     : Shell
+Comment   : Probably came in with the asynchronous file import stuff
+
+Bugfix    : Biconnectivity method sometimes fails on disconnected graphs
+Scope     : Library / Algorithms
+Comment   : Came in with the bipolar orientation stuff in Build 2.8b3
+
+
+Changes in Release 2.8b8
+------------------------
+
+Bugfix    : Subgraphs can neither be loaded from or written to file
+Scope     : Library / File handling
+Comment   : Came in with the const correctness cleanup in Build 2.8b7
+
+Milestone : Application of the max-flow solver to undirected graphs
+Scope     : Library / Subgraph management
+
+Milestone : Display of arrows for undirected edges (indicating direction of flow)
+Scope     : Library / Layout
+
+Milestone : Improved display options for edge colours
+Scope     : Library / GUI
+
+
+Changes in Release 2.8b9
+------------------------
+
+Milestone : Basic compaction code for 4-orthogonal drawings
+Scope     : Library / Layout
+
+Bugfix    : Cleanup of ReleaseBendNodes() and related procedures
+Scope     : Library / Layout
+Comment   : Could corrupt the thread node indices
+
+Milestone : Line merge compaction code for Kandinski drawings
+Scope     : Library / Layout
+
+
+Changes in Release 2.8b10
+-------------------------
+
+Bugfix    : CutNode() bugs with loops
+Scope     : Library / Connectivity
+Comment   : Especially if rootArc is a loop
+
+Bugfix    : Yet another bug in ReleaseDoubleBendNodes()
+Scope     : Library / Layout
+
+Milestone : Line merge compaction code for 4-orthogonal drawings
+Scope     : Library / Layout
+
+Bugfix    : Planar biconnectivity augmentation does not work
+Scope     : Library / Planarity
+
+Bugfix    : Too few bend nodes reserved by the 4-orthogonal drawing method
+Scope     : Library / Orthogonal layout
+
+Bugfix    : Planarity methods fail with non-trivial lower capacity bounds
+Scope     : Library / Planarity
+
+
+Changes in Release 2.8b11
+-------------------------
+
+Milestone : More elaborate compaction code for 4-orthogonal drawings
+Scope     : Library / Layout
+Comment   : Includes the non-planar case
+
+Bugfix    : Triangulation does not maintain planarity
+Scope     : Library / Planarity
+Comment   : Came in with build 2.8b10
+
+Milestone : More elaborate compaction code for 1-bent Kandinski drawings
+Scope     : Library / Layout
+Comment   : Includes the non-planar case
+
+
+Changes in Release 2.8b12
+-------------------------
+
+Milestone : Improved starting heuristic for 1-bent Kandinski drawings
+Scope     : Library / Layout
+Comment   : Neglecting planarity issues, any drawing given in advance
+          : is used for the initial node placement and arc orientation
+
+Milestone : Edge crossing minimization for 1-bent Kandinski drawings
+Scope     : Library / Layout
+
+Bugfix    : Planarity methods reports "non-planar" for bridge egdes
+Scope     : Library / Planarity
+
+Bugfix    : No small Kandinski nodes are possible
+Scope     : Library / Orthogonal layout
+
+Bugfix    : Do not write the layoutModel to the configuration data
+Scope     : Library / File representation
+
+Bugfix    : Form "Save Settings" produces window handler errors
+Scope     : GUI
+
+Bugfix    : Correct construction of K_4 minors for non-outerplanar graphs
+Scope     : Library / Planarity
+
+Milestone : More descriptive messages when solver calls exit
+Scope     : GUI / Solver
+
+Bugfix    : Wrong order of child nodes in series-parallel decomposition trees
+Scope     : Library / Planarity
+Comment   : Came in with build 2.8b10
+
+Bugfix    : Node label editor upload fails for float values in scientific notation
+Scope     : GUI / Editor
+
+
+Changes in Release 2.8b13
+-------------------------
+
+Milestone : Forbidden minors for non-series-parallel digraphs
+Scope     : Library / Planarity
+
+Milestone : Additional OriginalArc() mappings
+Scope     : Library / Graph composition
+Comment   : For the class constructors of graph, diGraph, mixedGraph, biGraph
+
+Bugfix    : Yet another bug in the construction of K_4 minors of non-outerplanar graphs
+Scope     : Library / Planarity
+
+Milestone : Format conversion of entire archives
+Scope     : GUI / File handling
+
+Milestone : Application of index sets to Steiner and T-Join problems
+Scope     : Library / Solver interfaces
+
+Milestone : Set theoretic extensions of the index set functionality
+Scope     : Library / Solver interfaces
+
+Milestone : Doxygen comments on file and class level
+Scope     : Library / Documentation
+
+Milestone : Support for (partially) directed line graphs
+Scope     : Library / Composition
+
+Milestone : Documentation of attributes and pools
+Scope     : Library / Documentation
+
+Milestone : Address all graph manipulations to the representational objects
+Scope     : Library
+
+
+Changes in Release 2.8b14
+-------------------------
+
+Bugfix    : Take care of implicit orientations when swapping arcs
+Scope     : Library / Graph manipulation
+
+Milestone : Export filter to GraphViz dot
+Scope     : Library / File handling
+
+Bugfix    : GUI crashes during startup if the command line filename is not *.gob
+Scope     : GUI / File handling
+
+Bugfix    : Cleanup of a cygwin gcc 3.4 compilation problem
+Scope     : Library
+
+Milestone : Draft version of a module test automation
+Scope     : GUI
+
+Bugfix    : Delete controller objects only when no object is referencing
+Scope     : Shell
+
+Bugfix    : Yet another change regarding default values of representational attributes
+Scope     : Library / Graph attributes
+Comment   : This cleans up a problem with loading the node demands from DIMACS digraphs
+
+Milestone : Closed the gaps in the construction of forbidden minors of series-parallel graphs
+Scope     : Library / Planarity
+Comment   : This concerned undirected graphs when the reduced graph was not biconnected
+
+
+Changes in Release 2.8b15
+-------------------------
+
+Bugfix    : Base the layout margin on the nodeSep parameter instead of nodeSize
+Scope     : Library / Graph drawing
+
+Milestone : Reworked the computation of display node sizes
+Scope     : Library / Graph drawing
+Comment   : nodeSize now denotes a percentage of the default display size
+
+Bugfix    : Mirror the convex drawing to achieve incidence lists which run in clockwise order
+Scope     : Library / Planar graph drawing
+
+Bugfix    : Canvas builder fails on arcs with coincident end nodes
+Scope     : Library / Graph drawing
+
+Milestone : Maintain a planar embedding by vertexTruncation objects
+Scope     : Library / Planarity
+
+Milestone : Maintain the exterior face when composing a planar graph from another
+Scope     : Library / Planarity
+
+Bugfix    : Wrong label positions of unbent arcs in the Kandinski drawing codes
+Scope     : Library / Graph drawing
+
+Bugfix    : Redundant bend nodes in the Kandinski drawing codes
+Scope     : Library / Graph drawing
+
+Milestone : Improved handling of port nodes
+Scope     : Library / Graph drawing
+Comments  : (1) Clear distinction between implicit and explicit definitions of port nodes
+            (2) Arrows are aligned with explicit port nodes
+
+Milestone : The editor node display follows the layout node display
+Scope     : GUI / Editor
+
+Bugfix    : Redundant bend nodes in the small node orthogonal drawing codes
+Scope     : Library / Graph drawing
+
+Bugfix    : Cleanup of the Hopcroft/Tarjan planarity code
+Scope     : Library / Planarity
+
+
+Changes in Release 2.8b16
+-------------------------
+
+Bugfix    : Misplaced rectangular display of nodes in the editor mode
+Scope     : GUI / Graph editor
+Comment   : Came in with the previous build
+
+Bugfix    : Cannot display graphs with canceled arcs
+Scope     : Library / Graph drawing
+Comment   : Caused by a missing const specifier of HiddenArc()
+
+Bugfix    : Cannot display graphs with canceled nodes
+Scope     : Library / Graph drawing
+Comment   : Caused by a scaling with infinite coordinates of canceled nodes
+
+Milestone : Handling of parallel arcs in Kandinski and staircase drawings
+Scope     : Library / Graph drawing
+
+Milestone : Alignment of port nodes and arrow heads in visibility drawings
+Scope     : Library / Graph drawing
+
+Bugfix    : Search for canonical ordering is not exhaustive
+Scope     : Library / Graph drawing
+
+Bugfix    : Wromg handling of default values
+Scope     : Library / Graph representation
+
+Bugfix    : Failed series-parallel decomposition of directed graphs
+Scope     : Library / Planarity
+
+Bugfix    : Candidate set heuristic blocks when the node demands do not resolve
+Scope     : Library / Matching
+
+Bugfix    : Generation of the Gallai-Edmonds decomposition
+Scope     : Library / Matching
+
+Bugfix    : Cannot generate new bigraph objects since initial layout fails
+Scope     : GUI / Object instanciation
+
+Milestone : Reworked the input forms for new instances
+Scope     : GUI / Object instanciation
+
+
+Changes in Release 2.8b17
+-------------------------
+
+Bugfix    : Disabled Kandinski compaction method
+Scope     : Library / Graph drawing
+
+Milestone : Improved Kandinski drawings of trees
+Scope     : Library / Graph drawing
+
+Milestone : Sierpinski triangular graphs
+Scope     : Library / Graph constructions
+
+Milestone : Torus grid graphs
+Scope     : Library / Graph constructions
+
+Milestone : Triangular (2-subset) graphs
+Scope     : Shell / GUI / Graph constructions
+
+Bugfix    : Deadlock after failed object instanciations
+Scope     : GUI / Graph constructions
+
+Milestone : Open grid graphs
+Scope     : Library / Graph constructions
+
+Milestone : Polar grid graphs
+Scope     : Library / Graph constructions
+
+Bugfix    : Attempts to upload node/arc data from the previous graph object
+Scope     : GUI / Object instanciation
+
+Bugfix    : Wrong y-coordiantes of implicit port nodes
+Scope     : Library / Graph drawing
+Comment   : Came in with Release 2.8b15
+
+Bugfix    : Another cleanup of the Hopcroft/Tarjan planarity code
+Scope     : Library / Planarity
+
+Milestone : HV-drawings of binary trees
+Scope     : Library / Graph drawing
+
+Milestone : Specialized Kandinsky tree drawings
+Scope     : Library / Graph drawing
+
+Milestone : Interface cleanup of the ChinesePostman() procedure
+Scope     : Library / Postman solver
+
+Bugfix    : Two bug fixes in the directed postman solver
+Scope     : Library / Postman solver
+
+Bugfix    : Missing update of rgraph, rbigraph and rdigraph
+Scope     : Command line tools
+
+
+Changes in Release 2.8b18
+-------------------------
+
+Milestone : Cleanup of the graph skeleton manipulation procedures
+Scope     : Library / Graph manipulation
+Comment   : More consistent handling of sparse and dense representations
+
+Milestone : Cleanup of the integration of representational objects
+Scope     : Library / Represented graphs
+Comment   : More consistent handling of sparse and dense representations
+
+Milestone : Cleanup of the TSP and connectivity solvers
+Scope     : Library / Solvers
+
+Bugfix    : Let netowrk flow solvers allow for mixed graphs with partial lower bounds
+Scope     : Library / Network flows
+
+Milestone : Export arborescence packings to the edge colours
+Scope     : Library / Tree packing
+
+Bugfix    : Wrong timer assignment of the tree packing module
+Scope     : Library / Tree packing
+
+Bugfix    : Arrow sizes in browser display / editor and xFig files differ
+Scope     : GUI / Export filters
+
+Bugfix    : Solvers do not adapt to changing root / source / target nodes
+Scope     : GUI / Solvers
+
+Milestone : Cleanup of the side effects of the cost-scaling parameter
+Scope     : Library / Min-cost flow
+
+Milestone : INSERT_NO_THROW mode for queue insertions
+Scope     : Library / Containers
+
+Bugfix    : Various bugs in the cost-scaling code
+Scope     : Library / Min-cost flow
+Comment   : (1) Wrong arc orientations in the Admissible[] queues
+          : (2) Wrong computation of the final node potentials
+          : (3) Double Admissible[] queue insertions
+
+Bugfix    : Wrong export format for ILP objects
+Scope     : GUI / Shell
+Comment   : When "gob" format was explicitly specified
+
+Bugfix    : SetSub() and SetSubRelative() are without effect for problem transformations
+Scope     : Library / Subgraph management
+Comment   : The min-cost b-flow solver failed when explicit reduction to an LP was used
+
+Milestone : Associate the metric type with graph attributes instead of controller objects
+Scope     : Library / Length labels
+Comment   : This cleans up a bug for edge covers of geometric graph instances
+
+Bugfix    : Import filters are affected by the random generator
+Scope     : GUI / File import
+
+Bugfix    : Window deletions cause runtime erros if GUI waits for the window to become visible
+Scope     : GUI / Window handling
+
+Milestone : Cleanup of the "Set constant labels" and the "Extract Solutions" forms
+Scope     : GUI / Editor
+
+Bugfix    : Display two arrow heads for antiparallel predecessor arcs
+Scope     : Library / Canvas builder
+
+Bugfix    : Shortcut for timer info does not work
+Scope     : GUI / Info menu
+
+Milestone : When using candidate graphs, the flows are symmetrized too soon
+Scope     : Library / Weighted matching
+
+Bugfix    : Strong edge connectivity computes to vertex connectivity in the undirected case
+Scope     : Library / Connectivity
+
+Bugfix    : Strong edge connectivity assigns wrong node demands to the complete orientation
+Scope     : Library / Connectivity
+
+Milestone : Computation of node connectivity for a specified node pair
+Scope     : Library / Connectivity
+
+
+Changes in Release 2.8b19
+-------------------------
+
+Milestone : Cleanup and unit test of connectivity methods
+Scope     : Library / Graph manipulation
+Comment   : Added several Reserve() operations 
+
+Bugfix    : Min-cut node identification method does not correctly apply to graphs with parallel arcs
+Scope     : Library / Connectivity
+
+Bugfix    : Test automation does not work at goblinCommLevel==0
+Scope     : GUI / Test automation
+
+Bugfix    : Test automation thread returns with an error
+Scope     : GUI / Test automation
+
+Milestone : Reworked arc display options
+Scope     : Library / GUI / Layout
+
+Bugfix    : Undo / redo operations miss to update the active dialog boxes
+Scope     : GUI / Modifications
+
+Milestone : Display grid lines and rework the bounding box determination
+Scope     : Library / GUI / Layout
+
+Bugfix    : Misplaced context menu for legenda
+Scope     : GUI / Canvas display
+
+Milestone : Stack and FIFO queue dapter classes for STL deques
+Scope     : Library / Interfaces
+
+Bugfix    : Faulty integrity test, complains about non-integral flow
+Scope     : Library / Matching solver
+
+Milestone : Handling of different font sizes and font types
+Scope     : Library / GUI / Layout
+
+Bugfix    : Input form cannot be mapped after grid selection from has been closed
+Scope     : GUI
+
+Bugfix    : Wrong arc label placement due to fineSep=0 assignment
+Scope     : Library / Layout / Layered drawing
+
+Bugfix    : Automatic arc label placement is inconsistent with fineSep
+Scope     : Library / Layout
+
+Milestone : Reworked the register delection code
+Scope     : Library / GUI
+
+Milestone : Grid completions
+Scope     : Library / GUI
+
+Milestone : Improved graph merge utility
+Scope     : Library / GUI
+Comment   : (1) Various alignment modes
+          : (2) Expose former graphs by node colours
+
+Milestone : Node shapes depending on the colours
+Scope     : Library / GUI
+
+
+Changes in Release 2.8b20
+-------------------------
+
+Milestone : Partial upload of the transscript
+Scope     : GUI / Messenger
+Comment   : Cleans up the long GUI response times with large transscript files
+
+Bugfix    : Cleaned up the non-buffered arc insertions
+Scope     : Library / Graph composition
+
+Bugfix    : Error when switching to detached slave window mode
+Scope     : GUI
+
+
+Changes in Release 2.8b21
+-------------------------
+
+Bugfix    : Error when starting a solver without log file display
+Scope     : GUI
+Comment   : Came in with Build 20
+
+Bugfix    : After calling a solver, let the messenger window pop up only in case of errors
+Scope     : GUI
+Comment   : Came in with Build 20
+
+Milestone : Mycielskian graphs
+Scope     : Library / Graph Composition
+
+Bugfix    : Cleaned up the non-buffered node insertions
+Scope     : Library / Graph composition
+
+Bugfix    : Missing context menu in partial upload mode
+Scope     : GUI / Messenger
+
+Milestone : Pulldown menus with defined display size
+Scope     : GUI
+
+Bugfix    : Predecessor arcs of dense graph objects cannot be displayed
+Scope     : Library / Layout
+
+Test      : Valgrind memcheck running in default mode
+Scope     : Library / Solvers
+Comment   : Executables in main_run applied to a single instance with default parameters:
+          : gsearch, mintree, optmatch, opttour, test_dag, colour, postman, connect, optflow
+
+Bugfix    : Build fails if _PROGRESS_ is unset in configuration.h
+Scope     : Library / Build
+
+Milestone : Version header file
+Scope     : Library / Build
+Comment   : Core library can be built without knowing the version in Makefile
+
+Milestone : Adjacency matrix like import filters
+Scope     : Library / Import filters
+Comment   : Both directed/undirected and upper capacity bounds / length labels
+
+Milestone : Moved Dimacs import filters to the C++ core library
+Scope     : Library / Import filters
+Comment   : Corrected the geom filter
+
+Bugfix    : Various display bugs for negative subgraph multiplicities
+Scope     : Library / Layout
+
+Milestone : Module guard class and its application
+Scope     : Library / Code instrumentation
+
+
+Changes in Release 2.8b22
+-------------------------
+
+Milestone : Moved progress counting code from the timer class to the module guards
+Scope     : Library / Code instrumentation
+Comment   : Now arbitrary nesting levels are supported
+
+Milestone : Moved optimization bounds from the timer class to the module guards
+Scope     : Library / Code instrumentation
+Comment   : Timer instrumentation is POSIX, but not ANSI
+
+Bugfix    : Cannot load balanced network from file in shell script
+Scope     : Shell
+
+Milestone : Tracing of layout methods
+Scope     : Library / Layout / Code instrumentation
+
+
+Changes in Release 2.8b23
+-------------------------
+
+Bugfix    : Steiner tree enumeration must strip off Steiner leave nodes
+Scope     : Library / Steiner trees
+
+Bugfix    : TSP lower bounds are not exported
+Scope     : Library / TSP
+
+Bugfix    : Attribute copy constructors do not work
+Scope     : Library / Attributes
+
+Milestone : Move layout parameters to graph pool
+Scope     : Library / GUI / Layout
+Comment   : (1) All graph copy / derivation constructors copy layout pool content
+          : (2) Expose former graphs by node colours
+
+Bugfix    : Deadlock when writing node shapes by colours
+Scope     : Library / Layout
+Comment   : In particular when node colours are undefined
+
+Milestone : Cleanup of the node / arc layout dialogs
+Scope     : GUI / Layout
+
+Bugfix    : Too few bend nodes in xfig export
+Scope     : Library / Layout
+Comment   : Came in with 2.8b15
+
+Milestone : String attributes
+Scope     : Library / Attributes
+
+
+Changes in Release 2.8b24
+-------------------------
+
+Milestone : Moebius ladders and lattices
+Scope     : Library / Graph constructors
+
+Milestone : Manipulate the node or arc index order
+Scope     : GUI / Library / Graph manipulation
+
+Milestone : Revision of the split graph constructor
+Scope     : Library / GUI / Graph composition
+Comment   : Split graph did not map node demands
+
+Bugfix    : Graph objects composed from other graph objects do not inherit label format strings
+Scope     : Library / Layout
+Comment   : Came in with 2.8b23
+
+Milestone : Elimination of the controller layout model
+Scope     : Library / Layout
+
+Milestone : Explicit bounding box determination
+Scope     : Library / Layout
+
+Bugfix    : Convex drawings are not scaled correctly
+Scope     : Library / Layout
+
+Bugfix    : SetCapacity() fails on graphs with layout points
+Scope     : Library / Graph constructors
+
+Milestone : Facet composition
+Scope     : Library / Graph composition
+
+Bugfix    : Missing check for log view initialization
+Scope     : GUI
+
+Milestone : Tcl interface cleanup and documentation
+Scope     : Shell / GUI
+
+Milestone : Cleanup of access to global variables
+Scope     : GUI
+
+Milestone : Support for invisible edge segments
+Scope     : Library / Layout
+
+Milestone : Display grid lines in xFig dependent figures
+Scope     : Library / Layout
+
+Bugfix    : Cleanup of inline methods
+Scope     : Library
+
+Bugfix    : Elimination of custom RTTI functionality
+Scope     : Library
+
+Bugfix    : Arc and node deletions may invert the order of bend nodes
+Scope     : Library / Graph manipulation
+
+Milestone : Torus maps
+Scope     : Library / Graph constructors
+
+Milestone : Generalized Petersen graphs
+Scope     : Library / Graph constructors
+
+Milestone : Kneser graphs
+Scope     : Library / Graph constructors
+
+Milestone : Improved drawing of triangular graphs
+Scope     : Library / Graph constructors / Layout
+
+
+Changes in Release 2.8b25
+-------------------------
+
+Milestone : Cleanup of graph attribute manipulation
+Scope     : Shell / GUI
+
+Bugfix    : If _BIG_NODES_ is unset, a lot of compiler warnings occur
+Scope     : Library / Compile time configuration
+
+Bugfix    : Cannot determine series-parallel node incidence order
+Scope     : GUI
+
+Milestone : Cleanup of source / target / root node default rules and naming
+Scope     : Shell / GUI / Library
+
+Milestone : k-ary (cyclic) butterfly graphs
+Scope     : Library / Graph constructors
+
+
+Changes in Release 2.8b26
+-------------------------
+
+Milestone : Completed the refactoring of the Tcl interface
+Scope     : Shell / GUI
+
+
+Changes in Release 2.8b27
+-------------------------
+
+Milestone : Perfect elimination ordering. Chordal and co-chordal graph recognition
+Scope     : Library / Recognition methods
+
+Milestone : Random permutation, threshold and interval graphs
+Scope     : Library / Constructors
+
+Milestone : Cleanup of the shortest path solver interface
+Scope     : Library
+Comment   : (1) BFS exports the distances by the node colour register
+            (2) Eligible arcs are specified by an index set
+
+
+Changes in Release 2.8b28
+-------------------------
+
+Bugfix    : Several constructor commands fail with "Missing number of nodes"
+Scope     : GUI / Shell
+
+
+Changes in Release 2.8b29
+-------------------------
+
+Bugfix    : Print button does not work
+Scope     : GUI
+
+Bugfix    : Missing default file format if the browser is started with a file without extension
+Scope     : GUI
+
+Milestone : Dynamic linking and "private" installation is the default build target
+Scope     : Build / Setup
+
+Bugfix    : Missing completion of compound object in xfig file export
+Scope     : Library / File export
+
+Bugfix    : No spline representation of edges in tk file export
+Scope     : Library / File export
+
+Milestone : Display proxy class translating all graph features
+Scope     : Library / Shell / GUI / Editor
+Comment   : Editor now preserves much more of the regular display modes
+
+Milestone : Move all display coordinate computations to the core library
+Scope     : GUI / Library / Shell
+Comment   : (1) In editor, actual node sizes are displayed
+            (2) In editor, the bounding box is displayed
+            (3) Zoom factor refers to sheet size rather than graph bounding boxes,
+                and so is preserved when the graph drawing changes
+            (4) Zoom operations to canvas with or height
+
+Bugfix    : Node deletion must be preceded by an upload of arc labels
+Scope     : GUI / Editor
+
+Milestone : Reworked the handling of display colours
+Scope     : Library
+
+Milestone : Coordinate transformations between pixels and metric values apply
+          : pixelWidth and pixelHeight scaling factors
+Scope     : Library / Shell / GUI
+
+Bugfix    : Insufficient spacing of arcs and arc labels in various orthogonal drawing codes
+Scope     : Library / Layout
+
+Bugfix    : Invisible arc segments due to a wrong bounding box
+Scope     : Library / Layout
+
+Bugfix    : Formal return value of the max-flow solver is not the absolute flow value
+Scope     : Library / Network flows
+
+Milestone : More efficient area optimization for small node orthogonal drawings
+Scope     : Library / Layout
+
+Bugfix    : In the method selection form, could not refer to the module info
+Scope     : GUI
+
+
+Changes in Release 2.8b30
+-------------------------
+
+Bugfix    : CutCapacity() does not consider lower capacity bounds
+Scope     : Library / MaxFlow solver
+
+Milestone : Area optimization for Giotto node orthogonal drawings
+Scope     : Library / Layout
+
+Milestone : Node shifting rule for Kandinski drawing does not apply in the non-planar case
+Scope     : Library / Layout
+
+Milestone : Deactivated the buggy method Layout_KandinskyRefineRouting()
+Scope     : Library / Layout
+
+Bugfix    : Missing typecasts of printf() parameters
+Scope     : Library
+

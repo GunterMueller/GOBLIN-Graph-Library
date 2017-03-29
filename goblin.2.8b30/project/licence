@@ -1,0 +1,27 @@
+
+            GOBLIN Licence Agreement
+            ------------------------
+
+The GOBLIN source code until release 2.4 was written by
+
+     Dr. Christian Fremuth-Paeger
+     Department of Mathematics
+     University of Augsburg, Germany
+	 
+     E-Mail: Fremuth@Math.Uni-Augsburg.DE
+     
+     (C) Christian Fremuth-Paeger and the DFG Council 1998-2001
+
+Later releases include contributions by other authors. A list of
+acknowledgements can be found in the reference manual.
+
+GOBLIN is open source software and licenced by the GNU Lesser Public License
+(LGPL). That is, GOBLIN may be downloaded, compiled and used for scientific,
+educational and other purposes free of charge. For the details, in particular
+the statements about redistribution and changes of the source code, observe
+the LGPL document which is attached with the package (folder ../tcl).
+
+This distribution includes sources of the GLPK linear programming kit written
+by Andrew Makhorin. Note that this software is licenced by the more restrictive
+GNU Public License (GPL). If this does not conform with your application you
+may compile GOBLIN without the GLPK plugin.
