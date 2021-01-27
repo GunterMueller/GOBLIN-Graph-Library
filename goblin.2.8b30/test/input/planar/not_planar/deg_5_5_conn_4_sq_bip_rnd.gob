@@ -1,0 +1,98 @@
+(graph
+ (definition
+  (nodes 18 18 2)
+  (arcs 45)
+  (incidences
+   (0
+     89  8  1 15 16)
+   (1
+     88 10  3  9 18)
+   (2
+     81 12  5 11 20)
+   (3
+     73 14  7 13 22)
+   (4
+     72 24 17 31 32)
+   (5
+     76 26 19 25 34)
+   (6
+     79 28 21 27 36)
+   (7
+     75 30 23 29 38)
+   (8
+     83 40 33 47 48)
+   (9
+     86 42 35 41 50)
+   (10
+     87 44 37 43 52)
+   (11
+     80 46 39 45 54)
+   (12
+     84 56 49 63 64)
+   (13
+     77 58 51 57 66)
+   (14
+     78 60 53 59 68)
+   (15
+     74 62 55 61 70)
+   (16
+     82  2  4  6  0)
+   (17
+     85 71 69 67 65)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length 1.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 3)
+  (coordinates
+   (axis0
+      -0.000 -12.732  -0.000  12.732  -0.000 -25.465  -0.000  25.465  -0.000 -38.197
+      -0.000  38.197  -0.000 -50.930  -0.000  50.930   0.000   0.000 -60.930  60.930)
+   (axis1
+      12.732   0.000 -12.732  -0.000  25.465   0.000 -25.465  -0.000  38.197   0.000
+     -38.197  -0.000  50.930   0.000 -50.930  -0.000   0.000   0.000 -60.930  60.930)
+   (axis2
+       0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+       0.000   0.000   0.000   0.000   0.000   0.000 -50.930  50.930   0.000   0.000)
+  )
+  (minBound 18)
+  (maxBound 19)
+ )
+ (layout
+  (bendSpacing 2.500)
+  (fineSpacing *)
+  (model 0)
+ )
+ (solutions
+ )
+ (configure
+   -sourceNode         200000
+   -targetNode         200000
+   -rootNode           200000
+   -displayMode        3
+   -displayZoom        1.00e+00
+   -pixelWidth         3.21e-01
+   -pixelHeight        3.39e-01
+   -legenda            0
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMan             0
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methFailSave       1
+   -methMCFST          2
+   -methCandidates     -1
+   -methRelaxTSP1      0
+   -methMaxCut         2
+   -methLocal          0
+   -maxBBNodes         3
+   -randLength         0
+   -randGeometry       0)
+)

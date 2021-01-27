@@ -1,0 +1,61 @@
+
+# Unit test for the visibility representation method
+
+set testTargetFilters \
+    [list [file join planar deg3 "*.gob"] \
+          [file join planar deg4 "*.gob"] \
+          [file join planar regular "*.gob"] \
+          [file join planar deg_high "*.gob"] ]
+
+set testTargetFormat "gob"
+
+set listOfTestSteps {
+    "Disturb embedding"         DisturbEmbedding                \
+    "Test planarity"            TestPlanarity                   \
+    "Visibility representation" TestVisibilityRepresentation    \
+    "Get Width"                 GetWidth                        \
+    "Get Height"                GetHeight                       \
+    "Export to GIF"             TestGifExport                   \
+}
+
+proc DisturbEmbedding {testObject testOutput} {
+    $testObject reorder incidences -shuffle
+
+    return 0
+}
+
+proc TestPlanarity {testObject testOutput} {
+    global goblinMethPlanarity
+    set goblinMethPlanarity 1
+
+    return [$testObject reorder incidences -planar]
+}
+
+proc TestVisibilityRepresentation {testObject testOutput} {
+    $testObject layout visibility -spacing 10
+
+    return 0
+}
+
+proc GetWidth {testObject testOutput} {
+    return [expr [$testObject layout boundingBox info -coordinate 0 -gridSize] -2]
+}
+
+proc GetHeight {testObject testOutput} {
+    return [expr [$testObject layout boundingBox info -coordinate 1 -gridSize] -2]
+}
+
+proc TestGifExport {testObject testOutput} {
+    global goblinXZoom goblinYZoom ZipEnabled
+
+    $testObject layout configure \
+        -nodeColourMode 2 -arcColourMode 0
+    set goblinXZoom 100
+    set goblinYZoom 100
+    set ZipEnabled 0
+
+#    ExportAndZip $testObject "$testOutput.gob" gob object
+    ExportAndZip $testObject "$testOutput.gif" gif bitmap
+
+    return 0
+}

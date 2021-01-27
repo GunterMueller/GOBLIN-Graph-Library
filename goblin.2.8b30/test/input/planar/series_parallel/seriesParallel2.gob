@@ -1,0 +1,58 @@
+(mixed
+ (definition
+  (nodes 5 5 0)
+  (arcs 6)
+  (incidences
+   (0
+     11  9)
+   (1
+      1  2)
+   (2
+      0  4)
+   (3
+      5  8  6  3)
+   (4
+      7 10)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    34.000 63.000 83.000 92.000 69.000 34.000)
+  (demand 1.000)
+  (directed 1)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+     -42.450 -46.329 -48.284 -45.532 -44.777)
+   (axis1
+     123.959 128.112 125.677 125.413 122.393)
+  )
+ )
+ (layout
+ )
+ (solutions
+  (edgeColour
+    3 2 2 2 3 3)
+ )
+ (configure
+   -sourceNode         2
+   -targetNode         0
+   -rootNode           200000
+   -xShift             55
+   -yShift             55
+   -xZoom              3.50e+02
+   -yZoom              3.50e+02
+   -nodeSep            2
+   -bendSep            2
+   -legenda            0
+   -arcLabels          1
+   -nodeColours        2
+   -displayMode        3
+   -traceLevel         0
+   -threshold          0
+   -logMeth            2
+   -randGeometry       0)
+)

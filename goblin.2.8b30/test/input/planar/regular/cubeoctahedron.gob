@@ -1,0 +1,89 @@
+(graph
+ (definition
+  (nodes 12 12 0)
+  (arcs 24)
+  (incidences
+   (0
+     17  2 39  0)
+   (1
+     33  4 23  6)
+   (2
+     47  8 31 10)
+   (3
+     41 12 27 14)
+   (4
+     21 16 15 18)
+   (5
+      3 20 29 22)
+   (6
+     19 26 11 24)
+   (7
+     25 30  7 28)
+   (8
+     37 32  9 34)
+   (9
+     43 38  5 36)
+   (10
+     45 40  1 42)
+   (11
+     35 46 13 44)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    36.000 26.000 65.000 16.000 58.000 37.000 24.000 36.000 99.000 98.000
+    71.000 79.000 78.000 42.000 63.000 29.000 44.000 21.000 16.000 95.000
+    66.000 40.000 84.000 42.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+      4.000  7.000 10.000  7.000  6.000  6.000  8.000  8.000  9.000  5.000
+      1.000 13.000)
+   (axis1
+      7.000  6.000  7.000 13.000 10.000  8.000 10.000  8.000  5.000  5.000
+      4.000  4.000)
+  )
+ )
+ (layout
+  (bendSpacing 1.000)
+  (nodeSpacing 2.000)
+  (exteriorArc 20)
+  (model 1)
+ )
+ (solutions
+  (nodeColour
+    0 1 1 0 1 2 2 0 0 2
+    1 2)
+ )
+ (configure
+   -sourceNode         200000
+   -targetNode         200000
+   -rootNode           200000
+   -displayMode        3
+   -displayZoom        1.00e+00
+   -pixelWidth         3.21e-01
+   -pixelHeight        3.39e-01
+   -legenda            0
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methCandidates     3
+   -methMaxCut         2
+   -methSolve          0
+   -methLocal          0
+   -maxBBIterations    10000
+   -maxBBNodes         50000
+   -methPlanarity      0
+   -randUCap           1
+   -randLength         0
+   -randGeometry       0)
+)

@@ -1,0 +1,86 @@
+(graph
+ (definition
+  (nodes 6 6 13)
+  (arcs 9)
+  (incidences
+   (0
+     12 17 14)
+   (1
+      8 13  0)
+   (2
+      4 10 16)
+   (3
+     11  9  7)
+   (4
+      1  5  2)
+   (5
+      6 15  3)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    30.000 23.000 83.000 50.000 58.000 15.000  4.000 90.000 21.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+      10.000  30.000  20.000  40.000  20.000  20.000  -2.500   0.000  37.500  40.000
+      27.500  30.000  12.500  10.000  40.000   0.000  42.500 -10.000  50.000)
+   (axis1
+      30.000   0.000  10.000  10.000  20.000  30.000  27.500  30.000  27.500  30.000
+      22.500  20.000  12.500  10.000   0.000   0.000   2.500 -10.000  40.000)
+  )
+  (minBound 17)
+  (maxBound 18)
+ )
+ (layout
+  (bendSpacing 10.000)
+  (nodeSize 125.000)
+  (fineSpacing 2.500)
+  (thread
+     *  *  *  *  *  *  7 15  9  *
+    11  * 13  *  *  * 14  *  *)
+  (align
+    10  *  *  8 16  *  6  * 12)
+  (model 2)
+ )
+ (solutions
+  (edgeColour
+    4 2 2 3 1 1 0 2 1)
+  (predecessor
+     * 12 11  8  4  2)
+  (nodeColour
+    0 5 3 4 2 1)
+  (subgraph
+    1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000 1.000)
+ )
+ (configure
+   -sourceNode         200000
+   -targetNode         200000
+   -rootNode           200000
+   -displayMode        3
+   -displayZoom        1.00e+00
+   -pixelWidth         3.21e-01
+   -pixelHeight        3.39e-01
+   -legenda            0
+   -traceLevel         3
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logMan             0
+   -logIO              1
+   -logWarn            1
+   -logGaps            1
+   -methFailSave       1
+   -methMCFST          2
+   -methCandidates     -1
+   -methRelaxTSP1      0
+   -methMaxCut         2
+   -methLocal          0
+   -maxBBNodes         3
+   -randLength         0
+   -randGeometry       0)
+)

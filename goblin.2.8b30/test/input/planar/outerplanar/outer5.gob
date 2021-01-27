@@ -1,0 +1,60 @@
+(graph
+ (definition
+  (nodes 8 8 0)
+  (arcs 7)
+  (incidences
+   (0
+      5)
+   (1
+     12  7  8)
+   (2
+     13)
+   (3
+     11)
+   (4
+     10  9)
+   (5
+      0)
+   (6
+      2)
+   (7
+      1  4  3  6)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length
+    58.000 15.000  4.000 90.000 21.000 67.000 37.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+     17.500  7.500  7.500  2.500  2.500 12.500 12.500 12.500)
+   (axis1
+      5.000  5.000 10.000 10.000  5.000 10.000  0.000  5.000)
+  )
+ )
+ (layout
+  (model 1)
+ )
+ (solutions
+  (nodeColour
+    7 0 2 3 0 1 6 0)
+  (predecessor
+     *  6 12 10  8  1  3  5)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             400
+   -yShift             400
+   -xZoom              1.50e+02
+   -yZoom              1.50e+02
+   -nodeSize           100
+   -nodeSep            100
+   -bendSep            50
+   -legenda            0)
+)

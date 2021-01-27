@@ -1,0 +1,120 @@
+(graph
+ (definition
+  (nodes 25 25 0)
+  (arcs 40)
+  (incidences
+   (0
+      3  0 12  9)
+   (1
+      1 22 32 29  5)
+   (2
+     23 24)
+   (3
+     48  2  6 43 52)
+   (4
+     67 70 45  7 19 14  4 27)
+   (5
+     25 62 26 38 35)
+   (6
+     47 42)
+   (7
+     65 54 59 46 44)
+   (8
+     63 64 76 73)
+   (9
+     21 10 13)
+   (10
+     11  8)
+   (11
+     16 18 20)
+   (12
+     17 15)
+   (13
+     33 40 31)
+   (14
+     28 30)
+   (15
+     41 37 39)
+   (16
+     34 36)
+   (17
+     61 51 53)
+   (18
+     50 49)
+   (19
+     56 60 58)
+   (20
+     55 57)
+   (21
+     71 69 78)
+   (22
+     66 68)
+   (23
+     79 74 77)
+   (24
+     75 72)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length 1.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+      0.000 10.000 20.000  0.000 10.000 20.000  0.000 10.000 20.000  5.000
+      3.000  5.000  7.000 15.000 13.000 15.000 17.000  5.000  3.000  5.000
+      7.000 15.000 13.000 15.000 17.000)
+   (axis1
+      0.000  0.000  0.000 10.000 10.000 10.000 20.000 20.000 20.000  3.000
+      5.000  7.000  5.000  3.000  5.000  7.000  5.000 13.000 15.000 17.000
+     15.000 13.000 15.000 17.000 15.000)
+  )
+ )
+ (layout
+  (exteriorArc 23)
+  (model 1)
+ )
+ (solutions
+  (nodeColour
+    0 0 0 0 0 0 0 0 0 0
+    0 0 0 0 0 0 0 0 0 0
+    0 0 0 0 0)
+  (edgeColour
+    1 1 1 0 0 0 0 0 0 0
+    0 1 1 1 0 0 0 0 0 0
+    0 0 0 0 0 0 1 0 0 1
+    1 1 1 1 1 0 1 1 0 1)
+ )
+ (configure
+   -source             200000
+   -target             200000
+   -root               200000
+   -xShift             3299
+   -yShift             479
+   -xZoom              3.13e+02
+   -yZoom              3.13e+02
+   -legenda            0
+   -arcLabels          1
+   -nodeLabels         0
+   -displayMode        3
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMeth            2
+   -logMan             0
+   -logIO              1
+   -logWarn            1
+   -logGaps            1
+   -methFailSave       1
+   -methMCFST          2
+   -methCandidates     -1
+   -methRelaxTSP1      0
+   -methMaxCut         2
+   -methLocal          0
+   -maxBBNodes         3
+   -randLength         0
+   -randGeometry       0)
+)

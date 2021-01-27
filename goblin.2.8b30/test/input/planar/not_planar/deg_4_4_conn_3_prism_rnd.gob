@@ -1,0 +1,110 @@
+(graph
+ (definition
+  (nodes 24 24 2)
+  (arcs 48)
+  (incidences
+   (0
+     95  0 23 24)
+   (1
+     86  2  1 26)
+   (2
+     79  4  3 28)
+   (3
+     93  6  5 30)
+   (4
+     81  8  7 32)
+   (5
+     84 10  9 34)
+   (6
+     85 12 11 36)
+   (7
+     92 14 13 38)
+   (8
+     90 16 15 40)
+   (9
+     78 18 17 42)
+   (10
+     91 20 19 44)
+   (11
+     77 22 21 46)
+   (12
+     72 48 25 71)
+   (13
+     83 50 27 49)
+   (14
+     76 52 29 51)
+   (15
+     88 54 31 53)
+   (16
+     74 56 33 55)
+   (17
+     80 58 35 57)
+   (18
+     73 60 37 59)
+   (19
+     75 62 39 61)
+   (20
+     94 64 41 63)
+   (21
+     82 66 43 65)
+   (22
+     89 68 45 67)
+   (23
+     87 70 47 69)
+  )
+  (ucap 1.000)
+  (lcap 0.000)
+  (length 1.000)
+  (demand 1.000)
+ )
+ (geometry
+  (metrics 0)
+  (dim 2)
+  (coordinates
+   (axis0
+      -0.000 -19.099 -33.080 -38.197 -33.080 -19.099  -0.000  19.099  33.080  38.197
+      33.080  19.099  -0.000 -38.197 -66.159 -76.394 -66.159 -38.197  -0.000  38.197
+      66.159  76.394  66.159  38.197 -86.394  86.394)
+   (axis1
+      38.197  33.080  19.099   0.000 -19.099 -33.080 -38.197 -33.080 -19.099  -0.000
+      19.099  33.080  76.394  66.159  38.197   0.000 -38.197 -66.159 -76.394 -66.159
+     -38.197  -0.000  38.197  66.159 -86.394  86.394)
+  )
+  (minBound 24)
+  (maxBound 25)
+ )
+ (layout
+  (exteriorArc 70)
+  (bendSpacing 2.500)
+  (fineSpacing *)
+  (model 0)
+ )
+ (solutions
+ )
+ (configure
+   -sourceNode         200000
+   -targetNode         200000
+   -rootNode           200000
+   -displayMode        3
+   -displayZoom        1.00e+00
+   -pixelWidth         3.21e-01
+   -pixelHeight        3.39e-01
+   -legenda            0
+   -traceLevel         0
+   -traceStep          1
+   -threshold          0
+   -logMan             0
+   -logIO              1
+   -logRes             2
+   -logWarn            1
+   -logGaps            1
+   -methFailSave       1
+   -methMCFST          2
+   -methCandidates     -1
+   -methRelaxTSP1      0
+   -methMaxCut         2
+   -methLocal          0
+   -maxBBNodes         3
+   -randLength         0
+   -randGeometry       0)
+)
